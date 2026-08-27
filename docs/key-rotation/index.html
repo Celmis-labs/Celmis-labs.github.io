@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JWT key rotation — Celmis</title>
+<meta name="description" content="Rotate the session and MCP signing secrets with no downtime, using a dual-secret window.">
+<link rel="canonical" href="https://celmis-labs.github.io/docs/key-rotation/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JWT key rotation — Celmis">
+<meta property="og:description" content="Rotate the session and MCP signing secrets with no downtime, using a dual-secret window.">
+<meta property="og:url" content="https://celmis-labs.github.io/docs/key-rotation/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"JWT key rotation — Celmis","description":"Rotate the session and MCP signing secrets with no downtime, using a dual-secret window.","url":"https://celmis-labs.github.io/docs/key-rotation/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"Celmis","url":"https://celmis-labs.github.io/"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},"license":"https://www.gnu.org/licenses/agpl-3.0.html"}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span><a href="/docs/">Docs</a><span>/</span>JWT key rotation</p>
+    <h1 class="docttl">JWT key rotation</h1>
+    <p class="docsub">Rotate the session and MCP signing secrets with no downtime, using a dual-secret window.</p>
+    <p class="docmeta"><span>runbook</span><span>source: <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/KEY_ROTATION.md">docs/KEY_ROTATION.md</a></span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<h1>JWT Key Rotation (Stage 21)</h1>
+<p>Both the API session tokens and MCP tokens are HS256 JWTs. Rotation is
+zero-downtime via a dual-secret window.</p>
+<h2 id="procedure"><a class="anchor" href="#procedure" aria-label="Link to this section">#</a>Procedure</h2>
+<ol>
+<li>Generate a new secret:
+<code>python -c 'import secrets; print(secrets.token_urlsafe(48))'</code></li>
+<li>In the deployment env:
+<ul>
+<li><code>CELMIS_JWT_SECRET_PREVIOUS=&lt;current value of CELMIS_JWT_SECRET&gt;</code></li>
+<li><code>CELMIS_JWT_SECRET=&lt;new secret&gt;</code></li>
+<li>(if MCP uses its own secret: same dance with <code>MCP_JWT_SECRET</code> /
+<code>MCP_JWT_SECRET_PREVIOUS</code>)</li>
+</ul>
+</li>
+<li>Restart the API. New tokens are signed with the new secret; tokens
+signed with the previous secret still verify.</li>
+<li>After the longest token TTL passes (session tokens live 30 days),
+remove <code>CELMIS_JWT_SECRET_PREVIOUS</code> and restart.</li>
+</ol>
+<h2 id="forced-revocation-compromise"><a class="anchor" href="#forced-revocation-compromise" aria-label="Link to this section">#</a>Forced revocation (compromise)</h2>
+<p>Skip step 3's grace: set only the new <code>CELMIS_JWT_SECRET</code> and do NOT
+set <code>_PREVIOUS</code>. All outstanding tokens become invalid immediately —
+every user re-logs in, MCP clients re-run the OAuth flow.</p>
+
+      <div class="docnav"><a href="/docs/backup/">← Backup and restore</a></div>
+    </article>
+    
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

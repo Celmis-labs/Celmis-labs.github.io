@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LiteLLM gateway — Celmis</title>
+<meta name="description" content="Put a single exit door in front of every model provider, so the application never holds a tenant&#x27;s real provider key on the call path.">
+<link rel="canonical" href="https://celmis-labs.github.io/docs/litellm/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LiteLLM gateway — Celmis">
+<meta property="og:description" content="Put a single exit door in front of every model provider, so the application never holds a tenant&#x27;s real provider key on the call path.">
+<meta property="og:url" content="https://celmis-labs.github.io/docs/litellm/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"LiteLLM gateway — Celmis","description":"Put a single exit door in front of every model provider, so the application never holds a tenant's real provider key on the call path.","url":"https://celmis-labs.github.io/docs/litellm/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"Celmis","url":"https://celmis-labs.github.io/"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},"license":"https://www.gnu.org/licenses/agpl-3.0.html"}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span><a href="/docs/">Docs</a><span>/</span>LiteLLM gateway</p>
+    <h1 class="docttl">LiteLLM gateway</h1>
+    <p class="docsub">Put a single exit door in front of every model provider, so the application never holds a tenant&#x27;s real provider key on the call path.</p>
+    <p class="docmeta"><span>operator runbook</span><span>source: <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/LITELLM_GATEWAY.md">docs/LITELLM_GATEWAY.md</a></span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<h1>LiteLLM gateway — operator runbook</h1>
+<p>The gateway is a LiteLLM proxy container that becomes the single exit door to
+every LLM provider. With it on, the app process no longer holds tenants' real
+provider keys on the call path: each workspace gets a <em>virtual</em> key that can
+only reach that workspace's own deployments.</p>
+<p>It is <strong>off by default and stays off</strong> until you deliberately turn it on. This
+document is the whole procedure: what to set, in what order, how to prove it
+works, how to go back, and the one thing you can never undo.</p>
+<hr />
+<h2 id="verifying-without-ssh"><a class="anchor" href="#verifying-without-ssh" aria-label="Link to this section">#</a>Verifying without SSH</h2>
+<p><code>scripts/verify_gateway.sh</code> needs a shell on the box. When you do not have
+one, the same checks run as an API call, from the same vantage point — the
+API container is inside the compose network, which is the only place
+<code>http://litellm:4000</code> resolves:</p>
+<pre><code class="language-bash"># Quick yes/no: is the proxy configured, up, and actually routing?
+curl -s -H &quot;X-Ops-Token: $CELMIS_OPS_TOKEN&quot; \
+  http://&lt;host&gt;/backend/api/ops/gateway | python3 -m json.tool
+
+# The full end-to-end. Needs a global-admin session, not the ops token:
+# it creates a team, deployments and a scoped key (and deletes them again).
+TOKEN=$(curl -s -X POST http://&lt;host&gt;/backend/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{&quot;email&quot;:&quot;&lt;CELMIS_MASTER_EMAIL&gt;&quot;,&quot;password&quot;:&quot;&lt;CELMIS_MASTER_KEY&gt;&quot;}' \
+  | python3 -c 'import json,sys; print(json.load(sys.stdin)[&quot;access_token&quot;])')
+
+curl -s -X POST -H &quot;Authorization: Bearer $TOKEN&quot; \
+  &quot;http://&lt;host&gt;/backend/api/ops/gateway/verify?workspace_id=&lt;ws&gt;&quot; \
+  | python3 -m json.tool
+</code></pre>
+<p>The response lists every check rather than stopping at the first failure —
+&quot;the admin plane works and only the completion failed&quot; points at the provider
+key, while &quot;team creation failed&quot; points at the master key. <code>cleaned: false</code>
+means the teardown did not finish and something was left on the proxy.</p>
+<p>The provider key comes from that workspace's own stored credentials, not from
+an environment variable, because that is where keys live: an env-level key
+would be a cross-tenant fallback that every workspace without its own key
+would silently spend on.</p>
+<h2 id="1-the-two-switches"><a class="anchor" href="#1-the-two-switches" aria-label="Link to this section">#</a>1. The two switches</h2>
+<p>They are independent on purpose, and both must be on:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Switch</th>
+<th>Where</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>COMPOSE_PROFILES=gateway</code></td>
+<td>server <code>.env</code></td>
+<td>whether the <strong>container exists</strong></td>
+</tr>
+<tr>
+<td><code>LITELLM_PROXY_URL=http://litellm:4000</code></td>
+<td>server <code>.env</code></td>
+<td>whether the <strong>API routes through it</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The container lives behind <code>profiles: [&quot;gateway&quot;]</code> in <code>docker-compose.yml</code>, so
+<code>docker compose up -d</code> never creates it unless the profile is active. Compose
+reads <code>COMPOSE_*</code> variables from the project <code>.env</code> on the server — so
+<strong>turning the gateway on is a change to that file and nothing else</strong>. No image
+is rebuilt and no deployment machinery is touched.</p>
+<p>Setting only <code>COMPOSE_PROFILES</code> runs the proxy but leaves the app on direct
+provider calls: a safe way to bring the proxy up and verify it before any real
+traffic depends on it. That is the recommended order.</p>
+<hr />
+<h2 id="2-variables-to-add-to-the-servers-env"><a class="anchor" href="#2-variables-to-add-to-the-servers-env" aria-label="Link to this section">#</a>2. Variables to add to the server's <code>.env</code></h2>
+<p>Append this block to <code>.env</code> on the server, beside the values
+<code>scripts/init-env.sh</code> generated. Keep everything already in the file — compose
+resolves interpolation for the whole document before starting anything, so one
+missing variable stops services that have nothing to do with the gateway.</p>
+<pre><code class="language-dotenv"># ── LiteLLM gateway ──────────────────────────────────────────────────
+# Creates the litellm container. Comma-separated; keep any profile already set.
+COMPOSE_PROFILES=gateway
+
+# Proxy admin key. MUST start with &quot;sk-&quot;.   echo &quot;sk-$(openssl rand -hex 24)&quot;
+LITELLM_MASTER_KEY=sk-...
+
+# Encrypts every provider key the proxy stores.   openssl rand -hex 32
+# SET ONCE — see section 6. This one can never be changed.
+LITELLM_SALT_KEY=...
+
+# Database for the proxy, on the same Postgres. Created automatically by the
+# litellm-init service; you do NOT run createdb by hand.
+LITELLM_DB=litellm
+
+# Leave this one OUT on the first deploy — add it in step 2 below.
+# LITELLM_PROXY_URL=http://litellm:4000
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li><code>LITELLM_PROXY_API_BASE</code> is set from <code>LITELLM_PROXY_URL</code> inside
+<code>docker-compose.yml</code>. Do not add it separately.</li>
+<li><code>LITELLM_PROXY_TIMEOUT</code> (default 20s) is optional.</li>
+<li>Do not add a <code>ports:</code> mapping for the proxy. It stores every tenant's real
+provider key; it must stay reachable only from inside the compose network.</li>
+<li>The <code>.env</code> must be LF, not CRLF. A trailing <code>\r</code> turns <code>COMPOSE_PROFILES</code> into
+a profile named <code>gateway\r</code>, which matches nothing — the deploy's gateway
+check catches this, but it is a confusing hour if you skip the check.</li>
+</ul>
+<hr />
+<h2 id="3-turning-it-on-order-matters"><a class="anchor" href="#3-turning-it-on-order-matters" aria-label="Link to this section">#</a>3. Turning it on — order matters</h2>
+<p><strong>Step 1 — bring the proxy up, with the app still on direct keys.</strong></p>
+<p>Add everything from section 2 <em>except</em> <code>LITELLM_PROXY_URL</code>, then push to <code>main</code>
+(or run the Deploy workflow). On the server this happens:</p>
+<ol>
+<li><code>litellm-init</code> runs to completion first. It refuses to continue unless
+<code>LITELLM_MASTER_KEY</code> starts with <code>sk-</code> and both keys are at least 16 chars,
+then creates the <code>litellm</code> database if it is not already there. It is
+idempotent — it runs on every deploy and does nothing the second time.</li>
+<li><code>litellm</code> starts, applies its own Prisma migrations to that database, and
+loads <code>deploy/litellm/config.yaml</code>.</li>
+<li>The deploy job waits for the container to report healthy and <strong>fails the
+build if it does not</strong>.</li>
+</ol>
+<p>Nothing about the running app has changed yet.</p>
+<p><strong>Step 2 — prove it works.</strong></p>
+<pre><code class="language-bash">ssh &lt;server&gt;
+cd celmis
+./scripts/verify_gateway.sh
+</code></pre>
+<p>It creates a throwaway team, deployments and a virtual key, makes one real chat
+completion and one embeddings call through the proxy, checks the virtual key is
+<em>refused</em> a deployment outside its allow-list, then deletes everything it made.
+It prints every check and exits non-zero on the first thing that is wrong.</p>
+<p><strong>Step 3 — route the app through it.</strong></p>
+<p>Add <code>LITELLM_PROXY_URL=http://litellm:4000</code> to the server's <code>.env</code> and
+re-run <code>./scripts/deploy-on-server.sh</code>.
+From then on, the first LLM call for each workspace provisions that workspace on
+the proxy (team + one deployment per surface + a scoped virtual key) and every
+later call reads the cached route.</p>
+<p><strong>Step 4 — confirm on a real workspace.</strong></p>
+<p>Ask a question in the UI, then:</p>
+<pre><code class="language-bash">docker compose logs --tail=100 api | grep litellm_workspace_provisioned
+</code></pre>
+<hr />
+<h2 id="4-what-the-app-does-when-the-proxy-misbehaves"><a class="anchor" href="#4-what-the-app-does-when-the-proxy-misbehaves" aria-label="Link to this section">#</a>4. What the app does when the proxy misbehaves</h2>
+<p>Fail-soft, everywhere. Any refusal from the proxy is logged (never with a
+secret in the message) and reported as &quot;no route&quot;, so the caller falls back to
+the tenant's direct provider key. Specifically:</p>
+<ul>
+<li>proxy unreachable, or any 4xx/5xx during provisioning → no virtual key, calls
+go direct. Retried at most once a minute per workspace.</li>
+<li>provisioning that dies half-way (deployment deleted, recreate failed) → the
+cached route is <strong>erased</strong>, so calls go direct rather than pointing at a
+deployment the proxy no longer has.</li>
+<li><code>/model/info</code> unreadable → provisioning is refused outright rather than
+creating a second deployment under the same name (<code>/model/new</code> appends; a
+duplicate would round-robin between the fresh provider key and the stale one).</li>
+</ul>
+<p>The one thing that is deliberately loud rather than soft: an embeddings route
+whose model or width no longer matches the vectors already in Qdrant raises
+<code>EmbeddingConfigMismatch</code>. Silently embedding with the wrong model just makes
+search quietly worse, which is far more expensive than an error.</p>
+<hr />
+<h2 id="5-rolling-back"><a class="anchor" href="#5-rolling-back" aria-label="Link to this section">#</a>5. Rolling back</h2>
+<p><strong>Stop routing through the proxy</strong> (instant, reversible, no data touched):</p>
+<p>remove <code>LITELLM_PROXY_URL</code> from the server's <code>.env</code> and re-deploy. <code>src/llm/gateway.py</code>
+requires both <code>LITELLM_PROXY_URL</code> and <code>LITELLM_MASTER_KEY</code>; with either missing
+<code>is_enabled()</code> is False, every route lookup returns None, and the app is
+byte-for-byte on the direct-provider path it used before. The proxy keeps
+running, harmlessly.</p>
+<p>To also stop the container, remove <code>COMPOSE_PROFILES=gateway</code> from <code>.env</code>,
+deploy, then on the server:</p>
+<pre><code class="language-bash">docker compose --profile gateway stop litellm
+docker compose --profile gateway rm -f litellm
+</code></pre>
+<p>(Compose does not stop a container just because its profile went inactive.)</p>
+<p>The proxy's database, and every provider key stored in it, survives all of the
+above. Turning the gateway back on picks up where it left off — <strong>as long as
+<code>LITELLM_SALT_KEY</code> is unchanged</strong>.</p>
+<hr />
+<h2 id="6-the-one-irreversible-thing-litellm-salt-key"><a class="anchor" href="#6-the-one-irreversible-thing-litellm-salt-key" aria-label="Link to this section">#</a>6. The one irreversible thing: <code>LITELLM_SALT_KEY</code></h2>
+<p><code>LITELLM_SALT_KEY</code> encrypts every provider credential the proxy stores in its
+database. It is not a session secret and it is not rotatable:</p>
+<blockquote>
+<p>Change <code>LITELLM_SALT_KEY</code> and every provider key already stored in the proxy
+becomes permanently unreadable. Not &quot;re-enter it and continue&quot; —
+unreadable. Every deployment silently starts failing auth against its
+provider.</p>
+</blockquote>
+<p>Rules:</p>
+<ol>
+<li>Generate it once (<code>openssl rand -hex 32</code>) and never change it.</li>
+<li>Back it up with the rest of the server's <code>.env</code>. Losing it is the same
+as changing it.</li>
+<li>If it ever <em>is</em> lost or changed, the recovery is: stop the proxy, drop the
+<code>litellm</code> database, set the new salt, let <code>litellm-init</code> recreate the
+database, then re-save each workspace's provider keys in LLM Setup so every
+workspace re-provisions from scratch.</li>
+</ol>
+<p><code>LITELLM_MASTER_KEY</code> is <em>not</em> in this category — it can be rotated. Change it in
+the server's <code>.env</code> and redeploy; already-minted virtual keys keep working, and the
+next provisioning cycle uses the new master key.</p>
+<hr />
+<h2 id="7-troubleshooting"><a class="anchor" href="#7-troubleshooting" aria-label="Link to this section">#</a>7. Troubleshooting</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deploy fails: <code>celmis-litellm is &quot;absent&quot;</code></td>
+<td>profile not active on the server</td>
+<td><code>grep COMPOSE_PROFILES celmis/.env</code>; check for CRLF</td>
+</tr>
+<tr>
+<td><code>litellm-init FATAL: LITELLM_MASTER_KEY must be set...</code></td>
+<td>key missing or not <code>sk-</code> prefixed</td>
+<td>fix <code>.env</code>, redeploy</td>
+</tr>
+<tr>
+<td><code>litellm-init FATAL: could not create database</code></td>
+<td>the Postgres role lacks CREATEDB</td>
+<td><code>docker compose exec postgres psql -U analyzer -c 'ALTER ROLE analyzer CREATEDB;'</code></td>
+</tr>
+<tr>
+<td>Container unhealthy for a few minutes on first start</td>
+<td>first-boot Prisma migrations</td>
+<td>expected; <code>start_period</code> is 120s</td>
+</tr>
+<tr>
+<td>App logs <code>litellm_gateway_unreachable</code></td>
+<td>proxy down, or <code>LITELLM_PROXY_URL</code> points at the wrong host</td>
+<td>from the API container: <code>curl -s http://litellm:4000/health/liveliness</code></td>
+</tr>
+<tr>
+<td>App logs <code>litellm_master_key_bad_prefix</code></td>
+<td><code>LITELLM_MASTER_KEY</code> does not start with <code>sk-</code></td>
+<td>the gateway disables itself; fix the key</td>
+</tr>
+<tr>
+<td><code>litellm_refused_unrestricted_key</code></td>
+<td>a workspace has no usable model/provider key</td>
+<td>configure the workspace in LLM Setup</td>
+</tr>
+<tr>
+<td>Everything works but nothing is routed</td>
+<td><code>LITELLM_PROXY_URL</code> unset</td>
+<td>that is step 3</td>
+</tr>
+</tbody>
+</table></div>
+<p>Useful one-liners on the server:</p>
+<pre><code class="language-bash">docker logs celmis-litellm-init                 # bootstrap: env checks + createdb
+docker compose logs --tail=50 litellm           # the proxy itself
+docker compose exec postgres psql -U analyzer -l # is the litellm database there?
+./scripts/verify_gateway.sh                     # full end-to-end proof
+</code></pre>
+<hr />
+<h2 id="8-what-the-proxy-is-pinned-to"><a class="anchor" href="#8-what-the-proxy-is-pinned-to" aria-label="Link to this section">#</a>8. What the proxy is pinned to</h2>
+<p><code>ghcr.io/berriai/litellm-database:v1.96.0</code> — pinned, never <code>:latest</code>. The admin
+calls <code>src/llm/gateway.py</code> makes (<code>/team/new</code>, <code>/team/info</code>, <code>/model/info</code>,
+<code>/model/new</code>, <code>/model/delete</code>, <code>/key/generate</code>, <code>/key/delete</code>) were verified
+against that exact version. Before bumping the tag, re-run
+<code>tests/llm/test_gateway_contract.py</code> against the new version's request models
+and then <code>./scripts/verify_gateway.sh</code> on the box.</p>
+
+      <div class="docnav"><a href="/docs/guide/">← Guide</a><a href="/docs/oracle-ci/">Free CI/CD on Oracle →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#verifying-without-ssh">Verifying without SSH</a></li><li><a class="lvl2" href="#1-the-two-switches">1. The two switches</a></li><li><a class="lvl2" href="#2-variables-to-add-to-the-servers-env">2. Variables to add to the server&#x27;s .env</a></li><li><a class="lvl2" href="#3-turning-it-on-order-matters">3. Turning it on — order matters</a></li><li><a class="lvl2" href="#4-what-the-app-does-when-the-proxy-misbehaves">4. What the app does when the proxy misbehaves</a></li><li><a class="lvl2" href="#5-rolling-back">5. Rolling back</a></li><li><a class="lvl2" href="#6-the-one-irreversible-thing-litellm-salt-key">6. The one irreversible thing: LITELLM_SALT_KEY</a></li><li><a class="lvl2" href="#7-troubleshooting">7. Troubleshooting</a></li><li><a class="lvl2" href="#8-what-the-proxy-is-pinned-to">8. What the proxy is pinned to</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

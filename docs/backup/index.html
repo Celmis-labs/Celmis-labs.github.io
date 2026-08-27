@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backup and restore — Celmis</title>
+<meta name="description" content="What each store holds, how to take a consistent copy of it, and how to put it back.">
+<link rel="canonical" href="https://celmis-labs.github.io/docs/backup/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Backup and restore — Celmis">
+<meta property="og:description" content="What each store holds, how to take a consistent copy of it, and how to put it back.">
+<meta property="og:url" content="https://celmis-labs.github.io/docs/backup/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Backup and restore — Celmis","description":"What each store holds, how to take a consistent copy of it, and how to put it back.","url":"https://celmis-labs.github.io/docs/backup/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"Celmis","url":"https://celmis-labs.github.io/"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},"license":"https://www.gnu.org/licenses/agpl-3.0.html"}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span><a href="/docs/">Docs</a><span>/</span>Backup and restore</p>
+    <h1 class="docttl">Backup and restore</h1>
+    <p class="docsub">What each store holds, how to take a consistent copy of it, and how to put it back.</p>
+    <p class="docmeta"><span>runbook</span><span>source: <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/BACKUP_RESTORE.md">docs/BACKUP_RESTORE.md</a></span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<h1>Backup &amp; Restore Runbook (Stage 21)</h1>
+<h2 id="what-gets-backed-up"><a class="anchor" href="#what-gets-backed-up" aria-label="Link to this section">#</a>What gets backed up</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Contents</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Postgres</td>
+<td>projects, chats, policies, sync_jobs, workspaces, oauth, compliance, ownership, deprecations</td>
+<td><code>pg_dump -Fc</code></td>
+</tr>
+<tr>
+<td>data/ volume</td>
+<td>SQLite (users, credentials, review_runs), audit JSONL, vault MD, FalkorDBLite graphs</td>
+<td><code>tar czf</code> (clones excluded — recoverable from git remotes)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="nightly-backup"><a class="anchor" href="#nightly-backup" aria-label="Link to this section">#</a>Nightly backup</h2>
+<pre><code>0 2 * * * cd /path/to/celmis &amp;&amp; BACKUP_DIR=/mnt/backups/celmis ./scripts/backup.sh &gt;&gt; /var/log/celmis-backup.log 2&gt;&amp;1
+</code></pre>
+<p>Retention: <code>CELMIS_BACKUP_KEEP</code> (default 14 sets).</p>
+<h2 id="restore"><a class="anchor" href="#restore" aria-label="Link to this section">#</a>Restore</h2>
+<pre><code>docker compose stop api web
+./scripts/restore.sh backups/pg_&lt;STAMP&gt;.dump backups/data_&lt;STAMP&gt;.tar.gz
+docker compose up -d api web
+docker exec celmis-api alembic upgrade head   # no-op if dump is current
+</code></pre>
+<h2 id="validate-a-backup-without-touching-prod"><a class="anchor" href="#validate-a-backup-without-touching-prod" aria-label="Link to this section">#</a>Validate a backup WITHOUT touching prod</h2>
+<pre><code>VALIDATE_ONLY=1 ./scripts/restore.sh backups/pg_&lt;STAMP&gt;.dump
+</code></pre>
+<p>Restores into a scratch DB, counts tables, drops it.</p>
+<h2 id="rpo-rto"><a class="anchor" href="#rpo-rto" aria-label="Link to this section">#</a>RPO / RTO</h2>
+<ul>
+<li>RPO: 24h with the nightly cron (tighten by running backup.sh more often).</li>
+<li>RTO: ~5 min for Postgres + data volume on typical sizes.</li>
+</ul>
+
+      <div class="docnav"><a href="/docs/oracle-ci/">← Free CI/CD on Oracle</a><a href="/docs/key-rotation/">JWT key rotation →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-gets-backed-up">What gets backed up</a></li><li><a class="lvl2" href="#nightly-backup">Nightly backup</a></li><li><a class="lvl2" href="#restore">Restore</a></li><li><a class="lvl2" href="#validate-a-backup-without-touching-prod">Validate a backup WITHOUT touching prod</a></li><li><a class="lvl2" href="#rpo-rto">RPO / RTO</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+name: Rebuild documentation
+
+# The pages under /docs/ are generated from the markdown in the product repository.
+# This keeps the claim on the docs index honest: they cannot drift, because nobody
+# edits them by hand.
+
+on:
+  schedule:
+    - cron: '17 5 * * *'        # daily, a few minutes past the hour
+  workflow_dispatch:            # and on demand
+  repository_dispatch:
+    types: [docs-changed]       # or when the product repository says so
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: This site
+        uses: actions/checkout@v4
+
+      - name: The product repository, for its markdown
+        uses: actions/checkout@v4
+        with:
+          repository: Celmis-labs/Celmis
+          path: _src
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install --quiet markdown-it-py
+
+      - name: Render
+        run: python3 build.py --source _src
+
+      - name: Commit only if something actually changed
+        run: |
+          rm -rf _src
+          if [ -z "$(git status --porcelain docs sitemap.xml)" ]; then
+            echo "documentation is already up to date"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs sitemap.xml
+          git commit -m "Rebuild documentation from the product repository"
+          git push

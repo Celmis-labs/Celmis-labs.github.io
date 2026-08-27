@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Free CI/CD on Oracle — Celmis</title>
+<meta name="description" content="Push to main, and GitHub Actions builds and restarts the stack on an Oracle Always Free ARM box over SSH — inside the free minutes.">
+<link rel="canonical" href="https://celmis-labs.github.io/docs/oracle-ci/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Free CI/CD on Oracle — Celmis">
+<meta property="og:description" content="Push to main, and GitHub Actions builds and restarts the stack on an Oracle Always Free ARM box over SSH — inside the free minutes.">
+<meta property="og:url" content="https://celmis-labs.github.io/docs/oracle-ci/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Free CI/CD on Oracle — Celmis","description":"Push to main, and GitHub Actions builds and restarts the stack on an Oracle Always Free ARM box over SSH — inside the free minutes.","url":"https://celmis-labs.github.io/docs/oracle-ci/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"Celmis","url":"https://celmis-labs.github.io/"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},"license":"https://www.gnu.org/licenses/agpl-3.0.html"}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span><a href="/docs/">Docs</a><span>/</span>Free CI/CD on Oracle</p>
+    <h1 class="docttl">Free CI/CD on Oracle</h1>
+    <p class="docsub">Push to main, and GitHub Actions builds and restarts the stack on an Oracle Always Free ARM box over SSH — inside the free minutes.</p>
+    <p class="docmeta"><span>deployment</span><span>source: <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/ORACLE_CICD.md">docs/ORACLE_CICD.md</a></span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<h1>Free CI/CD: GitHub Actions → Oracle Always Free</h1>
+<p>Push to <code>main</code> → GitHub Actions rsyncs the repo to your Oracle box and runs
+<code>docker compose up -d --build</code> <strong>on the box</strong>. The ARM box builds arm64 images
+natively (no cross-build, no registry). GitHub's hosted runner only orchestrates
+over SSH, so it stays inside the free minutes and works for private repos too.</p>
+<pre><code>git push ──▶ GitHub Actions (free runner) ──rsync+ssh──▶ Oracle VM
+                                                         └─ docker compose build+up (arm64, native)
+                                                         └─ Caddy → HTTP
+</code></pre>
+<p>Files in the repo: <a href="https://github.com/Celmis-labs/Celmis/blob/main/scripts/deploy-on-server.sh">scripts/deploy-on-server.sh</a>,
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/deploy/oracle/caddy-http.yml">deploy/oracle/caddy-http.yml</a>,
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/deploy/oracle/Caddyfile.http">deploy/oracle/Caddyfile.http</a>.</p>
+<blockquote>
+<p><strong>These are the files the pipeline actually uses.</strong> This page used to name
+<code>caddy.yml</code> / <code>Caddyfile</code> — a TLS overlay the workflow has never referenced.
+The deploy runs
+<code>docker compose -f docker-compose.yml -f deploy/oracle/caddy-http.yml</code>
+(in the deploy workflow this document predates), and three superseded
+overlays that sat beside it —
+<code>caddy.yml</code>, <code>caddy-ip.yml</code>, <code>caddy-sslip.yml</code> with their Caddyfiles — have
+been deleted. One of them hardcoded the production IP.</p>
+<p>So the box serves <strong>HTTP</strong>, not HTTPS. <code>tests/security/ test_no_service_faces_the_internet.py</code> reads the same overlay this line
+names, which is what keeps the two from drifting apart again.</p>
+</blockquote>
+<blockquote>
+<p><strong>arm64 is a supported build target, not a hope.</strong> The API image pulls two
+pinned binaries — <code>uv</code> in the builder stage, <code>osv-scanner</code> in the runtime
+stage — and both are now selected from BuildKit's <code>TARGETARCH</code> with a
+separate SHA-256 per architecture. <code>osv-scanner</code> used to be hardcoded to
+<code>_linux_amd64</code>, so the native arm64 build this page describes downloaded an
+x86 binary, matched its checksum, and then died at the <code>osv-scanner --version</code> gate with <code>exec format error</code>. An unknown <code>TARGETARCH</code> now stops
+the build instead of assuming amd64 — see
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/DEPLOY_AND_TESTING.md#18-%D0%BF%D1%96%D0%B4-%D1%8F%D0%BA%D1%96-%D0%B0%D1%80%D1%85%D1%96%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%B8-%D0%B7%D0%B1%D0%B8%D1%80%D0%B0%D1%94%D1%82%D1%8C%D1%81%D1%8F-%D0%BE%D0%B1%D1%80%D0%B0%D0%B7">DEPLOY_AND_TESTING.md § 1.8</a>
+for the bump procedure.</p>
+</blockquote>
+<hr />
+<h2 id="1-prepare-the-oracle-box-one-time"><a class="anchor" href="#1-prepare-the-oracle-box-one-time" aria-label="Link to this section">#</a>1. Prepare the Oracle box (one-time)</h2>
+<p>Oracle Always Free Ampere A1 (arm64), Ubuntu 24.04. SSH in as the image's
+default user (<code>ubuntu</code> on the Ubuntu image; <code>opc</code> on Oracle Linux).</p>
+<h3 id="docker-swap"><a class="anchor" href="#docker-swap" aria-label="Link to this section">#</a>Docker + swap</h3>
+<pre><code class="language-bash"># Docker Engine + compose (official repo)
+sudo apt update &amp;&amp; sudo apt install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo tee /etc/apt/sources.list.d/docker.sources &gt;/dev/null &lt;&lt;EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release &amp;&amp; echo &quot;${UBUNTU_CODENAME:-$VERSION_CODENAME}&quot;)
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+sudo apt update &amp;&amp; sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker $USER &amp;&amp; newgrp docker
+
+# Swap — insurance for the Next.js build (12 GB box is fine, but cheap safety)
+sudo fallocate -l 4G /swapfile &amp;&amp; sudo chmod 600 /swapfile
+sudo mkswap /swapfile &amp;&amp; sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+</code></pre>
+<h3 id="open-ports-oracle-has-two-firewalls"><a class="anchor" href="#open-ports-oracle-has-two-firewalls" aria-label="Link to this section">#</a>Open ports — Oracle has TWO firewalls</h3>
+<ol>
+<li><strong>VCN Security List / NSG</strong> (cloud console): add ingress rules for TCP <strong>80</strong>, <strong>443</strong> (and <strong>22</strong>) from <code>0.0.0.0/0</code> (and <code>::/0</code>).</li>
+<li><strong>Host iptables</strong> (Oracle's Ubuntu image blocks everything but 22 locally):</li>
+</ol>
+<pre><code class="language-bash">sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
+sudo netfilter-persistent save
+</code></pre>
+<p>Both must allow 80/443 or Caddy's certificate challenge fails.</p>
+<h3 id="ci-deploy-key"><a class="anchor" href="#ci-deploy-key" aria-label="Link to this section">#</a>CI deploy key</h3>
+<p>Give Actions an SSH key to reach the box:</p>
+<pre><code class="language-bash"># on the box (or reuse an existing keypair):
+ssh-keygen -t ed25519 -f ~/ci_deploy -N ''
+cat ~/ci_deploy.pub &gt;&gt; ~/.ssh/authorized_keys
+cat ~/ci_deploy          # &lt;-- PRIVATE key: copy into the GitHub secret below, then delete it
+rm ~/ci_deploy ~/ci_deploy.pub
+</code></pre>
+<h3 id="app-directory-env"><a class="anchor" href="#app-directory-env" aria-label="Link to this section">#</a>App directory + .env</h3>
+<pre><code class="language-bash">mkdir -p ~/celmis
+nano ~/celmis/.env        # paste the production .env (template below)
+</code></pre>
+<p><code>.env</code> is never synced or committed — it lives only on the box.</p>
+<hr />
+<h2 id="2-production-env-on-the-box"><a class="anchor" href="#2-production-env-on-the-box" aria-label="Link to this section">#</a>2. Production <code>.env</code> (on the box)</h2>
+<pre><code class="language-dotenv"># --- secrets ---
+GEMINI_API_KEY=...
+QDRANT_URL=...
+QDRANT_API_KEY=...
+POSTGRES_PASSWORD=...
+CELMIS_JWT_SECRET=...        # python -c &quot;import secrets;print(secrets.token_urlsafe(48))&quot;
+MCP_JWT_SECRET=...           # another one
+NEXTAUTH_SECRET=...          # another one
+
+# --- domains / URLs ---
+APP_DOMAIN=app.example.com
+API_DOMAIN=api.example.com
+ACME_EMAIL=you@example.com
+NEXTAUTH_URL=https://app.example.com
+NEXT_PUBLIC_API_BASE=https://api.example.com   # baked into the web build
+API_BASE_INTERNAL=http://api:8000              # server-side, over the compose network
+CELMIS_CORS_ORIGINS=https://app.example.com
+CELMIS_TRUST_PROXY=1
+
+# --- keep web/api off the public interface; only Caddy is exposed ---
+API_HOST_PORT=127.0.0.1:8000
+WEB_HOST_PORT=127.0.0.1:3000
+</code></pre>
+<hr />
+<h2 id="3-github-secrets"><a class="anchor" href="#3-github-secrets" aria-label="Link to this section">#</a>3. GitHub secrets</h2>
+<p>Repo → Settings → Secrets and variables → Actions → New repository secret:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ORACLE_HOST</code></td>
+<td>box public IP (or a domain pointing at it)</td>
+</tr>
+<tr>
+<td><code>ORACLE_USER</code></td>
+<td><code>ubuntu</code> (Ubuntu image) or <code>opc</code> (Oracle Linux)</td>
+</tr>
+<tr>
+<td><code>ORACLE_SSH_KEY</code></td>
+<td>the <strong>private</strong> key from step 1 (whole file, incl. header/footer lines)</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="4-dns"><a class="anchor" href="#4-dns" aria-label="Link to this section">#</a>4. DNS</h2>
+<p>At your DNS provider, point both subdomains at the box:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>app</code></td>
+<td><code>&lt;oracle-public-ip&gt;</code></td>
+</tr>
+<tr>
+<td>A</td>
+<td><code>api</code></td>
+<td><code>&lt;oracle-public-ip&gt;</code></td>
+</tr>
+<tr>
+<td>AAAA</td>
+<td><code>app</code> / <code>api</code></td>
+<td><code>&lt;oracle-ipv6&gt;</code> (optional)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Set these <strong>before</strong> the first deploy so Caddy can obtain certs.</p>
+<hr />
+<h2 id="5-go"><a class="anchor" href="#5-go" aria-label="Link to this section">#</a>5. Go</h2>
+<pre><code class="language-bash">git push origin main         # or run the workflow manually (Actions → Deploy to Oracle → Run)
+</code></pre>
+<p>Watch <strong>Actions</strong> for the run, then <code>docker compose logs -f caddy</code> on the box for
+<code>certificate obtained</code>. Open <code>https://app.example.com/signup</code> — <strong>the first user
+becomes admin</strong> → Settings → LLM to add keys (they persist in the <code>/workspace</code>
+volume across redeploys).</p>
+<hr />
+<h2 id="alternatives"><a class="anchor" href="#alternatives" aria-label="Link to this section">#</a>Alternatives</h2>
+<ul>
+<li><strong>No YAML at all:</strong> install <strong>Dokploy</strong> or <strong>Coolify</strong> on the box, connect the
+repo in its UI → it reads <code>docker-compose.yml</code> and auto-redeploys on push via
+webhook, and brings its own Traefik + TLS. Same result, no Actions file.</li>
+<li><strong>Self-hosted runner:</strong> register a GitHub Actions runner ON the box
+(<code>runs-on: [self-hosted, ARM64]</code>) and skip SSH entirely. Great for a <strong>private</strong>
+repo; avoid on a public repo (fork PRs could run on your box).</li>
+<li><strong>GitLab CI:</strong> identical shape — a job that installs an SSH key from CI
+variables and runs the same <code>rsync</code> + <code>ssh … compose up -d --build</code>.</li>
+<li><strong>First-run tip:</strong> on a fresh box <code>docker compose up --build</code> needs <code>.env</code>
+present (step 2) or it fails on missing secrets. Create it before the first push.</li>
+</ul>
+
+      <div class="docnav"><a href="/docs/litellm/">← LiteLLM gateway</a><a href="/docs/backup/">Backup and restore →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#1-prepare-the-oracle-box-one-time">1. Prepare the Oracle box (one-time)</a></li><li><a class="lvl3" href="#docker-swap">Docker + swap</a></li><li><a class="lvl3" href="#open-ports-oracle-has-two-firewalls">Open ports — Oracle has TWO firewalls</a></li><li><a class="lvl3" href="#ci-deploy-key">CI deploy key</a></li><li><a class="lvl3" href="#app-directory-env">App directory + .env</a></li><li><a class="lvl2" href="#2-production-env-on-the-box">2. Production .env (on the box)</a></li><li><a class="lvl2" href="#3-github-secrets">3. GitHub secrets</a></li><li><a class="lvl2" href="#4-dns">4. DNS</a></li><li><a class="lvl2" href="#5-go">5. Go</a></li><li><a class="lvl2" href="#alternatives">Alternatives</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

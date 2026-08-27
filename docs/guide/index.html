@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guide — Celmis</title>
+<meta name="description" content="What Celmis is, what it does, and how to run it — the complete documentation, from a first install to the architecture.">
+<link rel="canonical" href="https://celmis-labs.github.io/docs/guide/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Guide — Celmis">
+<meta property="og:description" content="What Celmis is, what it does, and how to run it — the complete documentation, from a first install to the architecture.">
+<meta property="og:url" content="https://celmis-labs.github.io/docs/guide/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Guide — Celmis","description":"What Celmis is, what it does, and how to run it — the complete documentation, from a first install to the architecture.","url":"https://celmis-labs.github.io/docs/guide/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"Celmis","url":"https://celmis-labs.github.io/"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},"license":"https://www.gnu.org/licenses/agpl-3.0.html"}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span><a href="/docs/">Docs</a><span>/</span>Guide</p>
+    <h1 class="docttl">Guide</h1>
+    <p class="docsub">What Celmis is, what it does, and how to run it — the complete documentation, from a first install to the architecture.</p>
+    <p class="docmeta"><span>the full product documentation</span><span>source: <a href="https://github.com/Celmis-labs/Celmis/blob/main/README.md">README.md</a></span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<div align="center">
+<h1>Celmis</h1>
+<p><strong>Self-hosted code intelligence — ask your codebases, review pull requests, and produce the evidence an auditor asks for</strong></p>
+</div>
+<p>Celmis reads your repositories once and keeps a symbol graph of them. Everything
+else — questions, reviews, dependency audits, generated documentation — is a
+different way of reading that graph. It runs on one machine under
+<code>docker compose</code>, with the model provider of your choice behind it, and nothing
+leaves your network except the calls you configure.</p>
+<p>The name is from <em>ядро</em> — a core. The index is the core; the surfaces are what
+reads from it.</p>
+<h2 id="what-that-buys-you-that-a-diff-only-tool-cannot"><a class="anchor" href="#what-that-buys-you-that-a-diff-only-tool-cannot" aria-label="Link to this section">#</a>What that buys you that a diff-only tool cannot</h2>
+<p>Ask a question that spans two repositories, and the answer quotes both:</p>
+<p><img src="/img/ask-the-code-cross-repo.png" alt="Ask the code, answering across two repositories" /></p>
+<p>That is not a search result. The gateway and the payments service are separate
+repositories with no shared code, and the answer traces the call chain between
+them — then notices, unprompted, that the Kafka topic name is hardcoded in both
+and that changing one silently breaks the other.</p>
+<p>A reviewer that reads only the diff structurally cannot say that. It never had
+the other repository open.</p>
+<hr />
+<h2 id="seven-things-people-do-with-it"><a class="anchor" href="#seven-things-people-do-with-it" aria-label="Link to this section">#</a>Seven things people do with it</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>You are a PM, a delivery lead or the client</strong> and want to know what state a group of projects is in, or how something actually works</td>
+<td>Ask it. From any device, anywhere, without booking time from an engineer and without a meeting whose only output is a paragraph → <a href="#ask-the-code">Ask the code</a></td>
+</tr>
+<tr>
+<td><strong>A new engineer has a question a senior would have to answer</strong></td>
+<td>Every one of those pulls someone experienced out of flow, at the moment they are already covering. The codebase answers instead, with file:line citations → <a href="#ask-the-code">Ask the code</a></td>
+</tr>
+<tr>
+<td><strong>Two teams share an integration and neither can read the other's repository</strong></td>
+<td>Load it, grant the right to ask, and deny the paths that must stay private. They get answers; the credentials are refused at the source → <a href="#who-can-see-what">Who can see what</a></td>
+</tr>
+<tr>
+<td><strong>A customer or an auditor asks for your SBOM</strong></td>
+<td>One button, CycloneDX, plus an evidence pack whose manifest lets them verify it without trusting you → <a href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></td>
+</tr>
+<tr>
+<td><strong>A vulnerability lands in a dependency</strong></td>
+<td><em>Fix with Claude</em> hands an embedded session the repository, the package and the finding. It edits, the runner pushes a branch and opens a PR → <a href="#fix-it-from-here">Fix it from here</a></td>
+</tr>
+<tr>
+<td><strong>A pull request needs reviewing</strong></td>
+<td>Agents read the diff — and, where the graph is built, who else calls what is being changed, including from another repository → <a href="#pull-request-review">Pull-request review</a></td>
+</tr>
+<tr>
+<td><strong>Your own agent or editor needs to understand the codebase</strong></td>
+<td>Point it at <code>/mcp/</code>. Eighteen tools over the same index, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>The first three are the ones a code-review tool does not do at all, and they are
+the reason this is a platform rather than a reviewer: index once, then read that
+index from whichever side of the work you are standing on.</p>
+<h2 id="three-numbers"><a class="anchor" href="#three-numbers" aria-label="Link to this section">#</a>Three numbers</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>197 seconds</strong></td>
+<td>from <code>git clone</code> to six healthy services, measured on a clean server</td>
+</tr>
+<tr>
+<td><strong>$0.118</strong></td>
+<td>per pull request reviewed, on the model this ships with</td>
+</tr>
+<tr>
+<td><strong>17th of 50</strong></td>
+<td>on the Martian Code Review Bench offline set, under all three judges</td>
+</tr>
+</tbody>
+</table></div>
+<p>That last one is deliberately unflattering, and it stays. It measures one of the
+surfaces below — pull-request review on isolated single-repository PRs — and
+that set has no sibling service for a symbol to have consumers in, so the thing
+this product is built around is not in the number at all. The table, the audit
+of every finding it scored false, and the command that reproduces both are in
+<a href="#results">Results</a>.</p>
+<h2 id="quick-start"><a class="anchor" href="#quick-start" aria-label="Link to this section">#</a>Quick start</h2>
+<h3 id="what-you-need"><a class="anchor" href="#what-you-need" aria-label="Link to this section">#</a>What you need</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Docker</strong></td>
+<td>24+ with Compose v2</td>
+<td>Docker Desktop on macOS/Windows, the native engine on Linux</td>
+</tr>
+<tr>
+<td><strong>A model API key</strong></td>
+<td>one of</td>
+<td>Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. A free Gemini key is enough to evaluate: <a href="https://aistudio.google.com/app/apikey">https://aistudio.google.com/app/apikey</a></td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>~4 GB free</td>
+<td>Measured on a real indexing run: 1.1 GB peak across all five containers, 565 MB at rest</td>
+</tr>
+</tbody>
+</table></div>
+<p>Postgres and Qdrant are <strong>bundled</strong> — no external cluster to provision. No
+Python or Node.js install is needed for the Docker flow.</p>
+<h3 id="start-it"><a class="anchor" href="#start-it" aria-label="Link to this section">#</a>Start it</h3>
+<pre><code class="language-bash">git clone &lt;your-fork-url&gt; celmis
+cd celmis
+
+# Generates .env and fills every secret in the format each one needs.
+# Idempotent: run it again after a pull and it fills only the new blanks.
+./scripts/init-env.sh
+
+docker compose --env-file .env up -d
+
+# Wait for healthy — first boot pulls three images and applies migrations
+docker compose ps
+</code></pre>
+<p>Open <a href="http://localhost">http://localhost</a>.</p>
+<p>Nothing is built here. The three images are pulled from the registry named by
+<code>CELMIS_REGISTRY</code> at the tag in <code>CELMIS_TAG</code>, for <code>linux/amd64</code> and
+<code>linux/arm64</code> — Apple Silicon and an ARM server both get a native image.
+Building them on the machine that runs them was measured at 485 seconds and
+4.2GB of disk for <code>api</code> alone, which is why installing no longer means
+compiling.</p>
+<p>Port 80, not 3000: a reverse proxy puts the app and its API on one origin and
+serves the API under <code>/backend</code>. That is not a deployment preference — the
+browser bundle asks for a relative path, which is the only way one published
+image can serve every installation instead of just the one it was built on.</p>
+<p>To work ON Celmis rather than run it, add the dev overlay and you get local
+builds back:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+</code></pre>
+<p><code>init-env.sh --check</code> reports what is still empty without writing anything.</p>
+<p><img src="/img/first-install-terminal.svg" alt="First install: clone, generate .env, bring the stack up" /></p>
+<p>That is a <strong>render of the captured session</strong>, not a screen recording — the
+figures in it are the ones the run produced on 26 August 2026, and the compose
+output is verbatim from <code>logs/03-up.log</code> in the install report. It is drawn
+rather than photographed because a second stack cannot be brought up beside a
+running one: <code>docker-compose.yml</code> fixes <code>container_name</code>, so the names collide.</p>
+<h3 id="stop"><a class="anchor" href="#stop" aria-label="Link to this section">#</a>Stop</h3>
+<pre><code class="language-bash">docker compose down       # stop, keep your data
+docker compose down -v    # stop and DELETE every volume
+</code></pre>
+<hr />
+<h2 id="first-user-and-admin"><a class="anchor" href="#first-user-and-admin" aria-label="Link to this section">#</a>First user and admin</h2>
+<p>The sign-up form on <code>/login</code> works as soon as the stack is healthy. That
+account is a <strong>normal user</strong> — signing up grants no admin rights, not even to
+the first person through the door.</p>
+<p>Global admin comes from the environment instead: sign in with
+<code>CELMIS_MASTER_EMAIL</code> and <code>CELMIS_MASTER_KEY</code> (as the password), both in
+<code>.env</code>. Whoever runs the box is the admin, which is the model a self-hosted
+install wants rather than whoever reached the form first. The path does not
+exist unless both variables are set, and every use of it is written to the
+audit log.</p>
+<p>To promote a normal account:</p>
+<pre><code class="language-bash">docker compose exec api analyzer auth make-admin you@example.com
+</code></pre>
+<hr />
+<h2 id="connect-a-repository"><a class="anchor" href="#connect-a-repository" aria-label="Link to this section">#</a>Connect a repository</h2>
+<ol>
+<li><strong>Settings → LLM Setup</strong> — paste a provider key. It is encrypted with
+<code>CREDENTIAL_MASTER_KEY</code> before it touches the database, and the UI only
+ever shows you the first and last four characters again.</li>
+<li><strong>Connections</strong> — add a GitHub, GitLab or Bitbucket token. Use a <strong>machine
+account</strong>, not your own: a personal token reaches every repository you can
+see, and tokens end up in backups, logs and screenshots.</li>
+<li><strong>Repositories → Add</strong> — pick repositories from the provider, or paste a
+clone URL. Indexing is queued; the job shows on the same page.</li>
+</ol>
+<p>Indexing builds two things from the same checkout: a symbol graph (definitions,
+calls, imports — what the review agents reason over) and embeddings in Qdrant
+(what Q&amp;A retrieves). A 120k-symbol repository takes about a minute on four
+cores.</p>
+<p>Twenty-three languages parse into the graph. A file in a language without a
+parser is said so out loud rather than silently skipped — <code>analyzer graph-stats</code>
+lists what was and was not read.</p>
+<hr />
+<h2 id="ask-the-code"><a class="anchor" href="#ask-the-code" aria-label="Link to this section">#</a>Ask the code</h2>
+<p>A question in a chat, answered with <strong>file:line citations</strong> from as many
+repositories as you point it at. Answers stream as they are written.</p>
+<p>Group repositories into a project, and the question is asked of the group:</p>
+<p><img src="/img/project-cross-repo.png" alt="A project holding several repositories" /></p>
+<p>Answers quote real code, and only the code the asker is allowed to see — which
+is what makes it safe to hand the question to someone outside the team that
+owns the repository. See <a href="#who-can-see-what">Who can see what</a>.</p>
+<h2 id="pull-request-review"><a class="anchor" href="#pull-request-review" aria-label="Link to this section">#</a>Pull-request review</h2>
+<p>Agents read the diff and post findings to GitHub, GitLab or Bitbucket. Rather
+than show that in a screenshot of this interface, the reviews are left where
+they were posted — fifty pull requests on real projects, with the comments still
+attached to the lines they were written about. They are listed under
+<a href="#test-repositories">Test repositories</a>, and the output there is unedited,
+including the findings the audit below marks wrong.</p>
+<p>Where the graph is built, the review also carries what the diff does not show:
+who else calls the symbol being changed, including from another repository.
+Where it is not built, the review still runs — it just answers the narrower
+question, which is what the benchmark measured.</p>
+<p>Every finding the benchmark scored false was opened in the source and published
+with a verdict. Thirty-three of seventy-nine turned out to be real defects the
+gold set does not contain. That work is in
+<a href="#audit-of-the-false-positives">Audit of the false positives</a>, with the code and
+a permalink for each, so you can disagree with any of them.</p>
+<h2 id="dependencies-sbom-and-the-evidence-pack"><a class="anchor" href="#dependencies-sbom-and-the-evidence-pack" aria-label="Link to this section">#</a>Dependencies, SBOM and the evidence pack</h2>
+<p>The dependency audit is <strong>deterministic</strong>: native auditors where the tool is
+installed, OSV everywhere else, no model involved. A language model, if you give
+it a key, writes the summary — it does not decide what is vulnerable.</p>
+<p><img src="/img/compliance-artefacts.png" alt="Compliance artefacts: SBOM, evidence pack, technical documentation" /></p>
+<p>Two files come out of every audit, and neither needs an LLM key:</p>
+<ul>
+<li><strong>SBOM</strong> — a CycloneDX inventory of every dependency, its version, package URL
+and the vulnerabilities known against it. This is the file people mean when
+they say &quot;send us your SBOM&quot;.</li>
+<li><strong>Evidence pack</strong> — the audit as a filing: every SBOM, every finding, the
+timeline of past runs, and a sha256 of each file, so a third party can check
+nothing was edited afterwards <em>without having to trust us</em>. A folder whose
+contents can be changed later proves nothing; the manifest is what makes it
+evidence.</li>
+</ul>
+<p>Alongside them, the generated technical documentation — module PRDs, feature
+documents and integration guides written from the code — which is yours to keep
+and keeps working after any subscription ends.</p>
+<p><strong>Why this exists now.</strong> From <strong>11 September 2026</strong> the EU Cyber Resilience Act
+requires a manufacturer to report an actively exploited vulnerability to ENISA
+within 24 hours. The formal SBOM mandate lands in December 2027, but you cannot
+answer the 24-hour question without component-level visibility first — to report
+what is affected, you have to know what is inside.</p>
+<p><strong>Celmis does not claim compliance, and will not.</strong> It produces the artefacts a
+filing needs. Whether a filing is adequate is a lawyer's judgement, and a tool
+that implies otherwise is selling a false sense of safety.</p>
+<p>One more thing the audit page says out loud, because it is the failure nobody
+looks for: <strong>an ecosystem nobody scanned reports zero vulnerabilities exactly
+like a clean one.</strong> Coverage is shown next to the findings — which auditor
+produced each result, and, more usefully, what went unchecked and why.</p>
+<h2 id="fix-it-from-here"><a class="anchor" href="#fix-it-from-here" aria-label="Link to this section">#</a>Fix it from here</h2>
+<p>Finding something is half a loop. An embedded Claude Code session runs <strong>inside</strong>
+the installation, edits the checkout, and the runner commits, pushes a branch and
+opens a pull request.</p>
+<p>A vulnerability in the dependency audit carries a <strong>Fix with Claude</strong> button. It
+does not open an empty chat — it hands the session the repository, the package,
+both versions and the boundaries of the job, already written:</p>
+<p><img src="/img/fix-with-claude-prefilled.png" alt="The session, pre-filled from a dependency finding" /></p>
+<p>Here is one such loop, end to end, on a real finding — <code>lodash 4.17.11</code> with a
+known vulnerability against it. <strong>220 seconds</strong> from <em>Start session</em> to an open
+pull request, in five turns:</p>
+<pre><code>Read package.json
+  → &quot;Only package.json has lodash; no requirements.txt/pyproject/go.mod exist here.&quot;
+Edit package.json: &quot;lodash&quot;: &quot;4.17.11&quot; → &quot;4.18.0&quot;
+mcp__exec__run: cat package.json | grep -A2 lodash; ls
+  → &quot;Confirmed no other manifest files exist, so no other changes were needed.&quot;
+</code></pre>
+<p>The branch it pushed, and the pull request it opened, on GitHub:</p>
+<p><img src="/img/pr-on-github.png" alt="The pull request the agent opened, one line changed" /></p>
+<p>Look at what is <em>not</em> in that diff. <code>axios 0.21.1</code>, <code>minimist 1.2.0</code>,
+<code>node-fetch 2.6.0</code> sit on the lines directly above and below — all outdated, all
+flagged in the same audit — and all untouched. The task said manifests only, and
+an agent that tidied three more on the way past would have been a worse result
+to review, not a better one.</p>
+<p>It is a live pull request, not a screenshot:
+<strong><a href="https://github.com/celmis-codereviewer/celmis-demo-gateway/pull/6">celmis-demo-gateway#6</a></strong>
+— branch <code>celmis-agent/b8960e01</code>, one commit, <code>+1/-1</code>.</p>
+<p><img src="/img/agent-session-finished.png" alt="The finished session, with its branch and a link to the pull request" /></p>
+<p>Two details in that transcript are worth more than the diff. The agent did not
+<em>assume</em> there were no other manifests — it ran a command in the sandbox to
+check. And the task said &quot;manifests only, do not touch unrelated dependencies&quot;,
+so the change is exactly one line.</p>
+<h3 id="what-the-runner-allows-and-what-it-does-not"><a class="anchor" href="#what-the-runner-allows-and-what-it-does-not" aria-label="Link to this section">#</a>What the runner allows, and what it does not</h3>
+<p>This is decided by the runner, not by the prompt — which is the part worth
+reading before you grant an agent anything:</p>
+<ul>
+<li><strong>No shell of its own.</strong> <code>Bash</code>, <code>WebFetch</code>, <code>WebSearch</code> and notebook editing
+are disallowed. Commands run through the sandbox container, which is a
+separate service with its own uid and a read-only root filesystem.</li>
+<li><strong>Git is the runner's job.</strong> The agent never commits or pushes. When the work
+is done — or when you press <em>Finish &amp; push</em> — the runner makes the commit,
+pushes the branch and opens the PR. Never to the default branch.</li>
+<li><strong>A provider limit is a pause, not a loss.</strong> The first attempt at the run above
+hit a weekly account limit mid-session. The session did not die: it moved to
+<code>paused</code>, kept its work resumable for fourteen days, and showed the provider's
+own message rather than a generic failure. A second key finished it.</li>
+<li><strong>The session is watchable.</strong> Output streams over SSE with replay, so a
+reconnect picks up where it left off instead of starting blank.</li>
+</ul>
+<p>Connection is a setup token, held per user or per workspace. The API never
+returns it once saved — only whether it is there and whether it still works.</p>
+<h2 id="who-can-see-what"><a class="anchor" href="#who-can-see-what" aria-label="Link to this section">#</a>Who can see what</h2>
+<p>Access is resolved per repository, per team, and it governs every surface at
+once — Q&amp;A, graph, search, MCP:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>setting</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>visibility: none</code></td>
+<td>the repository does not exist for research</td>
+</tr>
+<tr>
+<td><code>visibility: metadata</code></td>
+<td>documentation and architecture notes only</td>
+</tr>
+<tr>
+<td><code>visibility: code</code></td>
+<td>source is readable</td>
+</tr>
+<tr>
+<td><code>deny_globs</code></td>
+<td><strong>wins even at <code>code</code></strong> — credentials, crypto, database connections, secret verification</td>
+</tr>
+<tr>
+<td><code>allow_globs</code></td>
+<td>an allow-list when set; deny still subtracts from it</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is what makes the neighbouring-team case work rather than being a promise:
+load the repository, grant the other team the right to ask, and deny the paths
+that must not be read. They get answers; those files are refused at the source,
+not filtered out of a response that already contained them.</p>
+<h2 id="languages-and-formats"><a class="anchor" href="#languages-and-formats" aria-label="Link to this section">#</a>Languages and formats</h2>
+<p>Seventeen graph modules, plus a generic path through tree-sitter tag queries for
+languages without one:</p>
+<p><strong>Code</strong> — Python, TypeScript, JavaScript, Go, Java, C#, C++, PHP, Vue, and more
+through the generic path.</p>
+<p><strong>Infrastructure</strong> — Dockerfile, docker-compose, Helm, Kubernetes manifests,
+Terraform and CI workflows. This is the part most code-intelligence tools skip,
+and it is why a question can cross from a function to the service definition
+that runs it.</p>
+<h2 id="deterministic-checks-no-model-no-false-positives"><a class="anchor" href="#deterministic-checks-no-model-no-false-positives" aria-label="Link to this section">#</a>Deterministic checks — no model, no false positives</h2>
+<p>Every check below is decided by reading files. No language model takes part in
+deciding that something is wrong, so the false-positive rate is zero by
+construction rather than by tuning.</p>
+<p>That distinction is the whole point. Around twenty percent false positives is
+where developers stop reading a tool's comments at all — one costs seconds of
+attention, a thousand costs you a team that has learned to skip everything the
+tool says. A model is used here to explain and to prioritise, never to detect.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Reads</th>
+<th>Catches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>install_script</code></td>
+<td><code>package.json</code> lifecycle hooks</td>
+<td>a dependency that runs code at install time</td>
+</tr>
+<tr>
+<td><code>python_build_hooks</code></td>
+<td><code>pyproject.toml</code> / <code>setup.py</code></td>
+<td>build-time code execution in a Python package</td>
+</tr>
+<tr>
+<td><code>cargo_build_script</code></td>
+<td><code>Cargo.toml</code></td>
+<td>a crate with a <code>build.rs</code></td>
+</tr>
+<tr>
+<td><code>non_registry</code></td>
+<td>manifests and lock files</td>
+<td>a dependency pulled from a git URL or tarball instead of a registry</td>
+</tr>
+<tr>
+<td><code>suspect_name</code></td>
+<td>the dependency list</td>
+<td>typosquats — a name one edit away from a popular package</td>
+</tr>
+<tr>
+<td><code>lock_drift</code></td>
+<td>manifest vs lock file</td>
+<td>a lock file that no longer matches what the manifest declares</td>
+</tr>
+<tr>
+<td><code>cross_repo_drift</code></td>
+<td>the PR diff, then sibling repositories</td>
+<td>a constant changed in one repository and left behind in the others</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ordinary CVE scanning is deliberately <strong>not</strong> on that list. OSV-Scanner already
+does it, it is free, and it is the de-facto standard — Celmis runs it (plus each
+ecosystem's own auditor: <code>pip-audit</code>, <code>npm audit</code>, <code>govulncheck</code>,
+<code>cargo audit</code>) and treats the result as an input rather than as a feature.</p>
+<p><strong>On compliance.</strong> Celmis produces the artefacts an audit asks for — a
+CycloneDX SBOM, a dependency inventory, a findings history with timestamps and
+the evidence each finding rests on. It <strong>does not claim your filing is
+adequate</strong>, and no tool honestly can: what an auditor accepts depends on your
+sector, your jurisdiction and your own controls. Produce the artefacts; let
+the people whose job it is assess them.</p>
+<hr />
+<h2 id="connect-claude-code-and-other-mcp-clients"><a class="anchor" href="#connect-claude-code-and-other-mcp-clients" aria-label="Link to this section">#</a>Connect Claude Code and other MCP clients</h2>
+<p>Celmis exposes its index over MCP, so an agent can search symbols, read API
+surfaces and find consumers instead of grepping a checkout it does not have.</p>
+<p><strong>Over HTTP</strong> (the running stack serves it at <code>/mcp/</code>):</p>
+<pre><code class="language-bash"># Mint a token (or issue one from Settings → MCP in the UI)
+docker compose exec api analyzer mcp issue-token \
+  --scopes &quot;read:graph read:groups&quot; --duration 86400
+</code></pre>
+<pre><code class="language-jsonc">// ~/.claude.json  (or .mcp.json in a project)
+{
+  &quot;mcpServers&quot;: {
+    &quot;celmis&quot;: {
+      &quot;type&quot;: &quot;http&quot;,
+      &quot;url&quot;: &quot;http://localhost:8000/mcp/&quot;,
+      &quot;headers&quot;: { &quot;Authorization&quot;: &quot;Bearer &lt;the token you just minted&gt;&quot; }
+    }
+  }
+}
+</code></pre>
+<p><strong>Over stdio</strong>, without the HTTP hop:</p>
+<pre><code class="language-jsonc">{
+  &quot;mcpServers&quot;: {
+    &quot;celmis&quot;: {
+      &quot;command&quot;: &quot;docker&quot;,
+      &quot;args&quot;: [&quot;compose&quot;, &quot;exec&quot;, &quot;-T&quot;, &quot;api&quot;, &quot;analyzer&quot;, &quot;mcp&quot;, &quot;serve&quot;]
+    }
+  }
+}
+</code></pre>
+<h3 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h3>
+<p>The HTTP mount serves <strong>18 tools</strong>. They answer the questions a grep cannot:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list_workspace_repos</code></td>
+<td>which repositories exist, indexed, documented, auto-review on</td>
+</tr>
+<tr>
+<td><code>search_symbols</code></td>
+<td>where a function or endpoint is defined, across a whole project</td>
+</tr>
+<tr>
+<td><code>find_consumers</code></td>
+<td>which repositories call a symbol — including ones you never cloned</td>
+</tr>
+<tr>
+<td><code>get_api_surface</code></td>
+<td>the HTTP handlers a service actually exposes</td>
+</tr>
+<tr>
+<td><code>get_owner</code> · <code>list_deprecations</code></td>
+<td>who owns a file; what is on the way out and who still uses it</td>
+</tr>
+<tr>
+<td><code>route_incident</code></td>
+<td>given a stack trace, which repository and owner it belongs to</td>
+</tr>
+<tr>
+<td><code>bootstrap_client</code> · <code>start_integration_walk</code></td>
+<td>what a client needs to call another team's service</td>
+</tr>
+<tr>
+<td><code>get_dep_audit</code> · <code>list_dep_findings</code></td>
+<td>the last audit and its findings, worst first</td>
+</tr>
+<tr>
+<td><code>get_review</code> · <code>get_review_policy</code></td>
+<td>the latest review of a PR, and which agents run where</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>The two transports are not the same set.</strong> <code>analyzer mcp serve</code> over stdio
+serves 13 older, graph-shaped tools (<code>find_symbol</code>, <code>find_callers</code>,
+<code>query_graph</code>); the HTTP mount serves the 18 above. Neither is a subset of the
+other — pick the transport for the tools you want.</p>
+<p>A step-by-step guide, with the scopes each tool needs and the failure modes,
+is in <a href="https://github.com/Celmis-labs/Celmis/blob/main/claude/skills/celmis-mcp/SKILL.md"><code>.claude/skills/celmis-mcp/SKILL.md</code></a>.
+Claude Code picks it up automatically when this repository is open.</p>
+<hr />
+<h3 id="what-the-agent-can-ask-for"><a class="anchor" href="#what-the-agent-can-ask-for" aria-label="Link to this section">#</a>What the agent can ask for</h3>
+<p><img src="/img/mcp-cross-repo.svg" alt="An MCP client querying two repositories in one call" /></p>
+<p>One <code>search_symbols</code> call, one contract symbol, and it comes back from two
+repositories in two languages — to a client that has checked out neither. The
+boundary a diff never crosses is the one this makes ordinary.</p>
+<p>Eighteen tools, served over Streamable HTTP at <code>/mcp/</code> and authenticated with the
+same bearer token as <code>/api/</code>:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list_repos</code></td>
+<td>which repositories are indexed, and how fresh each index is</td>
+</tr>
+<tr>
+<td><code>list_groups</code></td>
+<td>which repositories are grouped together, so cross-repo questions have a scope</td>
+</tr>
+<tr>
+<td><code>find_symbol</code></td>
+<td>where a name is defined, across every indexed repository</td>
+</tr>
+<tr>
+<td><code>get_symbol</code></td>
+<td>the definition itself, with its file and line range</td>
+</tr>
+<tr>
+<td><code>find_callers</code></td>
+<td>what calls this — the question a grep answers badly and a graph answers exactly</td>
+</tr>
+<tr>
+<td><code>find_callees</code></td>
+<td>what this calls, one hop out</td>
+</tr>
+<tr>
+<td><code>cross_repo_edges</code></td>
+<td>calls that <strong>cross a repository boundary</strong></td>
+</tr>
+<tr>
+<td><code>query_graph</code></td>
+<td>read-only Cypher, for questions the seven above do not shape</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>cross_repo_edges</code> is the one worth understanding, because it is the reason this
+product carries a symbol graph at all. A diff-only reviewer — every tool in the
+benchmark table above, including this one when the graph is empty — can tell you
+that a function signature changed. It cannot tell you that a service in a
+different repository still calls the old shape, because it never had that
+repository open. Group the repositories once, and that question becomes
+answerable:</p>
+<pre><code>&gt; which services outside this repo call PaymentGateway.charge?
+</code></pre>
+<p>This is also why our benchmark rank understates the product rather than
+describing it: the benchmark set is isolated single-repository pull requests, so
+there is no sibling repository for an edge to cross. The capability is real and
+the benchmark cannot see it — which is a statement about the benchmark, not a
+claim you should take on faith. Point an MCP client at your own group and check.</p>
+<h2 id="results"><a class="anchor" href="#results" aria-label="Link to this section">#</a>Results</h2>
+<p>Celmis was run on the <a href="https://github.com/withmartian/code-review-benchmark">Martian Code Review Bench</a>
+offline set: 50 curated pull requests, 173 human-written golden comments, scored
+against the gold set by an LLM judge. Measured on <code>e0db376</code> with
+<code>gemini-3.6-flash</code> at temperature 0.1, no reasoning tokens.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Judge</th>
+<th style="text-align:right">F1</th>
+<th style="text-align:right">Precision</th>
+<th style="text-align:right">Recall</th>
+<th style="text-align:right">Rank</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>claude-opus-4.5</td>
+<td style="text-align:right">47.5%</td>
+<td style="text-align:right">52.4%</td>
+<td style="text-align:right">43.4%</td>
+<td style="text-align:right"><strong>17 / 50</strong></td>
+</tr>
+<tr>
+<td>claude-sonnet-4.5</td>
+<td style="text-align:right">44.9%</td>
+<td style="text-align:right">48.0%</td>
+<td style="text-align:right">42.2%</td>
+<td style="text-align:right"><strong>17 / 50</strong></td>
+</tr>
+<tr>
+<td>gpt-5.2</td>
+<td style="text-align:right">42.7%</td>
+<td style="text-align:right">46.0%</td>
+<td style="text-align:right">39.9%</td>
+<td style="text-align:right"><strong>17 / 50</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The F1 moves 4.8 points depending on who judges. The rank does not move at all —
+seventeenth under all three. Below us in every one of the three: CodeRabbit
+(19/25/23), every version of Greptile (26–29), Kodus (21/23/21), Copilot,
+Claude Code, Gemini, and CodeAnt.</p>
+<p>The whole run cost <strong>$5.88</strong> — $0.118 per pull request — and produced 153
+findings, 3.06 per PR (defect 114, security 27, contract 6, structural 6).</p>
+<p><strong>Why this comparison is fair.</strong> Martian ships its own evaluations of 49 tools
+in the benchmark repository, produced by the same three judges on the same 50
+PRs against the same goldens. We did not re-score anybody: their rows are taken
+as published and ours is appended. Reproduce the whole table with:</p>
+<pre><code class="language-bash">python3 autoloop/offline_table.py anthropic_claude-sonnet-4-5-20250929
+</code></pre>
+<p><strong>Offline is not the public leaderboard.</strong> Martian runs two benchmarks. The
+public leaderboard is the <em>online</em> one — 200,000 real pull requests scored by
+what developers actually fixed. This table is the <em>offline</em> one — 50 curated PRs
+scored against a gold set. They measure different things and the numbers are not
+interchangeable. Claims of the form &quot;tool X is #1 on Martian&quot; usually refer to
+the online table, a different metric, or a different judge.</p>
+<p><strong>What this number does not contain.</strong> The graph was empty for all 50 PRs
+(<code>graph_status</code> null, drift empty on every one), because the benchmark set is
+isolated single-repository pull requests — there is no sibling service for a
+symbol to have consumers in. Cross-repository drift, the thing this product
+carries a symbol graph for, contributed exactly nothing to the score above. It
+is not measurable here, and we are not claiming it from this table. See
+<a href="#test-repositories">Test repositories</a> to watch it work on real code instead.</p>
+<h2 id="audit-of-the-false-positives"><a class="anchor" href="#audit-of-the-false-positives" aria-label="Link to this section">#</a>Audit of the false positives</h2>
+<p>Benchmark scoring has a structural floor: the judge matches our comment against
+a finite list of human-written goldens, so a correct finding the annotator never
+wrote down is counted false <strong>by construction</strong>. We opened all 79 of ours in the
+source at the measured commit and assigned a verdict to each.</p>
+<p>Of 79 findings scored as false positives, <strong>33 are real defects</strong> the gold set
+does not contain, 38 are genuinely wrong, and 8 could not be settled from the
+code. That puts the true precision of this run between 69.7% and 75.0% rather
+than the measured 48.0% — but that corrected figure <strong>cannot be compared with
+anything in the table above</strong>, because nobody has audited the other tools the
+same way and their false positives almost certainly contain a similar share of
+real defects; for comparison with other tools the measured 48.0% is the honest
+number, because it is the same method applied to everyone.</p>
+<p>Twenty-four of the 38 genuinely-wrong findings share four root causes, and none
+of them is &quot;the model is weak&quot; — all four are about what the model was shown.
+The largest is an identifier declared in the same file but outside the excerpt
+the agent received: a method parameter 26 lines up, an import on line 3, an
+<code>attr_reader</code> on line 18.</p>
+<p>The full report gives the claim, the code at that commit, the verdict, the
+reasoning and a permalink for each of the 79, so any verdict can be disputed
+with the same evidence in front of you.</p>
+<h2 id="test-repositories"><a class="anchor" href="#test-repositories" aria-label="Link to this section">#</a>Test repositories</h2>
+<p>Every review in the run above is still live and public. These are real pull
+requests from real projects, forked with their history, carrying the inline
+comments Celmis wrote:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Fork</th>
+<th style="text-align:right">PRs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/celmis-bench/keycloak">celmis-bench/keycloak</a></td>
+<td style="text-align:right">9</td>
+</tr>
+<tr>
+<td><a href="https://github.com/celmis-bench/grafana">celmis-bench/grafana</a></td>
+<td style="text-align:right">10</td>
+</tr>
+<tr>
+<td><a href="https://github.com/celmis-bench/discourse-graphite">celmis-bench/discourse-graphite</a></td>
+<td style="text-align:right">10</td>
+</tr>
+<tr>
+<td><a href="https://github.com/celmis-bench/cal.diy">celmis-bench/cal.diy</a></td>
+<td style="text-align:right">10</td>
+</tr>
+<tr>
+<td><a href="https://github.com/celmis-bench/sentry">celmis-bench/sentry</a></td>
+<td style="text-align:right">6</td>
+</tr>
+<tr>
+<td><a href="https://github.com/celmis-bench/sentry-greptile">celmis-bench/sentry-greptile</a></td>
+<td style="text-align:right">4</td>
+</tr>
+</tbody>
+</table></div>
+<p>Worth opening first:</p>
+<ul>
+<li><a href="https://github.com/celmis-bench/keycloak/pull/17">keycloak#17</a> — a null
+dereference and a recovery-code indexing question in Keycloak's test storage
+provider</li>
+<li><a href="https://github.com/celmis-bench/grafana/pull/16">grafana#16</a> — a Storage
+failure recorded against the Legacy metric, one of three instances of the same
+mistake in that file</li>
+<li><a href="https://github.com/celmis-bench/cal.diy/pull/11">cal.diy#11</a> — <code>forEach</code> with
+an async callback, so the deletions are fire-and-forget and the surrounding
+<code>try</code> catches nothing</li>
+<li><a href="https://github.com/celmis-bench/sentry/pull/11">sentry#11</a> — seven inline
+comments on one Kafka consumer PR</li>
+</ul>
+<p>You are reading unedited output, including the findings the audit above marks
+wrong. Nothing was removed after scoring.</p>
+<h2 id="configuration"><a class="anchor" href="#configuration" aria-label="Link to this section">#</a>Configuration</h2>
+<p><code>./scripts/init-env.sh</code> writes <code>.env</code> from <a href="https://github.com/Celmis-labs/Celmis/blob/main/env.example"><code>.env.example</code></a> and
+generates every secret. The example ships each secret <strong>empty</strong> on purpose: a
+previous version put the generating command beside the variable, dotenv files
+have no inline comments, and every install that copied it ran with a master
+password printed in the repository.</p>
+<p>Settings reach the containers only through the <code>environment:</code> block in
+<code>docker-compose.yml</code> — the image carries no <code>.env</code>. A variable not named there
+takes its code default no matter what your <code>.env</code> says.
+<code>GET /healthz</code> reports the review clocks as the process actually resolved them,
+which is how you check what arrived.</p>
+<p>The clocks are documented as a set in <code>.env.example</code>, with the invariant that
+binds them:</p>
+<pre><code>REVIEW_LLM_TIMEOUT_SECONDS × (1 + RETRY_FACTOR)  ≤  REVIEW_TIMEOUT_SECONDS
+</code></pre>
+<p>Raise one and the other has to follow; a test enforces it.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REVIEW_TIMEOUT_SECONDS</code></td>
+<td>900</td>
+<td>wall clock for one review; past it the tail stages stand down and the comment says so</td>
+</tr>
+<tr>
+<td><code>REVIEW_LLM_TIMEOUT_SECONDS</code></td>
+<td>300</td>
+<td>one model call. Raise to ~600 for a slow reasoning model</td>
+</tr>
+<tr>
+<td><code>REVIEW_LLM_TIMEOUT_RETRY_FACTOR</code></td>
+<td>2.0</td>
+<td>how much longer the retry gets after a timeout; 1.0 disables the widening</td>
+</tr>
+<tr>
+<td><code>REVIEW_MAX_DIFF_SIZE_BYTES</code></td>
+<td>500000</td>
+<td>larger diffs are refused, not truncated</td>
+</tr>
+<tr>
+<td><code>REVIEW_VERIFIER_ENABLED</code></td>
+<td>false</td>
+<td>the LLM false-positive veto</td>
+</tr>
+<tr>
+<td><code>REVIEW_AGENT_CONCURRENCY</code></td>
+<td>3</td>
+<td>provider calls in flight per review</td>
+</tr>
+<tr>
+<td><code>CELMIS_JOB_LEASE_SECONDS</code></td>
+<td>600</td>
+<td>ceiling on worker silence before a job may be reclaimed</td>
+</tr>
+<tr>
+<td><code>CELMIS_DEPLOYMENT_MODE</code></td>
+<td>single_tenant</td>
+<td><code>multi_tenant</code> isolates workspaces from each other</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="operations"><a class="anchor" href="#operations" aria-label="Link to this section">#</a>Operations</h2>
+<pre><code class="language-bash">docker compose logs -f api            # follow the API
+docker compose exec api analyzer graph-stats &lt;repo&gt;   # what parsed, what did not
+./scripts/backup.sh                   # Postgres + volumes
+./scripts/restore.sh &lt;archive&gt;
+</code></pre>
+<p><strong>Admin → Monitoring</strong> shows queue depth, spend per workspace and per-agent
+model settings. <strong>Usage &amp; cost</strong> breaks spend down by surface, so a batch
+documentation build does not read as chat.</p>
+<p>Deploy to a server is <code>./scripts/deploy-on-server.sh v0.1.0</code>, run <strong>on the
+server</strong>: it pulls the published images, brings the stack up behind Caddy and
+stamps the build the AGPL footer links to. Nothing outside that machine needs a
+credential for it. See
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/ORACLE_CICD.md">docs/ORACLE_CICD.md</a>, or
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/HETZNER.md">docs/HETZNER.md</a> for a plain VM.</p>
+<hr />
+<h2 id="local-development"><a class="anchor" href="#local-development" aria-label="Link to this section">#</a>Local development</h2>
+<pre><code class="language-bash"># Postgres and Qdrant from compose, everything else on the host
+docker compose up -d postgres qdrant
+
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+
+alembic upgrade head
+uvicorn src.api.main:app --reload --port 8000
+
+cd web &amp;&amp; npm install &amp;&amp; npm run dev     # http://localhost:3000
+</code></pre>
+<pre><code class="language-bash">pytest -q                # the suite
+ruff check .             # lint, ratcheted at zero
+cd web &amp;&amp; npx tsc --noEmit
+</code></pre>
+<hr />
+<h2 id="cli-reference"><a class="anchor" href="#cli-reference" aria-label="Link to this section">#</a>CLI reference</h2>
+<p><code>analyzer</code> is installed by <code>pip install -e .</code>; inside Docker use
+<code>docker compose exec api analyzer …</code>. Every command takes <code>--help</code>.</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>analyzer init</code></td>
+<td>create the workspace layout</td>
+</tr>
+<tr>
+<td><code>analyzer index &lt;path|url&gt;</code></td>
+<td>parse a repository into the graph</td>
+</tr>
+<tr>
+<td><code>analyzer ask &quot;&lt;question&gt;&quot;</code></td>
+<td>one question, cited answer</td>
+</tr>
+<tr>
+<td><code>analyzer chat</code></td>
+<td>interactive session</td>
+</tr>
+<tr>
+<td><code>analyzer review &lt;provider&gt; &lt;repo&gt; &lt;pr&gt;</code></td>
+<td>review a pull request; <code>--post</code> publishes</td>
+</tr>
+<tr>
+<td><code>analyzer generate</code></td>
+<td>build the documentation vault</td>
+</tr>
+<tr>
+<td><code>analyzer refresh</code></td>
+<td>re-index what changed</td>
+</tr>
+<tr>
+<td><code>analyzer graph-stats &lt;repo&gt;</code></td>
+<td>what parsed, per language</td>
+</tr>
+<tr>
+<td><code>analyzer serve</code></td>
+<td>the API without Docker</td>
+</tr>
+<tr>
+<td><code>analyzer review-serve</code></td>
+<td>the webhook receiver alone</td>
+</tr>
+</tbody>
+</table></div>
+<p>Grouped subcommands: <code>analyzer repo</code>, <code>analyzer group</code>, <code>analyzer auth</code>,
+<code>analyzer mcp</code>, <code>analyzer scip</code>.</p>
+<hr />
+<h2 id="architecture"><a class="anchor" href="#architecture" aria-label="Link to this section">#</a>Architecture</h2>
+<pre><code>                      ┌──────────────┐
+   GitHub / GitLab ──▶│   webhook    │──┐
+   Bitbucket          └──────────────┘  │
+                                        ▼
+   Browser ──▶ web (Next.js) ──▶ api (FastAPI) ──▶ Postgres   jobs, policies, audit
+                                     │              Qdrant     embeddings
+                                     │              sandbox    untrusted execution
+                                     ▼
+                              model provider
+                       (direct, or via a LiteLLM gateway)
+</code></pre>
+<ul>
+<li><strong>Postgres</strong> holds jobs, policies, run history, spend and the audit log. The
+durable job queue is a table — dequeue is <code>SELECT … FOR UPDATE SKIP LOCKED</code>,
+and a worker renews its lease while it works rather than guessing a duration
+up front.</li>
+<li><strong>Qdrant</strong> holds embeddings, one collection per installation with workspace
+isolation enforced in the filter.</li>
+<li><strong>sandbox</strong> runs anything untrusted — a test suite, a build — as its own uid
+on its own network, with no database, no keys and a read-only root.</li>
+<li><strong>LiteLLM</strong> is optional. Set <code>LITELLM_PROXY_URL</code> and <code>LITELLM_MASTER_KEY</code>
+together and every call routes through the gateway; leave either empty and
+provider keys are used directly.</li>
+</ul>
+<hr />
+<h2 id="troubleshooting"><a class="anchor" href="#troubleshooting" aria-label="Link to this section">#</a>Troubleshooting</h2>
+<p><strong>A container will not start.</strong> <code>docker compose logs &lt;service&gt;</code>. The API says
+at startup which optional features are unavailable and why, rather than failing
+quietly.</p>
+<p><strong>Reviews produce nothing.</strong> Check <code>GET /healthz</code> for the resolved clocks, then
+<code>docker compose logs api | grep agent_</code>. Each agent logs its elapsed time, its
+model and its failure code.</p>
+<p><strong>A timeout, not an outage.</strong> <code>local_timeout</code> means this installation's own
+deadline elapsed before the provider answered — raise
+<code>REVIEW_LLM_TIMEOUT_SECONDS</code>. It is deliberately not reported as a provider
+fault.</p>
+<p><strong>Q&amp;A cites nothing.</strong> The repository is probably not indexed, or is indexed
+without embeddings. <strong>Repositories</strong> shows the state of each; <code>analyzer graph-stats &lt;repo&gt;</code> shows what parsed.</p>
+<p><strong>The sandbox is always busy.</strong> <code>SANDBOX_SLOTS</code> is how many jobs run at once
+and is the knob that costs memory. <code>SANDBOX_SLOT_WAIT</code> is how long a caller
+queues before being told to come back.</p>
+<hr />
+<h2 id="project-layout"><a class="anchor" href="#project-layout" aria-label="Link to this section">#</a>Project layout</h2>
+<pre><code>src/
+  api/          FastAPI app, routers, schemas
+  review/       PR review — agents, orchestrator, providers, policies
+  indexing/     parsers, symbol graph, embeddings
+  qa/           retrieval and answer composition
+  generation/   documentation vault
+  llm/          provider clients, error taxonomy, cost ledger
+  sync/         git providers, the durable job queue, workers
+  sandbox/      the isolated execution server
+  mcp_server/   the MCP surface
+  security/     redaction, patterns, log filtering
+web/            Next.js UI (App Router, 16 locales)
+tests/          5200+ tests
+deploy/         Caddy overlay and the LiteLLM gateway config
+docs/           deploy guides and the end-to-end walk-through
+bench/          benchmark harness and results
+</code></pre>
+<hr />
+<h2 id="provenance-and-rights"><a class="anchor" href="#provenance-and-rights" aria-label="Link to this section">#</a>Provenance and rights</h2>
+<p>This repository has a single root commit over about a hundred thousand lines —
+the shape a code drop of unclear origin has to a provenance scanner, and one
+that needs an explanation rather than a shrug. It has one:
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/PROVENANCE.md">PROVENANCE.md</a> states the licence position and the origin of
+the code — development happened privately before this commit, and none of it
+is needed to build, audit or fork what is here.</p>
+<p>That file is a record of facts, not the licence. The licence is
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">AGPL-3.0</a>, with one exception: anything under <code>ee/</code>, and any file
+whose name contains <code>.ee.</code>, is covered by <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE_EE">LICENSE_EE</a> instead.
+<code>ee/</code> holds no product code today — the boundary was drawn before the first
+tag because adding it afterwards means re-asking every contributor who has
+already sent work under an unqualified AGPL.</p>
+<p>Everything shipped here is AGPL, including the parts that look commercial: the
+audit console, usage and spend, compliance checks, installation metrics.
+Security controls are never enterprise-only — the audit <em>log</em> is written under
+AGPL and always will be. See <a href="https://github.com/Celmis-labs/Celmis/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for where new
+code goes.</p>
+
+      <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#seven-things-people-do-with-it">Seven things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-it-from-here">Fix it from here</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>
