@@ -1,0 +1,5 @@
+# Everything here is public and meant to be read, by people and by machines alike.
+User-agent: *
+Allow: /
+
+Sitemap: https://celmis-labs.github.io/sitemap.xml

@@ -378,6 +378,118 @@ footer nav a:hover{color:var(--accent)}
 }
 html{scroll-behavior:smooth}
 </style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "SoftwareApplication",
+   "@id": "https://celmis-labs.github.io/#software",
+   "name": "Celmis",
+   "alternateName": "Celmis code intelligence",
+   "applicationCategory": "DeveloperApplication",
+   "applicationSubCategory": "Code intelligence, code review, software composition analysis",
+   "operatingSystem": "Linux, macOS, Windows (via Docker)",
+   "url": "https://celmis-labs.github.io/",
+   "codeRepository": "https://github.com/Celmis-labs/Celmis",
+   "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+   "isAccessibleForFree": true,
+   "description": "Self-hosted code intelligence. Celmis indexes your repositories once and keeps a symbol graph of them; asking questions, reviewing pull requests, auditing dependencies and generating documentation are all different ways of reading that one graph. It runs on a single machine under docker compose, with the model provider of your choice behind it, and nothing leaves your network except the calls you configure.",
+   "featureList": [
+    "Ask questions across several repositories at once, answered with file and line citations",
+    "Pull-request review that also reads who else calls what is being changed, including from another repository",
+    "CycloneDX SBOM and an evidence pack whose manifest of sha256 digests a third party can verify independently",
+    "Fix with Claude: an embedded session edits the repository and the runner opens a pull request",
+    "Per-repository access control with visibility levels and deny globs",
+    "MCP server exposing eighteen tools over the same index under the same access rules",
+    "23 languages parsed"
+   ],
+   "softwareRequirements": "Docker 24+ with Compose v2, about 4 GB of free RAM, and an API key for Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. Postgres and Qdrant are bundled.",
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+   },
+   "publisher": {
+    "@id": "https://celmis-labs.github.io/#org"
+   }
+  },
+  {
+   "@type": "Organization",
+   "@id": "https://celmis-labs.github.io/#org",
+   "name": "Celmis Labs",
+   "url": "https://celmis-labs.github.io/",
+   "sameAs": [
+    "https://github.com/Celmis-labs"
+   ]
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://celmis-labs.github.io/#site",
+   "url": "https://celmis-labs.github.io/",
+   "name": "Celmis",
+   "publisher": {
+    "@id": "https://celmis-labs.github.io/#org"
+   },
+   "inLanguage": "en"
+  },
+  {
+   "@type": "FAQPage",
+   "@id": "https://celmis-labs.github.io/#faq",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "What is Celmis?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Celmis is self-hosted code intelligence. It reads your repositories once and keeps a symbol graph of them. Asking questions, reviewing pull requests, auditing dependencies and generating documentation are all different ways of reading that one index."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Is Celmis open source?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes. Celmis is released under the GNU Affero General Public License v3.0, with one exception noted in the licence file. Anyone you run it for over a network is entitled to its source. The repository is at github.com/Celmis-labs/Celmis."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Does Celmis send my code anywhere?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. It runs on one machine under docker compose with Postgres and Qdrant bundled. The only outbound calls are the ones the operator configures for their chosen model provider. There is no telemetry and no licence check."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How does Celmis score on the Martian Code Review Bench?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "17th of 50 on the offline set, stable under all three judges. That figure measures pull-request review on isolated single-repository pull requests, a set in which no symbol has consumers in a sibling service, so the cross-repository work Celmis is built around is not in the number. An audit of the 79 findings the benchmark scored false found 33 were real defects the gold set was silent about."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "What does Celmis need to run?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Docker 24 or newer with Compose v2, roughly 4 GB of free RAM, and an API key for one of Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. A first install took 197 seconds from git clone to six healthy services on a clean server."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Does Celmis make my product CRA compliant?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No, and it deliberately does not claim to. Celmis produces an evidence pack — a CycloneDX SBOM, findings, a timeline and a manifest of sha256 digests — that a third party can verify without trusting the machine that produced it. Compliance is a judgement about your organisation, not an output a tool can emit."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
 </head>
 <body>
 

@@ -1,0 +1,55 @@
+# Celmis
+
+> Self-hosted code intelligence. Celmis indexes your repositories once and keeps a
+> symbol graph of them; asking questions, reviewing pull requests, auditing
+> dependencies and generating documentation are all different ways of reading that
+> one graph. It runs on a single machine under `docker compose`, with the model
+> provider of your choice behind it.
+
+Licence: GNU Affero General Public License v3.0, with one exception noted in the
+licence file. Source: https://github.com/Celmis-labs/Celmis
+
+## What it does
+
+- **Ask the code** — questions answered across several repositories at once, with
+  file and line citations on every claim, including call chains that cross a
+  repository boundary.
+- **Pull-request review** — agents read the diff and, where the graph is built,
+  who else calls what is being changed, including from another repository.
+- **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
+  and a manifest of sha256 digests, so a third party can verify the pack without
+  trusting the machine that produced it. Celmis does not claim regulatory
+  compliance on the operator's behalf.
+- **Fix it from here** — a finding hands an embedded Claude Code session the
+  repository, the package and the context; the runner pushes a branch and opens a
+  pull request.
+- **Access control** — per-repository visibility of none, metadata or code, with
+  deny globs that win even at code level, so two teams can share an integration
+  without sharing credentials.
+- **MCP server** — eighteen tools over the same index, under the same access
+  rules, for any MCP client.
+
+## Measured facts
+
+- 197 seconds from `git clone` to six healthy services on a clean server.
+- $0.118 per pull request reviewed, on the model it ships with.
+- 17th of 50 on the Martian Code Review Bench offline set, under all three judges.
+  This measures pull-request review on isolated single-repository pull requests,
+  a set with no sibling service for a symbol to have consumers in, so the
+  cross-repository work the product is built around is absent from the number.
+  Of the 79 findings the benchmark scored false, an audit found 33 were real
+  defects the gold set was silent about.
+- 23 languages parsed.
+
+## Requirements
+
+Docker 24+ with Compose v2, about 4 GB of free RAM, and an API key for one of
+Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. Postgres and
+Qdrant are bundled. Nothing is sent anywhere except the calls the operator
+configures: no telemetry, no licence check.
+
+## Links
+
+- Site: https://celmis-labs.github.io/
+- Source and full documentation: https://github.com/Celmis-labs/Celmis
+- Benchmark results and the audit: https://github.com/Celmis-labs/Celmis#results
