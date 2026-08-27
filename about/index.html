@@ -18,21 +18,24 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
 <style>
-.contacts{list-style:none;padding:0;margin:clamp(24px,4vw,34px) 0 0;display:grid;gap:12px;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
-.contacts li{margin:0}
-.contacts a,.contacts .box{
-  display:block;height:100%;box-shadow:none!important;
-  background:var(--surface);border:1px solid var(--rule);border-radius:13px;padding:20px 22px;
-  transition:border-color .2s ease,transform .2s cubic-bezier(.2,.7,.3,1);
+.lines{list-style:none;padding:0;margin:clamp(22px,3.5vw,30px) 0 0;
+  border-top:1px solid var(--rule)}
+.lines li{
+  display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;
+  padding:17px 0;border-bottom:1px solid var(--rule-soft);
 }
-.contacts a:hover{border-color:var(--accent-line);transform:translateY(-3px)}
-.contacts .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;
-  letter-spacing:.13em;color:var(--muted);display:block;margin-bottom:9px}
-.contacts .v{font-weight:600;color:var(--ink);word-break:break-word;
-  font-variation-settings:"wdth" 104;display:block;margin-bottom:5px}
-.contacts p{margin:0;font-size:.9rem;color:var(--ink-2);line-height:1.45}
-.contacts .sec{border-color:var(--accent-line);background:var(--accent-soft)}
+.lines .k{
+  font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--muted);flex:0 0 108px;
+}
+.lines .v{font-size:1.05rem;font-weight:500;word-break:break-word}
+.lines .v a{box-shadow:inset 0 -1px 0 var(--accent-line)}
+.lines .n{flex:1 1 100%;margin:2px 0 0 126px;font-size:.9rem;color:var(--muted)}
+@media(max-width:620px){
+  .lines li{gap:4px}
+  .lines .k{flex:1 1 100%}
+  .lines .n{margin-left:0}
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
@@ -103,29 +106,28 @@
 
     <h2 id="contact">Getting in touch</h2>
 
-    <ul class="contacts">
-      <li><a href="mailto:kostiantynmakoid@gmail.com">
+    <ul class="lines">
+      <li>
         <span class="k">Email</span>
-        <span class="v">kostiantynmakoid@gmail.com</span>
-        <p>Questions, use cases, or anything that does not belong in a public issue.</p>
-      </a></li>
-      <li><a href="https://www.linkedin.com/in/constantine-makoid-86245b326" rel="me">
+        <span class="v"><a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a></span>
+        <span class="n">Questions, use cases, or anything that does not belong in a public issue.</span>
+      </li>
+      <li>
         <span class="k">LinkedIn</span>
-        <span class="v">Constantine Makoid</span>
-        <p>Where most of the writing about this project is posted first.</p>
-      </a></li>
-      <li><a class="sec" href="mailto:kostiantynmakoid@gmail.com?subject=Celmis%20security%20report">
+        <span class="v"><a href="https://www.linkedin.com/in/constantine-makoid-86245b326" rel="me">constantine-makoid</a></span>
+        <span class="n">Where most of the writing about this project is posted first.</span>
+      </li>
+      <li>
         <span class="k">Security</span>
-        <span class="v">Report a vulnerability</span>
-        <p>Same address, with <em>security</em> in the subject. Please do not open a public
-          issue for an unpatched vulnerability.</p>
-      </a></li>
+        <span class="v"><a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a></span>
+        <span class="n">Same address, with <em>security</em> in the subject. Please do not open a public issue for an unpatched vulnerability.</span>
+      </li>
     </ul>
 
     <h2 id="security">Reporting a vulnerability</h2>
 
     <p>If you find a security problem in Celmis, write to
-      <a href="mailto:kostiantynmakoid@gmail.com?subject=Celmis%20security%20report">kostiantynmakoid@gmail.com</a>
+      <a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a>
       with <em>security</em> in the subject line. Include what you did, what happened, and
       the version you were running — the footer of any running instance carries the exact
       commit.</p>
