@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About and contact — Celmis</title>
+<meta name="description" content="Who builds Celmis, why it exists, and how to get in touch — including where to report a vulnerability.">
+<link rel="canonical" href="https://celmis-labs.github.io/about/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="About and contact — Celmis">
+<meta property="og:description" content="Who builds Celmis, why it exists, and how to get in touch.">
+<meta property="og:url" content="https://celmis-labs.github.io/about/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+.contacts{list-style:none;padding:0;margin:clamp(24px,4vw,34px) 0 0;display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.contacts li{margin:0}
+.contacts a,.contacts .box{
+  display:block;height:100%;box-shadow:none!important;
+  background:var(--surface);border:1px solid var(--rule);border-radius:13px;padding:20px 22px;
+  transition:border-color .2s ease,transform .2s cubic-bezier(.2,.7,.3,1);
+}
+.contacts a:hover{border-color:var(--accent-line);transform:translateY(-3px)}
+.contacts .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.13em;color:var(--muted);display:block;margin-bottom:9px}
+.contacts .v{font-weight:600;color:var(--ink);word-break:break-word;
+  font-variation-settings:"wdth" 104;display:block;margin-bottom:5px}
+.contacts p{margin:0;font-size:.9rem;color:var(--ink-2);line-height:1.45}
+.contacts .sec{border-color:var(--accent-line);background:var(--accent-soft)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"AboutPage","url":"https://celmis-labs.github.io/about/","name":"About and contact — Celmis","inLanguage":"en"},
+{"@type":"Organization","@id":"https://celmis-labs.github.io/#org","name":"Celmis Labs",
+ "url":"https://celmis-labs.github.io/","sameAs":["https://github.com/Celmis-labs"],
+ "founder":{"@type":"Person","name":"Kostiantyn Makoid",
+   "sameAs":["https://www.linkedin.com/in/constantine-makoid-86245b326","https://github.com/Celmis-labs"]},
+ "contactPoint":[
+  {"@type":"ContactPoint","contactType":"general","email":"kostiantynmakoid@gmail.com","availableLanguage":["English","Ukrainian"]},
+  {"@type":"ContactPoint","contactType":"security","email":"kostiantynmakoid@gmail.com","availableLanguage":["English","Ukrainian"]}]}
+]}
+</script>
+</head>
+<body>
+
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#writing" class="opt">Writing</a>
+      <a href="/about/">About</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>About</p>
+    <h1 class="docttl">About and contact</h1>
+    <p class="docsub">Celmis is built by Kostiantyn Makoid under Celmis Labs. It is a small
+      project with a narrow claim: index a set of repositories once, then read that index
+      from whichever side of the work you happen to be standing on.</p>
+  </div>
+
+  <div class="doclayout">
+  <article class="prose">
+
+    <h2 id="why">Why it exists</h2>
+
+    <p>Most tools in this space read one diff at a time. That is enough to catch a typo and
+      not enough to notice that a constant is duplicated across two services, or that the
+      function being changed has callers in a repository nobody in the review has open.
+      The index is the part that makes the second kind of answer possible, and once it
+      exists, questions and reviews and dependency audits stop being separate products.</p>
+
+    <p>It runs on your own machine. That is a deliberate constraint rather than a feature:
+      the people who most need to ask questions about a codebase are often the ones least
+      able to send it to a third party.</p>
+
+    <h2 id="honesty">What we try not to do</h2>
+
+    <p>The <a href="/#numbers">benchmark position on the front page is unflattering</a> and
+      stays that way, with the reason it is a poor measure of this particular product
+      stated next to it rather than instead of it. The dependency audit reports what it
+      did <em>not</em> check as prominently as what it did, because an unchecked ecosystem
+      reports zero vulnerabilities exactly like a clean one. And the evidence pack refuses
+      to claim regulatory compliance on your behalf, in its own output.</p>
+
+    <p>If you find a place where the software or these pages overclaim, that is a bug worth
+      reporting, and one we will fix.</p>
+
+    <h2 id="contact">Getting in touch</h2>
+
+    <ul class="contacts">
+      <li><a href="mailto:kostiantynmakoid@gmail.com">
+        <span class="k">Email</span>
+        <span class="v">kostiantynmakoid@gmail.com</span>
+        <p>Questions, use cases, or anything that does not belong in a public issue.</p>
+      </a></li>
+      <li><a href="https://www.linkedin.com/in/constantine-makoid-86245b326" rel="me">
+        <span class="k">LinkedIn</span>
+        <span class="v">Constantine Makoid</span>
+        <p>Where most of the writing about this project is posted first.</p>
+      </a></li>
+      <li><a class="sec" href="mailto:kostiantynmakoid@gmail.com?subject=Celmis%20security%20report">
+        <span class="k">Security</span>
+        <span class="v">Report a vulnerability</span>
+        <p>Same address, with <em>security</em> in the subject. Please do not open a public
+          issue for an unpatched vulnerability.</p>
+      </a></li>
+    </ul>
+
+    <h2 id="security">Reporting a vulnerability</h2>
+
+    <p>If you find a security problem in Celmis, write to
+      <a href="mailto:kostiantynmakoid@gmail.com?subject=Celmis%20security%20report">kostiantynmakoid@gmail.com</a>
+      with <em>security</em> in the subject line. Include what you did, what happened, and
+      the version you were running — the footer of any running instance carries the exact
+      commit.</p>
+
+    <p>You will get an acknowledgement within three working days. Once a fix is available,
+      the advisory and the fix are published together; if you would like to be credited,
+      say so and you will be.</p>
+
+    <p>Please do not file an unpatched vulnerability as a public issue, and please do not
+      test against anyone else's running instance.</p>
+
+    <h2 id="licence">Licence</h2>
+
+    <p>Celmis is released under the GNU Affero General Public License v3.0, with one
+      exception noted in
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">the licence file</a>.
+      In practice: you may run it, read it, modify it and deploy it, including
+      commercially — and if you run a modified version as a network service, the people
+      using that service are entitled to your modified source.</p>
+
+    <div class="docnav">
+      <a href="/">← Celmis</a>
+      <a href="/docs/">Documentation →</a>
+    </div>
+
+  </article>
+
+  <aside class="toc">
+    <span class="k">On this page</span>
+    <ol>
+      <li><a href="#why">Why it exists</a></li>
+      <li><a href="#honesty">What we try not to do</a></li>
+      <li><a href="#contact">Getting in touch</a></li>
+      <li><a href="#security">Reporting a vulnerability</a></li>
+      <li><a href="#licence">Licence</a></li>
+    </ol>
+  </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>
+        · <a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a></p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="/about/">About and contact</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};links.forEach(function(a){var el=document.getElementById(a.hash.slice(1));if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>
