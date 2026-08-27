@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Celmis — self-hosted code intelligence</title>
+<meta name="description" content="Celmis indexes your repositories once and keeps a symbol graph of them. Ask questions across repositories, review pull requests, produce the evidence an auditor asks for. Runs on one machine under docker compose.">
+<link rel="canonical" href="https://celmis-labs.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Celmis — self-hosted code intelligence">
+<meta property="og:description" content="Index your repositories once. Ask across them, review pull requests, produce auditable evidence. Self-hosted, AGPLv3.">
+<meta property="og:url" content="https://celmis-labs.github.io/">
+<meta property="og:image" content="https://celmis-labs.github.io/img/ask-the-code-cross-repo.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230F1216'/><circle cx='16' cy='16' r='5' fill='%23E3B341'/><circle cx='16' cy='16' r='10.5' fill='none' stroke='%23E3B341' stroke-opacity='.45' stroke-width='1.5'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#0F1216; --surface:#161A20; --sunk:#0B0E11;
+  --rule:#242A32; --rule-soft:#1B2027;
+  --ink:#DCE1E8; --ink-dim:#AAB3BE; --muted:#7C858F;
+  --accent:#E3B341; --link:#84A9E0; --ok:#5FB98C;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.65;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+.col{max-width:70ch}
+a{color:var(--link);text-decoration:none;border-bottom:1px solid rgba(132,169,224,.3)}
+a:hover{border-bottom-color:var(--link)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;background:rgba(15,18,22,.88);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--rule-soft)}
+.bar .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.mark{font-family:var(--mono);font-weight:600;font-size:.95rem;letter-spacing:-.02em;
+  color:var(--ink);border:0;display:flex;align-items:center;gap:9px}
+.mark .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 4px rgba(227,179,65,.16);flex:none}
+.bar nav{margin-left:auto;display:flex;gap:22px;font-size:.86rem}
+.bar nav a{color:var(--muted);border:0}
+.bar nav a:hover{color:var(--ink)}
+@media(max-width:620px){.bar nav a.opt{display:none}}
+
+/* hero */
+.hero{padding:76px 0 8px;border-bottom:1px solid var(--rule-soft)}
+h1{font-family:var(--mono);font-weight:600;letter-spacing:-.045em;
+  font-size:clamp(3rem,10vw,5.25rem);line-height:.94;margin:0 0 20px}
+.lede{font-size:clamp(1.15rem,2.4vw,1.4rem);line-height:1.45;color:var(--ink);
+  margin:0 0 18px;max-width:26ch;text-wrap:balance;font-weight:500}
+.sub{color:var(--ink-dim);max-width:64ch;margin:0 0 30px}
+.etymology{font-size:.93rem;color:var(--muted);max-width:60ch;margin:0 0 34px}
+.etymology em{color:var(--ink-dim);font-style:italic}
+
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:40px}
+.btn{font-family:var(--mono);font-size:.88rem;font-weight:500;padding:11px 20px;border-radius:6px;
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink);display:inline-block}
+.btn.primary{background:var(--accent);color:#15130C;border-color:var(--accent);font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn.primary:hover{background:#F0C459;border-color:#F0C459}
+
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:44px;font-family:var(--mono);font-size:.76rem}
+.badge{border:1px solid var(--rule);border-radius:999px;padding:4px 12px;color:var(--muted);background:var(--sunk)}
+.badge b{color:var(--ink-dim);font-weight:500}
+.badge .live{color:var(--ok)}
+
+/* sections */
+section{padding:60px 0;border-bottom:1px solid var(--rule-soft)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;
+  color:var(--accent);margin:0 0 14px;font-weight:500}
+h2{font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.15;letter-spacing:-.022em;
+  font-weight:600;margin:0 0 16px;text-wrap:balance;max-width:22ch}
+h3{font-size:1.02rem;font-weight:600;margin:0 0 6px}
+p{margin:0 0 16px}
+.dim{color:var(--ink-dim)}
+.small{font-size:.93rem}
+
+/* figures */
+figure{margin:32px 0 0}
+figure img{display:block;width:100%;height:auto;border-radius:9px;border:1px solid var(--rule);background:var(--sunk)}
+figcaption{font-size:.86rem;color:var(--muted);margin-top:11px;max-width:66ch;line-height:1.55}
+
+/* seven scenarios */
+.rows{border-top:1px solid var(--rule);margin-top:30px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:28px;
+  padding:20px 0;border-bottom:1px solid var(--rule-soft)}
+.row .who{font-weight:600;line-height:1.4}
+.row .what{color:var(--ink-dim);font-size:.96rem;margin:0}
+.row .what .to{display:block;margin-top:7px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+@media(max-width:720px){.row{grid-template-columns:1fr;gap:7px;padding:18px 0}}
+
+/* numbers */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin:30px 0 22px}
+.nums div{background:var(--surface);padding:20px 22px}
+.nums .v{font-family:var(--mono);font-size:1.85rem;font-weight:600;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;line-height:1.1;margin-bottom:7px}
+.nums .v.warm{color:var(--accent)}
+.nums .l{font-size:.9rem;color:var(--ink-dim);line-height:1.45}
+
+/* code */
+pre{background:var(--sunk);border:1px solid var(--rule);border-radius:9px;
+  padding:18px 20px;overflow-x:auto;margin:24px 0;font-size:.85rem;line-height:1.7}
+pre,code{font-family:var(--mono)}
+code{font-size:.88em}
+p code,li code,td code{background:var(--sunk);border:1px solid var(--rule-soft);
+  padding:1px 6px;border-radius:4px;color:var(--ink-dim)}
+pre .c{color:var(--muted)}
+pre .p{color:var(--accent)}
+
+ul.plain{list-style:none;padding:0;margin:20px 0}
+ul.plain li{padding-left:22px;position:relative;margin:9px 0;color:var(--ink-dim)}
+ul.plain li::before{content:"";position:absolute;left:4px;top:.72em;width:5px;height:5px;
+  border-radius:50%;background:var(--accent);opacity:.75}
+
+/* footer */
+footer{padding:48px 0 64px;color:var(--muted);font-size:.9rem}
+footer .fgrid{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start}
+footer p{margin:0 0 10px;max-width:56ch}
+footer nav{display:flex;flex-direction:column;gap:8px}
+footer nav a{color:var(--ink-dim);border:0;font-size:.9rem}
+footer nav a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top"><span class="dot"></span>celmis</a>
+    <nav>
+      <a href="#uses" class="opt">Uses</a>
+      <a href="#numbers" class="opt">Numbers</a>
+      <a href="#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Celmis</h1>
+    <p class="lede">Self-hosted code intelligence.</p>
+    <p class="sub">Ask your codebases, review pull requests, and produce the evidence an
+      auditor asks for. Celmis reads your repositories once and keeps a symbol graph of
+      them — everything else is a different way of reading that graph. It runs on one
+      machine under <code>docker compose</code>, with the model provider of your choice
+      behind it, and nothing leaves your network except the calls you configure.</p>
+    <p class="etymology">The name is from <em>ядро</em> — a core. The index is the core;
+      the surfaces are what reads from it.</p>
+
+    <div class="cta">
+      <a class="btn primary" href="#start">Install in 197 seconds</a>
+      <a class="btn" href="https://github.com/Celmis-labs/Celmis">Read the source</a>
+    </div>
+
+    <div class="badges">
+      <span class="badge"><b>AGPLv3</b> · source-available to every user</span>
+      <span class="badge"><span class="live">●</span> <b>self-hosted</b> · one machine</span>
+      <span class="badge"><b>23</b> languages parsed</span>
+      <span class="badge"><b>18</b> MCP tools</span>
+    </div>
+  </div>
+</div>
+
+<section id="thesis">
+  <div class="wrap">
+    <p class="eyebrow">What a diff-only tool cannot do</p>
+    <div class="col">
+      <h2>Ask a question that spans two repositories, and the answer quotes both</h2>
+      <p class="dim">The gateway and the payments service are separate repositories with no
+        shared code. The answer traces the call chain between them — then notices,
+        unprompted, that the Kafka topic name is hardcoded in both, and that changing one
+        silently breaks the other.</p>
+      <p class="dim">A reviewer that reads only the diff structurally cannot say that.
+        It never had the other repository open.</p>
+    </div>
+    <figure>
+      <img src="img/ask-the-code-cross-repo.png" alt="Celmis answering a question that spans two repositories, citing files in both" loading="lazy" width="1600" height="1217">
+      <figcaption>One question, two repositories, two languages — with file and line
+        citations on both sides.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="uses">
+  <div class="wrap">
+    <p class="eyebrow">Seven things people do with it</p>
+    <div class="col">
+      <h2>Index once, then read it from whichever side of the work you are standing on</h2>
+    </div>
+    <div class="rows">
+
+      <div class="row">
+        <div class="who">You are a PM, a delivery lead or the client, and want to know what
+          state a group of projects is in</div>
+        <p class="what">Ask it. From any device, anywhere, without booking time from an
+          engineer and without a meeting whose only output is a paragraph.
+          <span class="to">→ ask the code</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">A new engineer has a question a senior would have to answer</div>
+        <p class="what">Every one of those pulls someone experienced out of flow, at the
+          moment they are already covering. The codebase answers instead, with
+          <code>file:line</code> citations.
+          <span class="to">→ ask the code</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">Two teams share an integration and neither can read the other's
+          repository</div>
+        <p class="what">Load it, grant the right to ask, and deny the paths that must stay
+          private. They get answers; the credentials are refused at the source.
+          <span class="to">→ access rules</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">A customer or an auditor asks for your SBOM</div>
+        <p class="what">One button, CycloneDX, plus an evidence pack whose manifest lets
+          them verify it without trusting you.
+          <span class="to">→ dependencies and evidence</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">A vulnerability lands in a dependency</div>
+        <p class="what"><em>Fix with Claude</em> hands an embedded session the repository,
+          the package and the finding. It edits, the runner pushes a branch and opens a
+          pull request.
+          <span class="to">→ fix it from here</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">A pull request needs reviewing</div>
+        <p class="what">Agents read the diff — and, where the graph is built, who else
+          calls what is being changed, including from another repository.
+          <span class="to">→ pull-request review</span></p>
+      </div>
+
+      <div class="row">
+        <div class="who">Your own agent or editor needs to understand the codebase</div>
+        <p class="what">Point it at <code>/mcp/</code>. Eighteen tools over the same index,
+          under the same access rules — no second copy of your code anywhere.
+          <span class="to">→ MCP</span></p>
+      </div>
+
+    </div>
+    <p class="small dim" style="margin-top:26px;max-width:70ch">The first three are the ones
+      a code-review tool does not do at all, and they are the reason this is a platform
+      rather than a reviewer.</p>
+  </div>
+</section>
+
+<section id="numbers">
+  <div class="wrap">
+    <p class="eyebrow">Three numbers</p>
+    <div class="col"><h2>Including the one that does not flatter us</h2></div>
+
+    <div class="nums">
+      <div><div class="v">197 s</div><div class="l">from <code>git clone</code> to six
+        healthy services, measured on a clean server</div></div>
+      <div><div class="v">$0.118</div><div class="l">per pull request reviewed, on the
+        model this ships with</div></div>
+      <div><div class="v warm">17<span style="font-size:.6em">th</span> of 50</div>
+        <div class="l">on the Martian Code Review Bench offline set, under all three
+        judges</div></div>
+    </div>
+
+    <div class="col">
+      <p class="dim">That last one is deliberately unflattering, and it stays. It measures
+        one of the surfaces above — pull-request review on isolated single-repository
+        pull requests — and that set has no sibling service for a symbol to have consumers
+        in. The thing this product is built around is not in the number at all.</p>
+      <p class="dim">The table, an audit of every finding it scored false, and the command
+        that reproduces both are in the repository. Of the 79 findings the benchmark
+        counted against us, 33 turned out to be real defects the gold set was silent
+        about.</p>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <p class="eyebrow">The other surfaces</p>
+    <div class="col">
+      <h2>Same index, read four more ways</h2>
+    </div>
+
+    <figure>
+      <img src="img/compliance-artefacts.png" alt="Evidence pack contents: CycloneDX SBOM, findings, timeline and a manifest of sha256 digests" loading="lazy" width="1600" height="700">
+      <figcaption><strong>Dependencies, SBOM and the evidence pack.</strong> CycloneDX plus
+        findings, a timeline and a manifest of sha256 digests — so a third party can verify
+        the pack without trusting the machine that produced it. Celmis does not claim
+        regulatory compliance on your behalf, and says so in its own output.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/fix-with-claude-prefilled.png" alt="Fix with Claude, pre-filled with the repository, package and finding" loading="lazy" width="1600" height="1300">
+      <figcaption><strong>Fix it from here.</strong> The finding hands an embedded session
+        the repository, the package and the context — no copy-pasting the problem into a
+        chat window somewhere else.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/pr-on-github.png" alt="A pull request opened on GitHub by the embedded session" loading="lazy" width="1600" height="1066">
+      <figcaption><strong>And it lands as a pull request.</strong> The session edits, the
+        runner pushes a branch and opens the PR — the review still belongs to a
+        human.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/mcp-cross-repo.svg" alt="MCP transcript: one query resolving a symbol across two repositories" loading="lazy">
+      <figcaption><strong>Eighteen tools over MCP.</strong> One query, two repositories, two
+        languages, the same contract symbol — from a client that has never checked either
+        of them out.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <p class="eyebrow">Quick start</p>
+    <div class="col">
+      <h2>Docker, a model key, and about four gigabytes of RAM</h2>
+      <p class="dim">Postgres and Qdrant are bundled — there is no external cluster to
+        provision, and no Python or Node.js install needed for the Docker flow. A free
+        Gemini key is enough to evaluate.</p>
+    </div>
+
+<pre><span class="c"># clone, then generate every secret in the format it needs</span>
+git clone https://github.com/Celmis-labs/Celmis.git celmis
+<span class="p">cd</span> celmis
+./scripts/init-env.sh
+
+<span class="c"># first boot pulls three images and applies migrations</span>
+docker compose --env-file .env up -d
+docker compose ps</pre>
+
+    <figure>
+      <img src="img/first-install-terminal.svg" alt="Terminal transcript of a first install reaching six healthy services" loading="lazy">
+      <figcaption>A first install on a clean server, recorded end to end.</figcaption>
+    </figure>
+
+    <div class="col">
+      <ul class="plain">
+        <li><strong>Bring your own model.</strong> Google Gemini, Anthropic, OpenAI,
+          OpenRouter, Groq or Mistral.</li>
+        <li><strong>Keys go in through the interface</strong>, not into a file you might
+          commit.</li>
+        <li><strong>Nothing phones home.</strong> The only outbound calls are the ones you
+          configure.</li>
+      </ul>
+      <p style="margin-top:26px"><a class="btn" href="https://github.com/Celmis-labs/Celmis#quick-start">Full
+        instructions in the README</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong style="color:var(--ink-dim)">Celmis</strong> is free software under the
+        GNU Affero General Public License v3.0, with one exception noted in the licence
+        file. If you run it for others over a network, they are entitled to its
+        source.</p>
+      <p style="color:var(--muted)">Built by <a href="https://github.com/Celmis-labs">Celmis
+        Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+      <a href="https://github.com/Celmis-labs/Celmis/issues">Issues</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
