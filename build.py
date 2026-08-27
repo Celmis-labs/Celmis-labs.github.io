@@ -46,6 +46,19 @@ PAGES = [
 ]
 
 
+# Pieces written for this site, rendered into /writing/<slug>/. Unlike the documentation
+# these are not mirrors of anything — the site is where they live, which is what lets a
+# syndicated copy elsewhere point its canonical URL back here.
+WRITING = [
+    dict(slug="one-question-two-repositories",
+         src="content/one-question-two-repositories.md",
+         title="Introducing Celmis",
+         blurb="Self-hosted code intelligence over a symbol graph: what it does, what it "
+               "refuses to claim, and how to run it on one machine.",
+         date="2026-08-27"),
+]
+
+
 def slugify(text: str) -> str:
     """Match GitHub's heading anchors, so in-document links keep working."""
     s = re.sub(r"<[^>]+>", "", text).strip().lower()
@@ -279,6 +292,50 @@ def build():
         built.append((page, len(body)))
         print("  %-14s %6d bytes  %2d headings" % (page["slug"], len(body), len(toc)))
 
+    # pieces written for this site
+    for w in WRITING:
+        src = out_root / w["src"]
+        if not src.exists():
+            print("  missing, skipped:", src)
+            continue
+        body, toc = decorate(rewrite_links(md.render(src.read_text())))
+        canonical = "%s/writing/%s/" % (SITE, w["slug"])
+        toc_html = ""
+        if len(toc) > 2:
+            items = "".join(
+                '<li><a class="%s" href="#%s">%s</a></li>'
+                % ("lvl3" if lvl == "3" else "lvl2", hid, html.escape(txt))
+                for lvl, hid, txt in toc)
+            toc_html = ('<aside class="toc"><span class="k">On this page</span>'
+                        '<ol>%s</ol></aside>' % items)
+        ld = ('<script type="application/ld+json">{"@context":"https://schema.org",'
+              '"@type":"Article","headline":%s,"description":%s,"url":%s,'
+              '"datePublished":%s,"dateModified":%s,"inLanguage":"en",'
+              '"author":{"@type":"Organization","name":"Celmis Labs"},'
+              '"publisher":{"@type":"Organization","name":"Celmis Labs","url":"%s/"}}</script>'
+              % (_json(w["title"]), _json(w["blurb"]), _json(canonical),
+                 _json(w["date"]), _json(w["date"]), SITE))
+        content = """<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">{title}</h1>
+    <p class="docsub">{blurb}</p>
+    <p class="docmeta"><span>{date}</span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+{body}
+      <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
+    </article>
+    {toc}
+  </div>
+</main>""".format(title=html.escape(w["title"]), blurb=html.escape(w["blurb"]),
+                  date=w["date"], body=body, toc=toc_html)
+        page = out_root / "writing" / w["slug"] / "index.html"
+        page.parent.mkdir(parents=True, exist_ok=True)
+        page.write_text(shell(w["title"] + " — Celmis", w["blurb"], canonical, ld, content))
+        print("  writing/%-32s %6d bytes" % (w["slug"], len(body)))
+
     cards = "".join(
         '<li><a href="/docs/{slug}/"><span class="t">{title} <span class="arw">→</span></span>'
         '<p>{blurb}</p><span class="n">{note}</span></a></li>'.format(
@@ -316,12 +373,16 @@ def build():
 
     urls = [("%s/" % SITE, "1.0"), ("%s/docs/" % SITE, "0.9")]
     urls += [("%s/docs/%s/" % (SITE, p["slug"]), "0.8") for p, _ in built]
-    # hand-written pages that are not generated from markdown
+    # hand-written pages, plus anything one level under writing/
+    root = pathlib.Path(__file__).parent
     urls += [("%s/%s/" % (SITE, d.name), "0.9")
-             for d in sorted(pathlib.Path(__file__).parent.iterdir())
+             for d in sorted(root.iterdir())
              if d.is_dir() and not d.name.startswith((".", "_"))
-             and d.name not in ("docs", "img", "assets")
+             and d.name not in ("docs", "img", "assets", "content", "writing")
              and (d / "index.html").exists()]
+    urls += [("%s/writing/%s/" % (SITE, d.name), "0.9")
+             for d in sorted((root / "writing").iterdir())
+             if d.is_dir() and (d / "index.html").exists()] if (root / "writing").exists() else []
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for loc, pri in urls:

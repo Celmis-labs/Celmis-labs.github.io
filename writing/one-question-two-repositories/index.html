@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Introducing Celmis — Celmis</title>
+<meta name="description" content="Self-hosted code intelligence over a symbol graph: what it does, what it refuses to claim, and how to run it on one machine.">
+<link rel="canonical" href="https://celmis-labs.github.io/writing/one-question-two-repositories/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Introducing Celmis — Celmis">
+<meta property="og:description" content="Self-hosted code intelligence over a symbol graph: what it does, what it refuses to claim, and how to run it on one machine.">
+<meta property="og:url" content="https://celmis-labs.github.io/writing/one-question-two-repositories/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Introducing Celmis","description":"Self-hosted code intelligence over a symbol graph: what it does, what it refuses to claim, and how to run it on one machine.","url":"https://celmis-labs.github.io/writing/one-question-two-repositories/","datePublished":"2026-08-27","dateModified":"2026-08-27","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">Introducing Celmis</h1>
+    <p class="docsub">Self-hosted code intelligence over a symbol graph: what it does, what it refuses to claim, and how to run it on one machine.</p>
+    <p class="docmeta"><span>2026-08-27</span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<p><strong>Celmis is self-hosted code intelligence.</strong> It reads a set of repositories once and
+keeps a symbol graph of them; asking questions, reviewing pull requests, auditing
+dependencies, routing alerts and serving an MCP endpoint are then all different ways of
+reading that one index, rather than five products each holding their own copy of your
+code. It runs on one machine under <code>docker compose</code>, with whichever model provider you
+already pay for behind it.</p>
+<p>This is the introduction — what it does, what it refuses to do, and how to run it. The
+quickest way to say why it exists is to show the thing a diff-only tool structurally
+cannot do.</p>
+<h2 id="one-question-two-repositories"><a class="anchor" href="#one-question-two-repositories" aria-label="Link to this section">#</a>One question, two repositories</h2>
+<p>I asked a question that spanned two repositories, and the answer quoted both.</p>
+<p>The question was ordinary: <em>&quot;How does the gateway talk to the payments service? Name the
+function on each side.&quot;</em></p>
+<p>The answer found a Python publisher:</p>
+<pre><code class="language-python">def publish(self, batch_id: str, entries: dict[str, int]) -&gt; None:
+    &quot;&quot;&quot;Emit one settlement event on the published topic.&quot;&quot;&quot;
+    self.producer.send(
+        SETTLEMENT_TOPIC,
+        json.dumps({&quot;batch_id&quot;: batch_id, &quot;entries&quot;: entries}).encode(),
+    )
+</code></pre>
+<p>and a TypeScript listener in a different repository:</p>
+<pre><code class="language-ts">start(): void {
+  this.bus.on(SETTLEMENT_TOPIC, (event) =&gt; {
+    const payload = JSON.stringify({ type: &quot;settlement&quot;, ...event });
+    for (const s of this.sockets) s.send(payload);
+  });
+}
+</code></pre>
+<p>They never call each other. They meet on a Kafka topic. Then the answer added something
+nobody asked for:</p>
+<blockquote>
+<p><strong>Duplicated contract.</strong> The topic name (<code>payments.settlement.v2</code>) and the event payload
+structure are hardcoded in two separate repositories — <code>src/config.py</code> in payments and
+<code>src/contract.ts</code> in the gateway. Changing the topic name or the payload schema in one
+repository without updating the other will silently break the integration.</p>
+</blockquote>
+<p><strong>A reviewer that reads only the diff cannot say that.</strong> It never had the other repository
+open. That is not a model-quality problem — no amount of reasoning recovers a file that
+was never in the context.</p>
+<h2 id="the-shape-of-the-idea"><a class="anchor" href="#the-shape-of-the-idea" aria-label="Link to this section">#</a>The shape of the idea</h2>
+<p>Read the repositories <strong>once</strong>. Build a symbol graph — deterministically, with tree-sitter,
+no model involved. Then everything else is a different way of reading that one index
+rather than a separate product with its own copy of your code:</p>
+<ul>
+<li><strong>Ask questions</strong>, answered with <code>file:line</code> citations, across repository and language
+boundaries.</li>
+<li><strong>Review pull requests</strong>, with knowledge of who else calls the function in the diff —
+including from a repository not in the pull request.</li>
+<li><strong>Audit dependencies</strong>, and produce the artefacts a buyer or an auditor asks for.</li>
+<li><strong>Route what your running services are shouting about</strong> — alerts arrive, and the index
+already knows which repository the failing service is, and who owns it.</li>
+<li><strong>Serve it over MCP</strong>, so your own editor or agent reads the same index under the same
+access rules.</li>
+</ul>
+<p>The index is the product. The rest are surfaces.</p>
+<h2 id="what-the-review-actually-catches"><a class="anchor" href="#what-the-review-actually-catches" aria-label="Link to this section">#</a>What the review actually catches</h2>
+<p>On a real pull request in a demo repository, three findings, all on real lines:</p>
+<pre><code class="language-js">6:  const first = vals[0];              // vals is {} — undefined, not a TypeError
+7:  for (let i = 0; i &lt;= vals.length; i++)   // off by one
+16: const n = parseInt(raw);            // never throws, so the catch below is dead
+</code></pre>
+<p>Three inline comments with <code>suggestion</code> blocks, one summary comment, <strong>zero false
+positives on that run</strong>. I verified all three against the file in the PR branch by hand,
+because a review tool that is right four times out of five is a tool you stop reading.</p>
+<h2 id="the-mcp-server"><a class="anchor" href="#the-mcp-server" aria-label="Link to this section">#</a>The MCP server</h2>
+<p>Eighteen tools over the same index. Here is a real session, trimmed:</p>
+<pre><code>--&gt; initialize
+&lt;-- 200   serverInfo: { &quot;name&quot;: &quot;celmis&quot;, &quot;version&quot;: &quot;1.29.1&quot; }
+
+--&gt; tools/list
+&lt;-- 200   18 tools
+          list_projects        get_api_surface       bootstrap_client
+          search_symbols       list_accessible_repos start_integration_walk
+          find_consumers       get_review            route_incident
+          get_owner            get_review_policy     get_dep_audit
+          get_architecture     list_deprecations     list_dep_findings
+          …
+
+--&gt; tools/call  search_symbols
+          { &quot;project_id&quot;: &quot;083bd97a-…&quot;, &quot;query&quot;: &quot;SETTLEMENT_TOPIC&quot; }
+&lt;-- 200
+          {
+            &quot;matches&quot;: [
+              { &quot;repo_slug&quot;: &quot;…celmis-demo-gateway&quot;,  &quot;kind&quot;: &quot;variable&quot;,
+                &quot;file&quot;: &quot;src/contract.ts&quot;, &quot;line&quot;: 2 },
+              { &quot;repo_slug&quot;: &quot;…celmis-demo-payments&quot;, &quot;kind&quot;: &quot;constant&quot;,
+                &quot;file&quot;: &quot;src/config.py&quot;,   &quot;line&quot;: 9 }
+            ],
+            &quot;count&quot;: 2
+          }
+</code></pre>
+<p>One query. Two repositories, two languages, the same contract symbol — from a client that
+has never checked either of them out. <code>find_consumers</code> is the one I use most: it answers
+&quot;what breaks if I change this&quot; across the whole set.</p>
+<h2 id="alerts-and-why-they-belong-on-the-same-index"><a class="anchor" href="#alerts-and-why-they-belong-on-the-same-index" aria-label="Link to this section">#</a>Alerts, and why they belong on the same index</h2>
+<p>This is the surface I nearly left out of this article, which was a mistake, because it is
+the one that closes the loop.</p>
+<p>Your services are already producing alerts. They land in a channel where somebody has to
+work out which repository the failing service actually is, who owns it, and whether the
+thing that broke was touched recently. That lookup is the expensive part — not the alert.</p>
+<p>So the same index answers it. An ingest endpoint takes the alert, a binding routes it, and
+the card arrives in chat:</p>
+<pre><code>POST /webhook/alerts/{token}
+  { &quot;severity&quot;: &quot;critical&quot;,
+    &quot;repo_hint&quot;: &quot;celmis-codereviewer/celmis-demo-gateway&quot;,
+    &quot;title&quot;: &quot;checkout: unhandled exception in settle()&quot; }
+
+→ notif_delivered event=alert_received
+  repo=celmis-codereviewer/celmis-demo-gateway severity=critical
+</code></pre>
+<p>Review results ride the same rails — a finished pull-request review posts its own card:
+<code>Review CHANGES · PR #4 — 0 critical · 3 error · 0 warn · 0 info</code>.</p>
+<p>Two things worth stealing from how this is wired, both of which I got wrong first:</p>
+<p><strong>The webhook signature is checked before anything else.</strong> Wrong signature → <code>401</code>.
+Correct → <code>202</code>. Replay the exact same delivery → <code>{&quot;status&quot;: &quot;duplicate&quot;}</code> rather than a
+second review and a second bill. Delivery IDs are cheap; duplicated model calls are not.</p>
+<p><strong>A failed channel test must not echo the URL it tested.</strong> Google Chat webhook URLs carry
+<code>key</code> and <code>token</code> in the query string — <strong>the URL is a credential</strong>. <code>httpx</code> puts the
+request URL in the exception text, and an early version of the endpoint returned
+<code>str(exc)</code> verbatim, which meant a failed test handed the caller back the secret it was
+testing. If you are building anything that tests a user-supplied webhook, go and check
+that path in your own code right now.</p>
+<h2 id="the-surface-that-quietly-became-urgent"><a class="anchor" href="#the-surface-that-quietly-became-urgent" aria-label="Link to this section">#</a>The surface that quietly became urgent</h2>
+<p>The dependency audit is the one part that is <strong>deterministic end to end</strong> — native
+auditors and OSV.dev, no LLM in the loop. It produces two things.</p>
+<p>A CycloneDX SBOM, and an evidence pack:</p>
+<pre><code>sbom/&lt;repo&gt;.cdx.json   CycloneDX, one per repository
+findings.json          what was found against those components
+timeline.jsonl         when each fact entered the record
+MANIFEST.json          sha256 of every file above
+</code></pre>
+<p>That last file is the point. An archive of files is not evidence — nothing in it stops
+the contents from having been edited afterwards. A manifest of digests means <strong>a third
+party can verify the pack without trusting the machine that produced it</strong>:</p>
+<pre><code class="language-json">{
+  &quot;algorithm&quot;: &quot;sha256&quot;,
+  &quot;files&quot;: {
+    &quot;findings.json&quot;: &quot;921412d4bf97eb32fa4b3e8ad09447dab762f19d31ffec45bddb6d7962bf08e5&quot;,
+    &quot;sbom/gateway.cdx.json&quot;: &quot;6eadeafad0043b85a51b65ddddba84ef7b43081064ed9e1b320c62838ddc3d8e&quot;,
+    &quot;timeline.jsonl&quot;: &quot;b1815a8e3607712aa9332cd1f8d2d0ec6f93cd8dce53dd92844b8edcde790b3d&quot;
+  },
+  &quot;generated_at&quot;: &quot;2026-08-26T19:09:41Z&quot;
+}
+</code></pre>
+<p><strong>Why now:</strong> from <strong>11 September 2026</strong>, under the EU Cyber Resilience Act, manufacturers
+must report an actively exploited vulnerability to ENISA and their national CSIRT within
+<strong>24 hours</strong>. The SBOM itself is not mandated until December 2027 — which is the trap,
+because on a 24-hour clock the first question is not how to word the notification. It is
+whether you ship the component at all, in which service, at which version.</p>
+<p>The document is due in 2027. The visibility it describes is needed fifteen months earlier.</p>
+<h3 id="the-part-i-am-most-attached-to"><a class="anchor" href="#the-part-i-am-most-attached-to" aria-label="Link to this section">#</a>The part I am most attached to</h3>
+<p>The audit reports <strong>what it could not check</strong>, as prominently as what it found:</p>
+<pre><code>Not fully checked (4). Treat a zero here as unknown, not as safe.
+
+- …demo-gateway — npm via npm-audit: no lock file
+  (package-lock.json / pnpm-lock.yaml / yarn.lock) — cannot resolve the tree
+- …demo-gateway — all via osv-scanner: recognised no manifest or lock file here
+- …e2e-probe/requirements.txt — PyPI via pip-audit: dependency resolution failed
+  — audited 4 pinned requirements directly, without the transitive tree
+</code></pre>
+<p><strong>An unchecked ecosystem reports zero vulnerabilities exactly like a clean one.</strong> If your
+tooling cannot tell you which of the two you are looking at, that gap <em>is</em> the finding.
+Steal this behaviour regardless of what you use.</p>
+<h2 id="running-it"><a class="anchor" href="#running-it" aria-label="Link to this section">#</a>Running it</h2>
+<p>One machine. Postgres and Qdrant bundled — no external cluster to provision.</p>
+<pre><code class="language-bash">git clone https://github.com/Celmis-labs/Celmis.git celmis
+cd celmis
+./scripts/init-env.sh          # generates .env, every secret in the format it needs
+docker compose --env-file .env up -d
+docker compose ps
+</code></pre>
+<p>On a clean server that took <strong>197 seconds</strong> from <code>git clone</code> to six healthy services —
+measured, not estimated. About 1.1 GB of RAM at peak during indexing, 565 MB at rest.</p>
+<p>Bring your own model key: Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. A free
+Gemini key is enough to evaluate it. <strong>No telemetry, no licence check</strong> — the only
+outbound calls are the ones you configure. AGPLv3, the whole thing, not open core.</p>
+<h2 id="the-number-i-am-not-hiding"><a class="anchor" href="#the-number-i-am-not-hiding" aria-label="Link to this section">#</a>The number I am not hiding</h2>
+<p><strong>17th of 50</strong> on the Martian Code Review Bench offline set, stable under all three
+judges.</p>
+<p>It measures one of the surfaces above — pull-request review on isolated
+single-repository PRs. That set has no sibling service for a symbol to have consumers in,
+so the cross-repository work this is built around contributes nothing to the score. It is
+on the front page of the site with that explanation next to it rather than instead of it.</p>
+<p>I also audited every one of the 79 findings the benchmark counted against us. <strong>33 were
+real defects the reference set was silent about.</strong> That audit is published in full, with
+the code for each one — partly because it is the honest thing to do, and partly because
+&quot;our precision is actually higher&quot; is a claim nobody should accept without the evidence
+attached.</p>
+<h2 id="known-rough-edges"><a class="anchor" href="#known-rough-edges" aria-label="Link to this section">#</a>Known rough edges</h2>
+<ul>
+<li>Semantic search needs a generated vault. Until you make one, the UI says so in an
+orange banner rather than quietly returning worse answers.</li>
+<li>The execution sandbox has deliberate internet egress, because <code>pip install</code> and
+<code>npm ci</code> need it.</li>
+<li>No long-term support branch. Fixes land on the latest release.</li>
+<li>It does not make anyone compliant with anything, and it says so in its own output.</li>
+</ul>
+<hr />
+<p>The source, the docs and the full benchmark audit are in
+<a href="https://github.com/Celmis-labs/Celmis">the repository</a>. Questions, including about the
+benchmark methodology — which is the part that deserves an argument — are welcome at
+<a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a>.</p>
+
+      <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#one-question-two-repositories">One question, two repositories</a></li><li><a class="lvl2" href="#the-shape-of-the-idea">The shape of the idea</a></li><li><a class="lvl2" href="#what-the-review-actually-catches">What the review actually catches</a></li><li><a class="lvl2" href="#the-mcp-server">The MCP server</a></li><li><a class="lvl2" href="#alerts-and-why-they-belong-on-the-same-index">Alerts, and why they belong on the same index</a></li><li><a class="lvl2" href="#the-surface-that-quietly-became-urgent">The surface that quietly became urgent</a></li><li><a class="lvl3" href="#the-part-i-am-most-attached-to">The part I am most attached to</a></li><li><a class="lvl2" href="#running-it">Running it</a></li><li><a class="lvl2" href="#the-number-i-am-not-hiding">The number I am not hiding</a></li><li><a class="lvl2" href="#known-rough-edges">Known rough edges</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>
