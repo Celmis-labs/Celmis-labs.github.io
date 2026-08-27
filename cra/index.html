@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What the Cyber Resilience Act asks for on 11 September — Celmis</title>
+<meta name="description" content="From 11 September 2026 manufacturers must report actively exploited vulnerabilities within 24 hours. The SBOM is not mandated until December 2027 — but you cannot meet the 2026 clock without the visibility the 2027 document describes. What an evidence pack has to contain to be a proof rather than a folder.">
+<link rel="canonical" href="https://celmis-labs.github.io/cra/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What the Cyber Resilience Act asks for on 11 September">
+<meta property="og:description" content="The reporting clock starts in 2026. The SBOM is mandated in 2027. The second is a prerequisite for the first, and that is the part most teams have the order wrong on.">
+<meta property="og:url" content="https://celmis-labs.github.io/cra/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+.lead{font-size:clamp(1.1rem,2.4vw,1.24rem);line-height:1.5;color:var(--ink);max-width:60ch;
+  font-weight:500;font-variation-settings:"wdth" 104}
+.dates{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:13px;overflow:hidden;
+  margin:clamp(26px,4vw,36px) 0;box-shadow:var(--shadow);
+}
+.dates > div{background:var(--surface);padding:20px 22px}
+.dates .d{font-family:var(--mono);font-weight:600;font-size:1.28rem;letter-spacing:-.02em;
+  margin-bottom:8px;font-variant-numeric:tabular-nums}
+.dates .now .d{color:var(--accent)}
+.dates .later .d{color:var(--brass)}
+.dates p{margin:0;font-size:.93rem;color:var(--ink-2);line-height:1.48}
+.clock{list-style:none;padding:0;margin:22px 0 0;counter-reset:step}
+.clock li{
+  position:relative;padding:0 0 18px 62px;border-left:1px solid var(--rule);margin-left:9px;
+}
+.clock li:last-child{border-left-color:transparent;padding-bottom:0}
+.clock li::before{
+  counter-increment:step;content:attr(data-t);
+  position:absolute;left:-9px;top:-2px;width:auto;min-width:52px;text-align:center;
+  font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--accent-ink);
+  background:var(--accent);border-radius:999px;padding:3px 8px;
+}
+.clock b{display:block;color:var(--ink);font-weight:600;margin-bottom:3px}
+.clock p{margin:0;color:var(--ink-2);font-size:.95rem}
+.refuse{
+  border:1px solid var(--accent-line);background:var(--accent-soft);
+  border-radius:13px;padding:22px 24px;margin:clamp(28px,4vw,40px) 0;
+}
+.refuse .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;
+  letter-spacing:.14em;color:var(--accent);display:block;margin-bottom:10px}
+.refuse p:last-child{margin-bottom:0}
+.pack{font-family:var(--mono);font-size:.85rem;line-height:1.9;color:var(--ink-2)}
+.pack .f{color:var(--ink);font-weight:500}
+.pack .c{color:var(--muted)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Article",
+ "headline":"What the Cyber Resilience Act asks for on 11 September",
+ "description":"From 11 September 2026 manufacturers must report actively exploited vulnerabilities within 24 hours. The SBOM is not mandated until 11 December 2027 — but the 2026 clock cannot be met without the visibility the 2027 document describes.",
+ "url":"https://celmis-labs.github.io/cra/",
+ "datePublished":"2026-08-27","dateModified":"2026-08-27","inLanguage":"en",
+ "author":{"@type":"Organization","name":"Celmis Labs","url":"https://github.com/Celmis-labs"},
+ "publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"},
+ "about":[{"@type":"Legislation","name":"Regulation (EU) 2024/2847 — Cyber Resilience Act"}]},
+{"@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"What happens on 11 September 2026 under the Cyber Resilience Act?",
+  "acceptedAnswer":{"@type":"Answer","text":"The reporting obligations in Article 14 begin to apply. Manufacturers of products with digital elements placed on the EU market must notify ENISA and the relevant national CSIRT of actively exploited vulnerabilities and severe incidents: an early warning within 24 hours of becoming aware, a fuller notification within 72 hours, and a final report within 14 days of a corrective measure being available for a vulnerability, or within one month for a severe incident."}},
+ {"@type":"Question","name":"Does the CRA require an SBOM from 11 September 2026?",
+  "acceptedAnswer":{"@type":"Answer","text":"No. The software bill of materials is part of the essential requirements in Annex I, Part II, point 1, which apply from 11 December 2027. It must be machine-readable and cover at least the top-level dependencies. It does not have to be published; it belongs to the technical documentation and is provided to market surveillance authorities on a reasoned request."}},
+ {"@type":"Question","name":"Does every CVE have to be reported under the CRA?",
+  "acceptedAnswer":{"@type":"Answer","text":"No. The reporting duty is triggered by a vulnerability that is being actively exploited, or by a severe incident affecting the security of the product. An unexploited advisory in a dependency is not, by itself, a reportable event."}},
+ {"@type":"Question","name":"Why does the 24-hour reporting clock require component visibility before 2027?",
+  "acceptedAnswer":{"@type":"Answer","text":"Because the clock starts when you become aware, and the first question is whether the exploited component is in your product at all. A team that needs two days to answer that has already missed the 24-hour early warning, regardless of what its paperwork will be required to contain in 2027."}}]}
+]}
+</script>
+</head>
+<body>
+
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">What the Cyber Resilience Act asks for on 11 September</h1>
+    <p class="lead">The reporting clock starts in 2026. The bill of materials is not
+      mandated until 2027. Most of the preparation advice has those two the wrong way
+      round — and the second is a prerequisite for the first.</p>
+    <p class="docmeta"><span>27 August 2026</span><span>Regulation (EU) 2024/2847</span></p>
+  </div>
+
+  <div class="doclayout">
+  <article class="prose">
+
+    <h2 id="two-dates">Two dates, and only one of them is close</h2>
+
+    <div class="dates">
+      <div class="now">
+        <div class="d">11 Sep 2026</div>
+        <p><strong>Reporting begins.</strong> Actively exploited vulnerabilities and
+          severe incidents must be notified to ENISA and the national CSIRT, on a
+          24-hour clock.</p>
+      </div>
+      <div class="later">
+        <div class="d">11 Dec 2027</div>
+        <p><strong>The essential requirements apply.</strong> Among them, a
+          machine-readable SBOM covering at least the top-level dependencies, held in
+          the technical documentation.</p>
+      </div>
+    </div>
+
+    <p>Both dates come from the same regulation, and the order surprises people. The
+      obligation that arrives first is not a document you can prepare in a quiet week.
+      It is a response time.</p>
+
+    <h2 id="the-clock">What the clock actually demands</h2>
+
+    <p>Article 14 sets three deadlines, and they run from the moment you become aware —
+      not from the moment you finish investigating.</p>
+
+    <ul class="clock">
+      <li data-t="24 h"><b>Early warning</b>
+        <p>To ENISA and the CSIRT of the member state where you are established. It does
+          not have to be complete. It has to exist.</p></li>
+      <li data-t="72 h"><b>Notification</b>
+        <p>The vulnerability or incident described, with whatever corrective or
+          mitigating measures you have taken.</p></li>
+      <li data-t="14 d"><b>Final report</b>
+        <p>Within fourteen days of a corrective measure being available for an actively
+          exploited vulnerability; within one month for a severe incident.</p></li>
+    </ul>
+
+    <p>Two limits are worth stating plainly, because a good deal of vendor material
+      blurs them. This is <strong>not</strong> a duty to report every CVE: the trigger is
+      active exploitation, or an incident severe enough to affect the security of the
+      product. And it applies to manufacturers placing products with digital elements on
+      the EU market — which includes software shipped years ago, still supported.</p>
+
+    <p>Whether an open-source project falls under the lighter regime the regulation
+      provides for stewards is a question about your organisation and your revenue, not
+      one a page like this can answer for you.</p>
+
+    <h2 id="the-order">The 2027 document is a prerequisite for the 2026 clock</h2>
+
+    <p>Here is the part that makes the ordering matter. When a component you ship turns
+      out to be under active exploitation, the first question is not how to write the
+      notification. It is <em>whether that component is in your product at all</em> —
+      and in which of your services, and at which version, and whether the vulnerable
+      path is one you actually call.</p>
+
+    <p>A team that needs two days to answer that has already missed the early warning.
+      It will miss it in September 2026, a year and three months before anyone is
+      required to hold the document that would have answered it.</p>
+
+    <p>So the SBOM deadline is the wrong thing to plan around. The capability the SBOM
+      describes is needed <strong>fifteen months earlier</strong> than the document is.
+      That is the whole practical point of this piece.</p>
+
+    <h2 id="evidence">What separates evidence from a folder of files</h2>
+
+    <p>Suppose you do assemble the material — a component list, the findings against it,
+      a record of when you knew what. You now have an archive. An archive is not yet
+      evidence, because nothing in it stops the contents from having been edited
+      afterwards.</p>
+
+    <p>What turns it into evidence is a manifest: a list of every file in the pack with
+      a cryptographic digest of its contents. The recipient recomputes the digests. If
+      they match, the files are the ones the manifest describes. If a single byte of the
+      component list changed after the fact, the digest does not match and the pack fails
+      its own check.</p>
+
+    <p>That is the property worth designing for — <strong>a third party can verify the
+      pack without trusting the machine that produced it, or the people who ran it</strong>.
+      Everything else in a compliance conversation is easier once that holds.</p>
+
+    <h2 id="worked-example">A worked example</h2>
+
+    <p>Celmis emits exactly that shape. It is not the only way to build one; it is the
+      one we can show:</p>
+
+    <pre class="pack"><span class="f">sbom/&lt;repo&gt;.cdx.json</span>   <span class="c">— CycloneDX, one per repository</span>
+<span class="f">findings.json</span>          <span class="c">— what was found against those components</span>
+<span class="f">timeline.jsonl</span>         <span class="c">— when each fact entered the record</span>
+<span class="f">MANIFEST.json</span>          <span class="c">— sha256 of every file above</span></pre>
+
+    <p>The timeline is the one people leave out, and it is the one a regulator's question
+      lands on. <em>When did you become aware?</em> is a question about a record, not
+      about memory. A line appended when the finding first appeared answers it; a
+      recollection does not.</p>
+
+    <figure>
+      <img src="/img/compliance-artefacts.png" width="1600" height="700" loading="lazy"
+           decoding="async" alt="An evidence pack: CycloneDX SBOM, findings, timeline and a manifest of sha256 digests">
+      <figcaption>The pack as it comes out. The manifest is what a recipient checks
+        first.</figcaption>
+    </figure>
+
+    <h2 id="refusal">What we will not tell you</h2>
+
+    <div class="refuse">
+      <span class="k">from the tool's own output</span>
+      <p>Celmis does not claim that using it makes a product compliant with the Cyber
+        Resilience Act, and it says so in the pack it generates. Compliance is a
+        judgement about an organisation — its processes, its support commitments, its
+        conformity assessment — not an artefact a program can emit.</p>
+      <p>A tool that implies otherwise is selling a feeling of safety, and the feeling
+        arrives before the audit does.</p>
+    </div>
+
+    <p>What a tool can honestly do is narrow the gap between a question and an answer:
+      make the component list current, keep the findings attached to it, stamp the
+      record, and make the whole thing checkable by someone who has no reason to trust
+      you. On a 24-hour clock, that is most of the work.</p>
+
+    <h2 id="what-to-do">If you have fifteen days</h2>
+
+    <p>Not much can be built in fifteen days, so spend them on the things that are
+      cheap and load-bearing:</p>
+
+    <ul>
+      <li><strong>Answer the question once, by hand.</strong> Pick a real component —
+        something in your dependency tree with a recent advisory — and time how long it
+        takes to say which of your services ship it, at what version. That number is
+        your actual readiness, and nobody else can measure it for you.</li>
+      <li><strong>Decide who receives the alert.</strong> The 24-hour clock starts when
+        your organisation becomes aware, which means it starts at whoever reads the
+        mailing list, not at whoever writes the notification.</li>
+      <li><strong>Find your CSIRT before you need it.</strong> The early warning goes to
+        the one in the member state where you are established, alongside ENISA. Looking
+        that up during the first hour is a bad use of the first hour.</li>
+      <li><strong>Start the timeline now.</strong> An append-only record that begins in
+        August is worth more in a conversation than a complete one assembled in
+        September.</li>
+    </ul>
+
+    <p>None of this requires our software, and the first three do not require any
+      software at all.</p>
+
+    <div class="docnav">
+      <a href="/">← Celmis</a>
+      <a href="/docs/guide/#dependencies-sbom-and-the-evidence-pack">How the pack is built →</a>
+    </div>
+
+    <p class="small dim" style="margin-top:30px">Dates and obligations here are drawn from
+      Regulation (EU) 2024/2847 and the European Commission's published guidance on CRA
+      reporting. This is a description of what the regulation says, written by people who
+      build a tool in the area — not legal advice, and no substitute for reading the text
+      or asking someone qualified.</p>
+
+  </article>
+
+  <aside class="toc">
+    <span class="k">On this page</span>
+    <ol>
+      <li><a href="#two-dates">Two dates</a></li>
+      <li><a href="#the-clock">What the clock demands</a></li>
+      <li><a href="#the-order">The order that matters</a></li>
+      <li><a href="#evidence">Evidence versus a folder</a></li>
+      <li><a href="#worked-example">A worked example</a></li>
+      <li><a href="#refusal">What we will not tell you</a></li>
+      <li><a href="#what-to-do">If you have fifteen days</a></li>
+    </ol>
+  </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};links.forEach(function(a){var el=document.getElementById(a.hash.slice(1));if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

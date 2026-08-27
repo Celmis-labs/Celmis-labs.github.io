@@ -316,6 +316,12 @@ def build():
 
     urls = [("%s/" % SITE, "1.0"), ("%s/docs/" % SITE, "0.9")]
     urls += [("%s/docs/%s/" % (SITE, p["slug"]), "0.8") for p, _ in built]
+    # hand-written pages that are not generated from markdown
+    urls += [("%s/%s/" % (SITE, d.name), "0.9")
+             for d in sorted(pathlib.Path(__file__).parent.iterdir())
+             if d.is_dir() and not d.name.startswith((".", "_"))
+             and d.name not in ("docs", "img", "assets")
+             and (d / "index.html").exists()]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for loc, pri in urls:
