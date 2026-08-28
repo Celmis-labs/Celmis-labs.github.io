@@ -2,10 +2,10 @@
 
 > Self-hosted code intelligence. Celmis indexes your repositories once and keeps a
 > symbol graph of them; asking questions, reviewing pull requests, auditing
-> dependencies, fixing a finding with an embedded Claude Code session, and
-> generating documentation are all different ways of reading that one graph. It
-> runs on a single machine under `docker compose`, with the model provider of your
-> choice behind it.
+> dependencies, fixing a finding or a production alert with an embedded Claude Code
+> session, and generating documentation are all different ways of reading that one
+> graph. It runs on a single machine under `docker compose`, with the model
+> provider of your choice behind it.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis
@@ -26,6 +26,15 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   repository, the package and the context; it edits, and the runner pushes a branch
   and opens a pull request. Measured at 220 seconds from start to an open pull
   request on a real dependency finding.
+- **Alerts, and fixing from a phone** — any monitoring system can post to a
+  per-workspace ingest URL; Grafana's unified alerting webhook is parsed as-is. A
+  web push notification reaches the operator's phone, the alert carries the
+  repository it belongs to, and Fix with Claude opens a session already holding it.
+  No checkout, no terminal, no trusted machine — the work happens inside the
+  installation.
+- **Two records of what happened** — an append-only JSONL audit trail (who did what,
+  to which repository, when; filterable, CSV-exportable, 90-day default retention)
+  and resource-usage history for the installation itself.
 - **Access control** — per-repository visibility of none, metadata or code, with
   deny globs that win even at code level, so two teams can share an integration
   without sharing credentials.

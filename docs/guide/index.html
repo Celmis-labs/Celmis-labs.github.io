@@ -68,7 +68,7 @@ and that changing one silently breaks the other.</p>
 <p>A reviewer that reads only the diff structurally cannot say that. It never had
 the other repository open.</p>
 <hr />
-<h2 id="seven-things-people-do-with-it"><a class="anchor" href="#seven-things-people-do-with-it" aria-label="Link to this section">#</a>Seven things people do with it</h2>
+<h2 id="eight-things-people-do-with-it"><a class="anchor" href="#eight-things-people-do-with-it" aria-label="Link to this section">#</a>Eight things people do with it</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -95,11 +95,15 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>A vulnerability lands in a dependency</strong></td>
-<td><em>Fix with Claude</em> hands an embedded session the repository, the package and the finding. It edits, the runner pushes a branch and opens a PR → <a href="#fix-it-from-here">Fix it from here</a></td>
+<td><em>Fix with Claude</em> hands an embedded session the repository, the package and the finding. It edits, the runner pushes a branch and opens a PR → <a href="#fix-with-claude">Fix with Claude</a></td>
 </tr>
 <tr>
 <td><strong>A pull request needs reviewing</strong></td>
 <td>Agents read the diff — and, where the graph is built, who else calls what is being changed, including from another repository → <a href="#pull-request-review">Pull-request review</a></td>
+</tr>
+<tr>
+<td><strong>An alert fires at 02:00 and you are not at a desk</strong></td>
+<td>It lands in Celmis, a web push reaches your phone, and <em>Fix with Claude</em> opens a session already holding the alert. The runner opens the pull request → <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></td>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
@@ -297,7 +301,7 @@ that implies otherwise is selling a false sense of safety.</p>
 looks for: <strong>an ecosystem nobody scanned reports zero vulnerabilities exactly
 like a clean one.</strong> Coverage is shown next to the findings — which auditor
 produced each result, and, more usefully, what went unchecked and why.</p>
-<h2 id="fix-it-from-here"><a class="anchor" href="#fix-it-from-here" aria-label="Link to this section">#</a>Fix it from here</h2>
+<h2 id="fix-with-claude"><a class="anchor" href="#fix-with-claude" aria-label="Link to this section">#</a>Fix with Claude</h2>
 <p>Finding something is half a loop. An embedded Claude Code session runs <strong>inside</strong>
 the installation, edits the checkout, and the runner commits, pushes a branch and
 opens a pull request.</p>
@@ -348,6 +352,45 @@ reconnect picks up where it left off instead of starting blank.</li>
 </ul>
 <p>Connection is a setup token, held per user or per workspace. The API never
 returns it once saved — only whether it is there and whether it still works.</p>
+<h2 id="alerts-and-fixing-from-a-phone"><a class="anchor" href="#alerts-and-fixing-from-a-phone" aria-label="Link to this section">#</a>Alerts, and fixing from a phone</h2>
+<p>The loop above starts from a dependency finding. It also starts from production.</p>
+<p>Point any monitoring system at the workspace's ingest URL and its alerts land in
+Celmis:</p>
+<pre><code>POST /webhook/alerts/{workspace_id}.{secret}
+</code></pre>
+<p>Grafana's unified alerting webhook is parsed as-is; anything else can post
+<code>{&quot;title&quot;, &quot;body&quot;, &quot;severity&quot;, &quot;repo&quot;}</code>. The secret half is stored Fernet-encrypted
+per workspace and compared in constant time. The endpoint is <strong>unauthenticated by
+design</strong> — monitoring systems cannot do OAuth — and <strong>tenant-bound by
+construction</strong>: a token can only ever write into the workspace it belongs to.</p>
+<p>What that buys is the route with no laptop in it:</p>
+<ol>
+<li>An alert fires. It reaches Celmis and a web push notification reaches your phone
+— real web push, VAPID and a service worker, so it arrives whether or not the tab
+is open.</li>
+<li>You open it. The alert carries its repository, because <code>route_incident</code> can take
+a stack trace and say which repository and which owner it belongs to.</li>
+<li>You press <strong>Fix with Claude</strong>. The session opens already holding the alert — not
+an empty chat.</li>
+<li>The runner commits, pushes a branch and opens the pull request.</li>
+</ol>
+<p><img src="/img/alert-to-fix.png" alt="An alert, ingested and bound to its repository" /></p>
+<p>None of those four steps needs a checkout, a terminal, or a machine you trust. The
+work happens inside your own installation; the phone is a screen for it.</p>
+<p>The same page lists every alert the workspace has received, so an alert that nobody
+acted on is visible rather than lost in a channel.</p>
+<p><strong>What is written down while this happens.</strong> Two separate records, and they answer
+different questions:</p>
+<ul>
+<li><strong>The audit trail</strong> — append-only JSONL, rotated by size, filterable by time,
+mode, operation and repository, exportable as CSV. It answers <em>who did what, to
+which repository, when</em>. Retention defaults to 90 days and the active file is
+never deleted, only rotated archives.</li>
+<li><strong>Resource history</strong> — samples and aggregates over the installation itself,
+exportable as CSV for a sizing sheet. It answers <em>what did this cost to run</em>.</li>
+</ul>
+<p>An agent session that edits a repository at two in the morning from somebody's phone
+is exactly the kind of event that has to be reconstructable afterwards. It is.</p>
 <h2 id="who-can-see-what"><a class="anchor" href="#who-can-see-what" aria-label="Link to this section">#</a>Who can see what</h2>
 <p>Access is resolved per repository, per team, and it governs every surface at
 once — Q&amp;A, graph, search, MCP:</p>
@@ -987,7 +1030,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#seven-things-people-do-with-it">Seven things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-it-from-here">Fix it from here</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#eight-things-people-do-with-it">Eight things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>
