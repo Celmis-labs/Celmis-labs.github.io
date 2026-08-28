@@ -7,6 +7,7 @@ is hand-written prose. Run this after the docs change, then commit the result.
     python3 build.py [--source ../Celmis]
 """
 import argparse
+import datetime
 import html
 import pathlib
 import re
@@ -386,14 +387,30 @@ def build():
              if d.is_dir() and not d.name.startswith((".", "_"))
              and d.name not in ("docs", "img", "assets", "content", "writing")
              and (d / "index.html").exists()]
+    # the writing index itself, now that it exists — it was 404 while the articles
+    # under it were 200, which broke the one path a reader trims a URL to
+    if (root / "writing" / "index.html").exists():
+        urls.append(("%s/writing/" % SITE, "0.9"))
     urls += [("%s/writing/%s/" % (SITE, d.name), "0.9")
              for d in sorted((root / "writing").iterdir())
              if d.is_dir() and (d / "index.html").exists()] if (root / "writing").exists() else []
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    # lastmod is derived from the file that actually backs each URL, not written down
+    # here. A literal date meant every rebuild emitted the same day forever, which told
+    # the crawlers the site never changes and cancelled out the daily docs rebuild.
+    def _lastmod(loc):
+        seg = loc[len(SITE):].strip("/")
+        f = (out_root / seg / "index.html") if seg else (out_root / "index.html")
+        try:
+            return datetime.date.fromtimestamp(f.stat().st_mtime).isoformat()
+        except OSError:
+            return datetime.date.today().isoformat()
+
     for loc, pri in urls:
-        sm.append("  <url><loc>%s</loc><lastmod>2026-08-27</lastmod>"
-                  "<changefreq>weekly</changefreq><priority>%s</priority></url>" % (loc, pri))
+        sm.append("  <url><loc>%s</loc><lastmod>%s</lastmod>"
+                  "<changefreq>weekly</changefreq><priority>%s</priority></url>"
+                  % (loc, _lastmod(loc), pri))
     sm.append("</urlset>")
     (out_root / "sitemap.xml").write_text("\n".join(sm) + "\n")
     print("  sitemap: %d urls" % len(urls))
