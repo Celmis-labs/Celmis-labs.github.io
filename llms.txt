@@ -2,9 +2,10 @@
 
 > Self-hosted code intelligence. Celmis indexes your repositories once and keeps a
 > symbol graph of them; asking questions, reviewing pull requests, auditing
-> dependencies and generating documentation are all different ways of reading that
-> one graph. It runs on a single machine under `docker compose`, with the model
-> provider of your choice behind it.
+> dependencies, fixing a finding with an embedded Claude Code session, and
+> generating documentation are all different ways of reading that one graph. It
+> runs on a single machine under `docker compose`, with the model provider of your
+> choice behind it.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis
@@ -13,16 +14,18 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 
 - **Ask the code** — questions answered across several repositories at once, with
   file and line citations on every claim, including call chains that cross a
-  repository boundary.
+  repository boundary. The symbol graph itself is built deterministically with
+  tree-sitter; no model takes part in constructing it.
 - **Pull-request review** — agents read the diff and, where the graph is built,
   who else calls what is being changed, including from another repository.
 - **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
   and a manifest of sha256 digests, so a third party can verify the pack without
   trusting the machine that produced it. Celmis does not claim regulatory
   compliance on the operator's behalf.
-- **Fix it from here** — a finding hands an embedded Claude Code session the
-  repository, the package and the context; the runner pushes a branch and opens a
-  pull request.
+- **Fix with Claude** — a finding hands an embedded Claude Code session the
+  repository, the package and the context; it edits, and the runner pushes a branch
+  and opens a pull request. Measured at 220 seconds from start to an open pull
+  request on a real dependency finding.
 - **Access control** — per-repository visibility of none, metadata or code, with
   deny globs that win even at code level, so two teams can share an integration
   without sharing credentials.
