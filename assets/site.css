@@ -503,3 +503,7 @@ html{scroll-behavior:smooth}
   font-size:clamp(1.05rem,2.2vw,1.2rem);font-weight:600;margin:0 0 14px;
   font-variation-settings:"wdth" 104;color:var(--muted);max-width:none;
 }
+
+/* the scenario pointer, when it is a real link rather than a label */
+a.to{box-shadow:none!important;transition:color .16s ease}
+a.to:hover{color:var(--ink)}

@@ -50,6 +50,11 @@ PAGES = [
 # these are not mirrors of anything — the site is where they live, which is what lets a
 # syndicated copy elsewhere point its canonical URL back here.
 WRITING = [
+    dict(slug="mcp", path="mcp", src="content/mcp.md",
+         title="MCP server",
+         blurb="Eighteen tools over the same index, under the same access rules — for "
+               "Claude Code, Cursor, and any other MCP client.",
+         date="2026-08-28"),
     dict(slug="one-question-two-repositories",
          src="content/one-question-two-repositories.md",
          title="Introducing Celmis",
@@ -299,7 +304,8 @@ def build():
             print("  missing, skipped:", src)
             continue
         body, toc = decorate(rewrite_links(md.render(src.read_text())))
-        canonical = "%s/writing/%s/" % (SITE, w["slug"])
+        seg = w.get("path") or ("writing/" + w["slug"])
+        canonical = "%s/%s/" % (SITE, seg)
         toc_html = ""
         if len(toc) > 2:
             items = "".join(
@@ -331,10 +337,10 @@ def build():
   </div>
 </main>""".format(title=html.escape(w["title"]), blurb=html.escape(w["blurb"]),
                   date=w["date"], body=body, toc=toc_html)
-        page = out_root / "writing" / w["slug"] / "index.html"
+        page = out_root.joinpath(*seg.split("/")) / "index.html"
         page.parent.mkdir(parents=True, exist_ok=True)
         page.write_text(shell(w["title"] + " — Celmis", w["blurb"], canonical, ld, content))
-        print("  writing/%-32s %6d bytes" % (w["slug"], len(body)))
+        print("  %-40s %6d bytes" % (seg, len(body)))
 
     cards = "".join(
         '<li><a href="/docs/{slug}/"><span class="t">{title} <span class="arw">→</span></span>'
