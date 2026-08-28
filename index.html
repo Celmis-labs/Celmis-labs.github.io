@@ -3,16 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Celmis — self-hosted code intelligence</title>
+<title>Celmis — open-source self-hosted code intelligence</title>
 <meta name="description" content="Celmis indexes your repositories once and keeps a symbol graph of them. Ask questions across repositories, review pull requests, produce the evidence an auditor asks for. Runs on one machine under docker compose. AGPLv3.">
 <link rel="canonical" href="https://celmis-labs.github.io/">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Celmis — self-hosted code intelligence">
+<meta property="og:title" content="Celmis — open-source self-hosted code intelligence">
 <meta property="og:description" content="Index your repositories once. Ask across them, review pull requests, produce auditable evidence. Self-hosted, AGPLv3.">
 <meta property="og:url" content="https://celmis-labs.github.io/">
-<meta property="og:image" content="https://celmis-labs.github.io/img/ask-the-code-cross-repo.png">
+<meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Celmis — open-source self-hosted code intelligence over a symbol graph">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,7 +159,8 @@
   <canvas id="graph" aria-hidden="true"></canvas>
   <p class="hint" id="hint">hover a node — its consumers light up</p>
   <div class="wrap">
-    <h1 class="rv">Celmis</h1>
+    <h1 class="rv">Celmis<span class="sr"> — open-source, self-hosted code intelligence
+      over a symbol graph, for developers and for coding agents</span></h1>
     <p class="lede rv">Self-hosted <em>code intelligence</em>.</p>
     <p class="sub rv">Ask your codebases, review pull requests, and produce the evidence
       an auditor asks for.</p>
@@ -175,8 +179,10 @@
 
 <section class="intro">
   <div class="wrap">
+    <h2 class="introq rv">What is Celmis?</h2>
     <div class="introgrid">
-      <p class="rv">Celmis reads your repositories once and keeps a symbol graph of them —
+      <p class="rv">Celmis is open-source, self-hosted code intelligence. It reads your
+        repositories once and keeps a symbol graph of them —
         everything else is a different way of reading that graph. It runs on one machine
         under <code>docker compose</code>, with the model provider of your choice behind
         it, and nothing leaves your network except the calls you configure.</p>

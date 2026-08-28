@@ -490,3 +490,16 @@ html{scroll-behavior:smooth}
   transition:border-color .18s ease,color .18s ease;
 }
 .docnav a:hover{border-color:var(--accent-line);color:var(--accent)}
+
+/* Carries the full sentence for machines and screen readers while the eye sees the
+   wordmark alone. Not display:none — that would hide it from assistive tech too. */
+.sr{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+/* The question a search engine has to answer about this page, asked out loud. */
+.introq{
+  font-size:clamp(1.05rem,2.2vw,1.2rem);font-weight:600;margin:0 0 14px;
+  font-variation-settings:"wdth" 104;color:var(--muted);max-width:none;
+}
