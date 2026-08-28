@@ -3,8 +3,9 @@
 > Self-hosted code intelligence. Celmis indexes your repositories once and keeps a
 > symbol graph of them; asking questions, reviewing pull requests, auditing
 > dependencies, fixing a finding or a production alert with an embedded Claude Code
-> session, and generating documentation are all different ways of reading that one
-> graph. It runs on a single machine under `docker compose`, with the model
+> session, generating documentation, and asking in one sentence for work to be done
+> across every repository that matches a condition are all different ways of reading
+> that one graph. It runs on a single machine under `docker compose`, with the model
 > provider of your choice behind it.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
@@ -26,6 +27,13 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   repository, the package and the context; it edits, and the runner pushes a branch
   and opens a pull request. Measured at 220 seconds from start to an open pull
   request on a real dependency finding.
+- **Ask for work across repositories** — every other surface acts on one thing at a
+  time. This one takes a sentence: "generate documentation for every service that has
+  none", "audit everything under acme-ai not audited in thirty days". The answer to
+  the sentence is not the work but the list of repositories it resolves to, with a
+  second button under it; scope is re-checked at confirmation, so a repository
+  registered in between cannot quietly join a set that said "everything". Automated
+  callers are capped and cannot enqueue an unbounded fan-out.
 - **Alerts, and fixing from a phone** — any monitoring system can post to a
   per-workspace ingest URL; Grafana's unified alerting webhook is parsed as-is. A
   web push notification reaches the operator's phone, the alert carries the
@@ -35,6 +43,16 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 - **Two records of what happened** — an append-only JSONL audit trail (who did what,
   to which repository, when; filterable, CSV-exportable, 90-day default retention)
   and resource-usage history for the installation itself.
+- **Spending, and a cap that refuses** — every model call writes a row to a spend
+  ledger, giving usage by surface, agent and model. A workspace can set a monthly cap
+  that actually blocks further calls rather than only warning. Enforcement is opt-in:
+  no cap means unlimited.
+- **Run it without the internet** — chat, review and the agent can point at a local
+  model server (Ollama, vLLM or llama.cpp); embeddings can too, which is what makes an
+  air-gapped install possible.
+- **GDPR export and erasure** — a full JSON export of everything keyed to a person
+  across every store, and an erasure that deactivates and anonymises. Secrets are
+  never included; token records carry metadata only.
 - **Access control** — per-repository visibility of none, metadata or code, with
   deny globs that win even at code level, so two teams can share an integration
   without sharing credentials.

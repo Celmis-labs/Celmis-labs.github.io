@@ -68,7 +68,7 @@ and that changing one silently breaks the other.</p>
 <p>A reviewer that reads only the diff structurally cannot say that. It never had
 the other repository open.</p>
 <hr />
-<h2 id="eight-things-people-do-with-it"><a class="anchor" href="#eight-things-people-do-with-it" aria-label="Link to this section">#</a>Eight things people do with it</h2>
+<h2 id="nine-things-people-do-with-it"><a class="anchor" href="#nine-things-people-do-with-it" aria-label="Link to this section">#</a>Nine things people do with it</h2>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -100,6 +100,10 @@ the other repository open.</p>
 <tr>
 <td><strong>A pull request needs reviewing</strong></td>
 <td>Agents read the diff — and, where the graph is built, who else calls what is being changed, including from another repository → <a href="#pull-request-review">Pull-request review</a></td>
+</tr>
+<tr>
+<td><strong>Forty services need the same thing done to them</strong></td>
+<td>Write the sentence. Celmis shows which repositories it resolves to and waits for a second press, rather than finding them among forty and pressing a button forty times → <a href="#ask-for-work-across-repositories">Ask for work across repositories</a></td>
 </tr>
 <tr>
 <td><strong>An alert fires at 02:00 and you are not at a desk</strong></td>
@@ -391,6 +395,36 @@ exportable as CSV for a sizing sheet. It answers <em>what did this cost to run</
 </ul>
 <p>An agent session that edits a repository at two in the morning from somebody's phone
 is exactly the kind of event that has to be reconstructable afterwards. It is.</p>
+<h2 id="ask-for-work-across-repositories"><a class="anchor" href="#ask-for-work-across-repositories" aria-label="Link to this section">#</a>Ask for work across repositories</h2>
+<p>Every surface above acts on one thing at a time: this repository, this pull
+request, this finding. That is the right shape for a button, and the wrong shape
+for a set defined by a condition.</p>
+<p><em>Generate documentation for every service that has none</em> is one sentence. Through
+the interface it is finding them among forty and pressing a button forty times.
+<em>Audit everything under <code>acme-ai</code> that has not been audited in thirty days</em> needs
+filters, saved selections and bulk operations — a subsystem — or it needs a
+sentence.</p>
+<p>So there is a sentence box, and a deliberately short catalogue of verbs behind it.
+Single-object work stays on the buttons, where it belongs.</p>
+<p><strong>Nothing runs on the first press.</strong> Interpretation is a guess, and these verbs
+cost money and hours — a vault build, a fleet of review agents, an audit across a
+group. So the answer to a sentence is not the work; it is <em>which repositories this
+resolves to</em>, listed, with a second button under them. You confirm the set, not
+the intent.</p>
+<p><strong>The scope is re-checked at the moment you confirm, not when you asked.</strong> A
+repository registered in the seconds between the question and the press cannot
+quietly join a set that said &quot;everything&quot;. The same rule that governs the rest of
+the product — the check runs where the work happens — governs this.</p>
+<p><strong>An automated caller can never enqueue an unbounded fan-out.</strong> The verbs are
+capped, workspace-scoped, and take an explicit actor: nothing here reads an
+ambient request context, because a connector processing a queue has no request,
+and a function that guesses at a workspace is the way one tenant's automation
+reaches another tenant's repositories.</p>
+<p>Three callers are converging on these same verbs — an external agent over MCP, the
+embedded agent, and a ticket connector that turns <em>audit these four services</em> into
+work and posts the result back. They share one implementation on purpose: a second
+&quot;start an audit&quot; is a second set of rules about live runs, deduplication and forced
+restarts, and the copy nobody maintains is the one that corrupts the queue.</p>
 <h2 id="who-can-see-what"><a class="anchor" href="#who-can-see-what" aria-label="Link to this section">#</a>Who can see what</h2>
 <p>Access is resolved per repository, per team, and it governs every surface at
 once — Q&amp;A, graph, search, MCP:</p>
@@ -1030,7 +1064,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#eight-things-people-do-with-it">Eight things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>
