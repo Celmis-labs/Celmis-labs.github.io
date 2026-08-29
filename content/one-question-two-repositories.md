@@ -61,6 +61,9 @@ rather than a separate product with its own copy of your code:
 - **Review pull requests**, with knowledge of who else calls the function in the diff —
   including from a repository not in the pull request.
 - **Audit dependencies**, and produce the artefacts a buyer or an auditor asks for.
+- **Fix what was found**, without leaving the finding. An embedded Claude Code session
+  runs on your own subscription inside your own installation, edits the checkout, and the
+  runner opens a pull request.
 - **Route what your running services are shouting about** — alerts arrive, and the index
   already knows which repository the failing service is, and who owns it.
 - **Serve it over MCP**, so your own editor or agent reads the same index under the same
@@ -154,6 +157,32 @@ request URL in the exception text, and an early version of the endpoint returned
 `str(exc)` verbatim, which meant a failed test handed the caller back the secret it was
 testing. If you are building anything that tests a user-supplied webhook, go and check
 that path in your own code right now.
+
+## Fixing, on your subscription and your machine
+
+Finding something is half a loop. The other half is an embedded Claude Code session that
+runs **inside the installation**, edits the checkout, and lets the runner push a branch
+and open a pull request.
+
+There is no key to buy from us and no model bundled. You connect your own Claude
+subscription the way Cursor does — `claude setup-token` once on your laptop, paste the
+token into Settings — and it is stored encrypted. An admin can optionally share one
+subscription with a workspace, and the interface says plainly, before you save, that
+sharing one person's subscription across several people may breach Anthropic's consumer
+terms. That is the subscription holder's decision, and the product will not make it
+quietly.
+
+The session is not running in somebody else's cloud. It runs on the machine you already
+control, in a workspace isolated per session. What that buys is not "cloud access" — it is
+that the box holding your code is yours, and you reach it from an office laptop or a phone
+on a train for the same reason you reach anything else you run: it is up.
+
+On one real finding — `lodash 4.17.11` with a known vulnerability — that loop took **220
+seconds** from *Start session* to an open pull request, and changed exactly one line.
+`axios`, `minimist` and `node-fetch` sat outdated on the lines above and below, all
+flagged in the same audit, all untouched: the task said manifests only, and an agent that
+tidied three more on the way past would have been a worse thing to review, not a better
+one.
 
 ## The surface that quietly became urgent
 

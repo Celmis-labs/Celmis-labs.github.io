@@ -309,6 +309,41 @@ produced each result, and, more usefully, what went unchecked and why.</p>
 <p>Finding something is half a loop. An embedded Claude Code session runs <strong>inside</strong>
 the installation, edits the checkout, and the runner commits, pushes a branch and
 opens a pull request.</p>
+<h3 id="it-runs-on-your-subscription-on-your-machine"><a class="anchor" href="#it-runs-on-your-subscription-on-your-machine" aria-label="Link to this section">#</a>It runs on your subscription, on your machine</h3>
+<p>There is no key to buy from us and no model bundled. You connect <strong>your own Claude
+subscription</strong>, the way Cursor does it: run <code>claude setup-token</code> once on your own
+laptop and paste the token into Settings. It is stored encrypted in the credential
+store, and the session that runs later uses it.</p>
+<p>Two slots, resolved in that order:</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Personal</strong></td>
+<td>your own subscription, visible to nobody else</td>
+</tr>
+<tr>
+<td><strong>Workspace</strong></td>
+<td>one subscription an admin shares with the workspace — explicit opt-in</td>
+</tr>
+</tbody>
+</table></div>
+<p>The workspace slot is off unless someone turns it on, and the interface says why
+before you save: <strong>sharing one person's subscription across several people may
+breach Anthropic's consumer terms.</strong> That is a decision for whoever holds the
+subscription, and the product will not make it quietly.</p>
+<p>And the session is not running in somebody's cloud. It runs on <strong>your own
+installation</strong>, in a workspace isolated per session. What that buys you is not
+&quot;cloud access&quot; — it is that the machine holding your code is one you control, and
+you reach it from a laptop in an office or a phone on a train for the same reason
+you reach any service you run: because it is yours and it is up.</p>
+<p>That is the whole of <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a>
+— an alert arrives, and the fix starts from wherever you happened to read it.</p>
 <p>A vulnerability in the dependency audit carries a <strong>Fix with Claude</strong> button. It
 does not open an empty chat — it hands the session the repository, the package,
 both versions and the boundaries of the job, already written:</p>
@@ -1064,7 +1099,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>

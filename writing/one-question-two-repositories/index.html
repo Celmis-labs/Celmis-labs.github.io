@@ -94,6 +94,9 @@ boundaries.</li>
 <li><strong>Review pull requests</strong>, with knowledge of who else calls the function in the diff —
 including from a repository not in the pull request.</li>
 <li><strong>Audit dependencies</strong>, and produce the artefacts a buyer or an auditor asks for.</li>
+<li><strong>Fix what was found</strong>, without leaving the finding. An embedded Claude Code session
+runs on your own subscription inside your own installation, edits the checkout, and the
+runner opens a pull request.</li>
 <li><strong>Route what your running services are shouting about</strong> — alerts arrive, and the index
 already knows which repository the failing service is, and who owns it.</li>
 <li><strong>Serve it over MCP</strong>, so your own editor or agent reads the same index under the same
@@ -167,6 +170,27 @@ request URL in the exception text, and an early version of the endpoint returned
 <code>str(exc)</code> verbatim, which meant a failed test handed the caller back the secret it was
 testing. If you are building anything that tests a user-supplied webhook, go and check
 that path in your own code right now.</p>
+<h2 id="fixing-on-your-subscription-and-your-machine"><a class="anchor" href="#fixing-on-your-subscription-and-your-machine" aria-label="Link to this section">#</a>Fixing, on your subscription and your machine</h2>
+<p>Finding something is half a loop. The other half is an embedded Claude Code session that
+runs <strong>inside the installation</strong>, edits the checkout, and lets the runner push a branch
+and open a pull request.</p>
+<p>There is no key to buy from us and no model bundled. You connect your own Claude
+subscription the way Cursor does — <code>claude setup-token</code> once on your laptop, paste the
+token into Settings — and it is stored encrypted. An admin can optionally share one
+subscription with a workspace, and the interface says plainly, before you save, that
+sharing one person's subscription across several people may breach Anthropic's consumer
+terms. That is the subscription holder's decision, and the product will not make it
+quietly.</p>
+<p>The session is not running in somebody else's cloud. It runs on the machine you already
+control, in a workspace isolated per session. What that buys is not &quot;cloud access&quot; — it is
+that the box holding your code is yours, and you reach it from an office laptop or a phone
+on a train for the same reason you reach anything else you run: it is up.</p>
+<p>On one real finding — <code>lodash 4.17.11</code> with a known vulnerability — that loop took <strong>220
+seconds</strong> from <em>Start session</em> to an open pull request, and changed exactly one line.
+<code>axios</code>, <code>minimist</code> and <code>node-fetch</code> sat outdated on the lines above and below, all
+flagged in the same audit, all untouched: the task said manifests only, and an agent that
+tidied three more on the way past would have been a worse thing to review, not a better
+one.</p>
 <h2 id="the-surface-that-quietly-became-urgent"><a class="anchor" href="#the-surface-that-quietly-became-urgent" aria-label="Link to this section">#</a>The surface that quietly became urgent</h2>
 <p>The dependency audit is the one part that is <strong>deterministic end to end</strong> — native
 auditors and OSV.dev, no LLM in the loop. It produces two things.</p>
@@ -250,7 +274,7 @@ benchmark methodology — which is the part that deserves an argument — are we
 
       <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#one-question-two-repositories">One question, two repositories</a></li><li><a class="lvl2" href="#the-shape-of-the-idea">The shape of the idea</a></li><li><a class="lvl2" href="#what-the-review-actually-catches">What the review actually catches</a></li><li><a class="lvl2" href="#the-mcp-server">The MCP server</a></li><li><a class="lvl2" href="#alerts-and-why-they-belong-on-the-same-index">Alerts, and why they belong on the same index</a></li><li><a class="lvl2" href="#the-surface-that-quietly-became-urgent">The surface that quietly became urgent</a></li><li><a class="lvl3" href="#the-part-i-am-most-attached-to">The part I am most attached to</a></li><li><a class="lvl2" href="#running-it">Running it</a></li><li><a class="lvl2" href="#the-number-i-am-not-hiding">The number I am not hiding</a></li><li><a class="lvl2" href="#known-rough-edges">Known rough edges</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#one-question-two-repositories">One question, two repositories</a></li><li><a class="lvl2" href="#the-shape-of-the-idea">The shape of the idea</a></li><li><a class="lvl2" href="#what-the-review-actually-catches">What the review actually catches</a></li><li><a class="lvl2" href="#the-mcp-server">The MCP server</a></li><li><a class="lvl2" href="#alerts-and-why-they-belong-on-the-same-index">Alerts, and why they belong on the same index</a></li><li><a class="lvl2" href="#fixing-on-your-subscription-and-your-machine">Fixing, on your subscription and your machine</a></li><li><a class="lvl2" href="#the-surface-that-quietly-became-urgent">The surface that quietly became urgent</a></li><li><a class="lvl3" href="#the-part-i-am-most-attached-to">The part I am most attached to</a></li><li><a class="lvl2" href="#running-it">Running it</a></li><li><a class="lvl2" href="#the-number-i-am-not-hiding">The number I am not hiding</a></li><li><a class="lvl2" href="#known-rough-edges">Known rough edges</a></li></ol></aside>
   </div>
 </main>
 <footer>
