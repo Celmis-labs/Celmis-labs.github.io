@@ -46,14 +46,22 @@
     <article class="prose">
 <div align="center">
 <h1>Celmis</h1>
-<p><strong>Self-hosted code intelligence — ask your codebases, review pull requests, and produce the evidence an auditor asks for</strong></p>
+<p><strong>A self-hosted platform for most of a development cycle, and the observability that feeds it — from the alert to the fixed pull request</strong></p>
 <p><a href="https://celmis-labs.github.io"><strong>celmis-labs.github.io</strong></a> · <a href="https://celmis-labs.github.io/docs/">Documentation</a> · <a href="#quick-start">Quick start</a> · <a href="#results">Results</a></p>
 </div>
-<p>Celmis reads your repositories once and keeps a symbol graph of them. Everything
-else — questions, reviews, dependency audits, generated documentation — is a
-different way of reading that graph. It runs on one machine under
-<code>docker compose</code>, with the model provider of your choice behind it, and nothing
-leaves your network except the calls you configure.</p>
+<p>An alert arrives from a service you run. Celmis already knows which repository
+that service is and who owns it, so the fix starts there: an embedded Claude Code
+session — on <em>your</em> subscription, inside <em>your</em> installation — edits the code, and
+the runner commits, pushes a branch and opens a pull request. On one measured
+finding that took <strong>220 seconds</strong>, from whatever device the alert reached first.</p>
+<p>That loop is the product. It closes because everything sits on one index: a symbol
+graph Celmis builds from your repositories once. The same index answers questions
+that cross repository boundaries, reviews pull requests, audits dependencies into a
+CycloneDX SBOM and a verifiable evidence pack, generates documentation, and serves
+eighteen tools over MCP — surfaces worth having, and none of them the point on
+their own.</p>
+<p>It runs on one machine under <code>docker compose</code>, with the model provider of your
+choice behind it, and nothing leaves your network except the calls you configure.</p>
 <p>In the oldest telling, Kelmis was the smelter — one of the three Idaean Dactyls,
 alongside Damnameneus the hammer and Acmon the anvil, to whom the working of iron
 was credited. The index does the reducing here; the surfaces are what work the

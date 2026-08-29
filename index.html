@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Celmis — open-source self-hosted code intelligence</title>
-<meta name="description" content="Celmis indexes your repositories once and keeps a symbol graph of them. Ask questions across repositories, review pull requests, produce the evidence an auditor asks for. Runs on one machine under docker compose. AGPLv3.">
+<title>Celmis — self-hosted platform: from the alert to the fixed pull request</title>
+<meta name="description" content="An alert arrives; Celmis already knows which repository it belongs to, and an embedded Claude Code session fixes it and opens a pull request. Most of a development cycle plus the observability that feeds it, self-hosted on one machine. AGPLv3.">
 <link rel="canonical" href="https://celmis-labs.github.io/">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Celmis — open-source self-hosted code intelligence">
-<meta property="og:description" content="Index your repositories once. Ask across them, review pull requests, produce auditable evidence. Self-hosted, AGPLv3.">
+<meta property="og:title" content="Celmis — from the alert to the fixed pull request">
+<meta property="og:description" content="Most of a development cycle plus the observability that feeds it. An alert lands, the platform knows whose code it is, and the fix opens as a pull request — from a laptop or a phone. Self-hosted, AGPLv3.">
 <meta property="og:url" content="https://celmis-labs.github.io/">
 <meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Celmis — open-source self-hosted code intelligence over a symbol graph">
+<meta property="og:image:alt" content="Celmis — self-hosted platform taking a production alert through to a fixed pull request">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,11 +160,10 @@
   <canvas id="graph" aria-hidden="true"></canvas>
   <p class="hint" id="hint">hover a node — its consumers light up</p>
   <div class="wrap">
-    <h1 class="rv">Celmis<span class="sr"> — open-source, self-hosted code intelligence</span></h1>
-    <p class="lede rv">Self-hosted <em>code intelligence</em>.</p>
-    <p class="sub rv">Ask your codebases, review pull requests, and produce the evidence
-      an auditor asks for. One open-source index, read by your team and by your coding
-      agents over MCP.</p>
+    <h1 class="rv">Celmis<span class="sr"> — a self-hosted platform for most of a development cycle, and the observability that feeds it</span></h1>
+    <p class="lede rv">From the alert to the <em>fixed pull request</em>.</p>
+    <p class="sub rv">Most of a development cycle, plus the observability that feeds it —
+      self-hosted, open source, on one machine.</p>
     <div class="cta rv">
       <a class="btn primary" href="#start">Install in 197 seconds <span class="arw">→</span></a>
       <a class="btn" href="https://github.com/Celmis-labs/Celmis">Read the source</a>
@@ -182,11 +181,13 @@
   <div class="wrap">
     <h2 class="introq rv">What is Celmis?</h2>
     <div class="introgrid">
-      <p class="rv">Celmis is open-source, self-hosted code intelligence. It reads your
-        repositories once and keeps a symbol graph of them —
-        everything else is a different way of reading that graph. It runs on one machine
-        under <code>docker compose</code>, with the model provider of your choice behind
-        it, and nothing leaves your network except the calls you configure.</p>
+      <p class="rv">An alert arrives from a service you run. Celmis already knows which
+        repository that service is and who owns it, so the fix starts there: an embedded
+        Claude Code session — on <em>your</em> subscription, inside <em>your</em>
+        installation — edits the code, and the runner opens a pull request. On one
+        measured finding that took <strong>220 seconds</strong>, from a phone or a laptop,
+        whichever the alert reached first. That loop is the product: most of a development
+        cycle, plus the observability that feeds it.</p>
       <p class="etym rv">In the oldest telling, <b>Kelmis</b> was the smelter — one of
         three who found how to work iron with fire. The index does the reducing here; the
         surfaces are what work the result.</p>
@@ -196,12 +197,14 @@
 
 <section id="thesis">
   <div class="wrap">
-    <p class="eyebrow rv">What a diff-only tool cannot do</p>
+    <p class="eyebrow rv">Why the loop closes</p>
     <div class="col">
-      <h2 class="rv">Ask a question that spans two repositories, and the answer quotes both</h2>
-      <p class="h2sub rv">The gateway and the payments service are separate repositories with
-        no shared code. The answer traces the call chain between them — then notices,
-        unprompted, that the Kafka topic name is hardcoded in both, and that changing one
+      <h2 class="rv">One index underneath, so the platform knows whose code it is</h2>
+      <p class="h2sub rv">An alert can be routed to an owner, and a fix can be scoped, only
+        because something already read the code. Celmis builds a symbol graph from your
+        repositories once; every surface above reads that one index. Here it answers a
+        question spanning two repositories — tracing the call chain, then noticing,
+        unprompted, that the Kafka topic name is hardcoded in both and that changing one
         silently breaks the other.</p>
       <p class="h2sub rv">A reviewer that reads only the diff structurally cannot say that.
         It never had the other repository open.</p>
@@ -219,11 +222,18 @@
 
 <section id="uses" class="tint">
   <div class="wrap">
-    <p class="eyebrow rv">Seven things people do with it</p>
+    <p class="eyebrow rv">Eight things people do with it</p>
     <div class="col">
       <h2 class="rv">Index once, then read it from whichever side of the work you are standing on</h2>
     </div>
     <div class="rows">
+      <div class="row rv">
+        <div class="who">Something breaks in production at an unhelpful hour</div>
+        <p class="what">The alert arrives knowing which repository it belongs to and who
+          owns it. <em>Fix with Claude</em> takes it from there on your own subscription,
+          and the runner opens a pull request — from whatever device you read it on.
+          <a class="to" href="/docs/guide/#alerts-and-fixing-from-a-phone">alerts and fixing</a></p>
+      </div>
       <div class="row rv">
         <div class="who">You are a PM, a delivery lead or the client, and want to know what
           state a group of projects is in</div>
