@@ -190,6 +190,13 @@
       <p class="rv">Celmis does not watch your services; Grafana or whatever you already
         run does that, and it is good at it. This is the part that comes after the alert —
         the walk from a firing rule to a diff someone can review.</p>
+      <p class="rv"><strong>Fix with Claude</strong> is the name of that step. It starts
+        from a production alert or from a dependency finding, opens an embedded
+        <strong>Claude Code</strong> session pre-filled with the repository, the package,
+        both versions and the boundaries of the job, and runs it on <em>your</em> Anthropic
+        subscription inside <em>your</em> installation. The session edits the checkout; the
+        Celmis runner commits, pushes a branch and opens a pull request. A human reviews and
+        merges — it opens a pull request, it does not merge one.</p>
       <p class="etym rv">In the oldest telling, <b>Kelmis</b> was the smelter — one of
         three who found how to work iron with fire. The index does the reducing here; the
         surfaces are what work the result.</p>

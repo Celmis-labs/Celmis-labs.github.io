@@ -1,18 +1,40 @@
 # Celmis
 
-> Self-hosted code intelligence. Celmis indexes your repositories once and keeps a
-> symbol graph of them; asking questions, reviewing pull requests, auditing
-> dependencies, fixing a finding or a production alert with an embedded Claude Code
-> session, generating documentation, and asking in one sentence for work to be done
-> across every repository that matches a condition are all different ways of reading
-> that one graph. It runs on a single machine under `docker compose`, with the model
-> provider of your choice behind it.
+> **Your monitoring already told you something broke. Celmis is what happens next.**
+> An alert lands, Celmis already knows which repository that service is and who owns
+> it, and an embedded Claude Code session — on your own subscription, inside your own
+> installation — edits the code while the runner commits, pushes a branch and opens a
+> pull request. On one measured finding that took 220 seconds, from whatever device
+> the alert reached first.
+>
+> Celmis does not watch your services; Grafana or whatever you already run does that.
+> This is the part after the alert: the walk from a firing rule to a diff someone can
+> review. The loop closes because everything sits on one index — a symbol graph built
+> once from your repositories with tree-sitter, no model involved in constructing it.
+> That same index also answers questions across repository boundaries, reviews pull
+> requests, audits dependencies into a CycloneDX SBOM and a verifiable evidence pack,
+> generates documentation, enforces per-repository access rules, and serves eighteen
+> tools over MCP. Those are surfaces worth having; none of them is the point on its
+> own. It runs on a single machine under `docker compose`, with the model provider of
+> your choice behind it.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis
 
 ## What it does
 
+- **Fix with Claude** — the named step between a finding and a diff. It starts from a
+  production alert or from a dependency finding, opens an embedded Claude Code session
+  pre-filled with the repository, the package, both versions and the boundaries of the
+  job, and runs on the operator's own Anthropic subscription inside their own
+  installation. The session edits the checkout; the Celmis runner commits, pushes a
+  branch and opens a pull request. A human reviews and merges — it opens a pull request,
+  it does not merge one. Measured once at 220 seconds from start to open PR.
+- **Alerts, and fixing from wherever you read them** — a signed webhook takes alerts
+  from Grafana or anything else that can POST. The binding routes each one by the
+  repository it names, so the card arrives with the code context already attached, and
+  *Fix with Claude* starts the session from there. The review still belongs to a human:
+  it opens a pull request, it does not merge one.
 - **Ask the code** — questions answered across several repositories at once, with
   file and line citations on every claim, including call chains that cross a
   repository boundary. The symbol graph itself is built deterministically with
