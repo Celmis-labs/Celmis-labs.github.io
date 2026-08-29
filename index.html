@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Celmis — self-hosted platform: from the alert to the fixed pull request</title>
-<meta name="description" content="An alert arrives; Celmis already knows which repository it belongs to, and an embedded Claude Code session fixes it and opens a pull request. Most of a development cycle plus the observability that feeds it, self-hosted on one machine. AGPLv3.">
+<title>Celmis — from the alert to the fixed pull request, self-hosted</title>
+<meta name="description" content="Your monitoring already told you something broke. Celmis is what happens next: it knows which repository the alert belongs to, and an embedded Claude Code session on your own subscription fixes it and opens a pull request. Self-hosted on one machine, AGPLv3.">
 <link rel="canonical" href="https://celmis-labs.github.io/">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Celmis — from the alert to the fixed pull request">
-<meta property="og:description" content="Most of a development cycle plus the observability that feeds it. An alert lands, the platform knows whose code it is, and the fix opens as a pull request — from a laptop or a phone. Self-hosted, AGPLv3.">
+<meta property="og:description" content="Your Grafana already told you. Celmis is what happens next — it knows whose code the alert is, and the fix opens as a pull request, from a laptop or a phone. Self-hosted, AGPLv3.">
 <meta property="og:url" content="https://celmis-labs.github.io/">
 <meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
 <meta property="og:image:width" content="1200">
@@ -160,9 +160,9 @@
   <canvas id="graph" aria-hidden="true"></canvas>
   <p class="hint" id="hint">hover a node — its consumers light up</p>
   <div class="wrap">
-    <h1 class="rv">Celmis<span class="sr"> — a self-hosted platform for most of a development cycle, and the observability that feeds it</span></h1>
+    <h1 class="rv">Celmis<span class="sr"> — a self-hosted platform that takes a production alert through to a fixed pull request</span></h1>
     <p class="lede rv">From the alert to the <em>fixed pull request</em>.</p>
-    <p class="sub rv">Most of a development cycle, plus the observability that feeds it —
+    <p class="sub rv">Your monitoring already told you. This is what happens next —
       self-hosted, open source, on one machine.</p>
     <div class="cta rv">
       <a class="btn primary" href="#start">Install in 197 seconds <span class="arw">→</span></a>
@@ -186,8 +186,10 @@
         Claude Code session — on <em>your</em> subscription, inside <em>your</em>
         installation — edits the code, and the runner opens a pull request. On one
         measured finding that took <strong>220 seconds</strong>, from a phone or a laptop,
-        whichever the alert reached first. That loop is the product: most of a development
-        cycle, plus the observability that feeds it.</p>
+        whichever the alert reached first.</p>
+      <p class="rv">Celmis does not watch your services; Grafana or whatever you already
+        run does that, and it is good at it. This is the part that comes after the alert —
+        the walk from a firing rule to a diff someone can review.</p>
       <p class="etym rv">In the oldest telling, <b>Kelmis</b> was the smelter — one of
         three who found how to work iron with fire. The index does the reducing here; the
         surfaces are what work the result.</p>

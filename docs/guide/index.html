@@ -46,7 +46,7 @@
     <article class="prose">
 <div align="center">
 <h1>Celmis</h1>
-<p><strong>A self-hosted platform for most of a development cycle, and the observability that feeds it — from the alert to the fixed pull request</strong></p>
+<p><strong>Self-hosted — from the alert your monitoring already sent, through to a pull request someone can review</strong></p>
 <p><a href="https://celmis-labs.github.io"><strong>celmis-labs.github.io</strong></a> · <a href="https://celmis-labs.github.io/docs/">Documentation</a> · <a href="#quick-start">Quick start</a> · <a href="#results">Results</a></p>
 </div>
 <p>An alert arrives from a service you run. Celmis already knows which repository
@@ -54,6 +54,9 @@ that service is and who owns it, so the fix starts there: an embedded Claude Cod
 session — on <em>your</em> subscription, inside <em>your</em> installation — edits the code, and
 the runner commits, pushes a branch and opens a pull request. On one measured
 finding that took <strong>220 seconds</strong>, from whatever device the alert reached first.</p>
+<p>Celmis does not watch your services. Grafana, or whatever you already run, does
+that and does it well. This is the part that comes after the alert: the walk from a
+firing rule to a diff someone can review.</p>
 <p>That loop is the product. It closes because everything sits on one index: a symbol
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
