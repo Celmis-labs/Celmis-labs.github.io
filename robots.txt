@@ -2,4 +2,5 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://celmis-labs.github.io/sitemap-index.xml
 Sitemap: https://celmis-labs.github.io/sitemap.xml

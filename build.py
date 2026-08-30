@@ -412,8 +412,23 @@ def build():
                   "<changefreq>weekly</changefreq><priority>%s</priority></url>"
                   % (loc, _lastmod(loc), pri))
     sm.append("</urlset>")
-    (out_root / "sitemap.xml").write_text("\n".join(sm) + "\n")
-    print("  sitemap: %d urls" % len(urls))
+    body = "\n".join(sm) + "\n"
+    # Three files, one list. sitemap.xml is what Bing already reads successfully and is
+    # left where it is. sitemap-pages.xml is the same bytes at a path Google holds no
+    # cached fetch failure against, and sitemap-index.xml points at that — submitting an
+    # index gives the crawler a fresh record instead of replaying a stale error against
+    # a URL it decided about when this site was two days old.
+    (out_root / "sitemap.xml").write_text(body)
+    (out_root / "sitemap-pages.xml").write_text(body)
+    newest = max((datetime.date.fromtimestamp(f.stat().st_mtime)
+                  for f in out_root.rglob("index.html")), default=datetime.date.today())
+    (out_root / "sitemap-index.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        '  <sitemap><loc>%s/sitemap-pages.xml</loc><lastmod>%s</lastmod></sitemap>\n'
+        '</sitemapindex>\n' % (SITE, newest.isoformat()))
+    print("  sitemap: %d urls → sitemap.xml, sitemap-pages.xml, sitemap-index.xml"
+          % len(urls))
 
 
 def _json(s):
