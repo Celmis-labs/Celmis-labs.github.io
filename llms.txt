@@ -51,11 +51,14 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   installation. The session edits the checkout; the Celmis runner commits, pushes a
   branch and opens a pull request. A human reviews and merges — it opens a pull request,
   it does not merge one. Measured once at 220 seconds from start to open PR.
-- **Alerts, and fixing from wherever you read them** — a signed webhook takes alerts
-  from Grafana or anything else that can POST. The binding routes each one by the
-  repository it names, so the card arrives with the code context already attached, and
-  *Fix with Claude* starts the session from there. The review still belongs to a human:
-  it opens a pull request, it does not merge one.
+- **Alerts, and fixing from wherever you read them** — a signed per-workspace webhook
+  takes alerts from Grafana, whose unified alerting format is parsed as-is, or from
+  anything else that can POST JSON. Each alert fans out to the workspace's bound
+  channels — Slack, Discord, Google Chat or a plain webhook — and the binding routes it
+  by the repository it names, so the card arrives with the code context already
+  attached and *Fix with Claude* starts the session from there. No checkout, no
+  terminal, no trusted machine: the work happens inside the installation. The review
+  still belongs to a human: it opens a pull request, it does not merge one.
 - **Ask the code** — questions answered across several repositories at once, with
   file and line citations on every claim, including call chains that cross a
   repository boundary. The symbol graph itself is built deterministically with
@@ -66,10 +69,6 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   and a manifest of sha256 digests, so a third party can verify the pack without
   trusting the machine that produced it. Celmis does not claim regulatory
   compliance on the operator's behalf.
-- **Fix with Claude** — a finding hands an embedded Claude Code session the
-  repository, the package and the context; it edits, and the runner pushes a branch
-  and opens a pull request. Measured at 220 seconds from start to an open pull
-  request on a real dependency finding.
 - **Ask for work across repositories** — every other surface acts on one thing at a
   time. This one takes a sentence: "generate documentation for every service that has
   none", "audit everything under acme-ai not audited in thirty days". The answer to
@@ -77,12 +76,6 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   second button under it; scope is re-checked at confirmation, so a repository
   registered in between cannot quietly join a set that said "everything". Automated
   callers are capped and cannot enqueue an unbounded fan-out.
-- **Alerts, and fixing from a phone** — any monitoring system can post to a
-  per-workspace ingest URL; Grafana's unified alerting webhook is parsed as-is. A
-  web push notification reaches the operator's phone, the alert carries the
-  repository it belongs to, and Fix with Claude opens a session already holding it.
-  No checkout, no terminal, no trusted machine — the work happens inside the
-  installation.
 - **Two records of what happened** — an append-only JSONL audit trail (who did what,
   to which repository, when; filterable, CSV-exportable, 90-day default retention)
   and resource-usage history for the installation itself.
