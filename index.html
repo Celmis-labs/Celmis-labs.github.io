@@ -43,7 +43,7 @@
     "Ask questions across several repositories at once, answered with file and line citations",
     "Pull-request review that also reads who else calls what is being changed, including from another repository",
     "CycloneDX SBOM and an evidence pack whose manifest of sha256 digests a third party can verify independently",
-    "Fix with Claude: an embedded session edits the repository and the runner opens a pull request",
+    "Fix from here: an embedded session edits the repository and the runner opens a pull request",
     "Per-repository access control with visibility levels and deny globs",
     "MCP server exposing eighteen tools over the same index under the same access rules",
     "23 languages parsed"
@@ -199,7 +199,7 @@
         Platform-wide, not Celmis-only. Every port binds to <code>127.0.0.1</code> and is
         reached over an SSH tunnel, because a log store strangers can write to is not a log
         store.</p>
-      <p class="rv"><strong>Fix with Claude</strong> is the name of that step. It starts
+      <p class="rv"><strong>Fix from here</strong> is the name of that step. It starts
         from a production alert or from a dependency finding, opens an embedded
         <strong>Claude Code</strong> session pre-filled with the repository, the package,
         both versions and the boundaries of the job, and runs it on <em>your</em> Anthropic
@@ -248,7 +248,7 @@
       <div class="row rv">
         <div class="who">Something breaks in production at an unhelpful hour</div>
         <p class="what">The alert arrives knowing which repository it belongs to and who
-          owns it. <em>Fix with Claude</em> takes it from there on your own subscription,
+          owns it. <em>Fix from here</em> takes it from there on your own subscription,
           and the runner opens a pull request — from whatever device you read it on.
           <a class="to" href="/docs/guide/#alerts-and-fixing-from-a-phone">alerts and fixing</a></p>
       </div>
@@ -281,11 +281,11 @@
       </div>
       <div class="row rv">
         <div class="who">A vulnerability lands in a dependency</div>
-        <p class="what"><em>Fix with Claude</em> hands an embedded session the repository,
+        <p class="what"><em>Fix from here</em> hands an embedded session the repository,
           the package and the finding. It edits, the runner pushes a branch and opens a
           pull request — on your own Claude subscription, running on your own machine, so
           the fix can start from a laptop or a phone.
-          <a class="to" href="/docs/guide/#fix-with-claude">fix it from here</a></p>
+          <a class="to" href="/docs/guide/#fix-from-here">fix it from here</a></p>
       </div>
       <div class="row rv">
         <div class="who">A pull request needs reviewing</div>
@@ -349,8 +349,8 @@
 
     <figure class="rv">
       <div class="frame">
-        <img src="img/fix-with-claude-prefilled.png" width="1600" height="1300" loading="lazy" decoding="async"
-             alt="Fix with Claude, pre-filled with the repository, package and finding">
+        <img src="img/fix-from-here-prefilled.png" width="1600" height="1300" loading="lazy" decoding="async"
+             alt="Fix from here, pre-filled with the repository, package and finding">
       </div>
       <figcaption><b>Fix it from here.</b> The finding hands an embedded session the
         repository, the package and the context — no copy-pasting the problem into a chat

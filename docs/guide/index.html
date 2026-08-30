@@ -124,7 +124,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>A vulnerability lands in a dependency</strong></td>
-<td><em>Fix with Claude</em> hands an embedded session the repository, the package and the finding. It edits, the runner pushes a branch and opens a PR → <a href="#fix-with-claude">Fix with Claude</a></td>
+<td><em>Fix from here</em> hands an embedded session the repository, the package and the finding. It edits, the runner pushes a branch and opens a PR → <a href="#fix-from-here">Fix from here</a></td>
 </tr>
 <tr>
 <td><strong>A pull request needs reviewing</strong></td>
@@ -136,7 +136,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>An alert fires at 02:00 and you are not at a desk</strong></td>
-<td>It lands in Celmis and goes out to the workspace's chat channel, and <em>Fix with Claude</em> opens a session already holding the alert. The runner opens the pull request → <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></td>
+<td>It lands in Celmis and goes out to the workspace's chat channel, and <em>Fix from here</em> opens a session already holding the alert. The runner opens the pull request → <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></td>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
@@ -334,7 +334,7 @@ that implies otherwise is selling a false sense of safety.</p>
 looks for: <strong>an ecosystem nobody scanned reports zero vulnerabilities exactly
 like a clean one.</strong> Coverage is shown next to the findings — which auditor
 produced each result, and, more usefully, what went unchecked and why.</p>
-<h2 id="fix-with-claude"><a class="anchor" href="#fix-with-claude" aria-label="Link to this section">#</a>Fix with Claude</h2>
+<h2 id="fix-from-here"><a class="anchor" href="#fix-from-here" aria-label="Link to this section">#</a>Fix from here</h2>
 <p>Finding something is half a loop. An embedded Claude Code session runs <strong>inside</strong>
 the installation, edits the checkout, and the runner commits, pushes a branch and
 opens a pull request.</p>
@@ -373,7 +373,7 @@ you reach it from a laptop in an office or a phone on a train for the same reaso
 you reach any service you run: because it is yours and it is up.</p>
 <p>That is the whole of <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a>
 — an alert arrives, and the fix starts from wherever you happened to read it.</p>
-<p>A vulnerability in the dependency audit carries a <strong>Fix with Claude</strong> button. It
+<p>A vulnerability in the dependency audit carries a <strong>Fix from here</strong> button. It
 does not open an empty chat — it hands the session the repository, the package,
 both versions and the boundaries of the job, already written:</p>
 <p><img src="/img/fix-with-claude-prefilled.png" alt="The session, pre-filled from a dependency finding" /></p>
@@ -439,7 +439,7 @@ finds you where you already are rather than on a page you have to remember to
 open.</li>
 <li>You open it. The alert carries its repository, because <code>route_incident</code> can take
 a stack trace and say which repository and which owner it belongs to.</li>
-<li>You press <strong>Fix with Claude</strong>. The session opens already holding the alert — not
+<li>You press <strong>Fix from here</strong>. The session opens already holding the alert — not
 an empty chat.</li>
 <li>The runner commits, pushes a branch and opens the pull request.</li>
 </ol>
@@ -1129,7 +1129,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-with-claude">Fix with Claude</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-from-here">Fix from here</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>

@@ -44,7 +44,7 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 
 ## What it does
 
-- **Fix with Claude** — the named step between a finding and a diff. It starts from a
+- **Fix from here** — the named step between a finding and a diff. It starts from a
   production alert or from a dependency finding, opens an embedded Claude Code session
   pre-filled with the repository, the package, both versions and the boundaries of the
   job, and runs on the operator's own Anthropic subscription inside their own
@@ -56,7 +56,7 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   anything else that can POST JSON. Each alert fans out to the workspace's bound
   channels — Slack, Discord, Google Chat or a plain webhook — and the binding routes it
   by the repository it names, so the card arrives with the code context already
-  attached and *Fix with Claude* starts the session from there. No checkout, no
+  attached and *Fix from here* starts the session from there. No checkout, no
   terminal, no trusted machine: the work happens inside the installation. The review
   still belongs to a human: it opens a pull request, it does not merge one.
 - **Ask the code** — questions answered across several repositories at once, with
