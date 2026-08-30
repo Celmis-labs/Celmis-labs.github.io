@@ -190,13 +190,15 @@
       <p class="rv">Celmis does not watch your services; Grafana or whatever you already
         run does that, and it is good at it. This is the part that comes after the alert —
         the walk from a firing rule to a diff someone can review.</p>
-      <p class="rv small">To be exact about it, since the distinction is easy to blur:
-        Celmis has <strong>no log-ingestion endpoint and no log store</strong>. It starts
-        from the alert your monitoring already sent, reads a log file only when a person
-        attaches one to a session by hand, and embeds no Grafana — the repository ships an
-        <em>optional</em> Prometheus/Loki/Promtail/Grafana compose overlay which, if you
-        turn it on, tails that host's container logs into a Grafana <em>you</em> run, not
-        into Celmis.</p>
+      <p class="rv small">To be exact, because the line is easy to blur. The application
+        itself ingests no logs — it starts from the alert. But the repository ships an
+        <strong>optional observability overlay</strong>: one extra compose file brings up
+        Prometheus, Loki, Promtail and Grafana, and Promtail then tails
+        <em>every container on that host</em> — all thirty of them, if you run thirty —
+        into a Loki you own, browsable in the bundled Grafana and filterable by container.
+        Platform-wide, not Celmis-only. Every port binds to <code>127.0.0.1</code> and is
+        reached over an SSH tunnel, because a log store strangers can write to is not a log
+        store.</p>
       <p class="rv"><strong>Fix with Claude</strong> is the name of that step. It starts
         from a production alert or from a dependency finding, opens an embedded
         <strong>Claude Code</strong> session pre-filled with the repository, the package,

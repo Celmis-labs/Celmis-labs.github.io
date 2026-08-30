@@ -18,16 +18,26 @@
 > own. It runs on a single machine under `docker compose`, with the model provider of
 > your choice behind it.
 
+## Logs, and where the line actually falls
+
+The Celmis application ingests no logs of its own; it starts from the alert your
+monitoring already sent, and reads a log file only when a person attaches one to a session
+by hand.
+
+The repository, however, ships an **optional observability overlay** —
+`docker-compose.observability.yml` — bringing up Prometheus, Loki, Promtail and Grafana.
+It is deliberately platform-wide rather than Celmis-only: Promtail tails the Docker
+daemon's container logs and labels each stream by container name, so every service on that
+host appears in Grafana's Loki explorer, filterable by container. Loki's
+`POST /loki/api/v1/push` is a genuine log-ingestion endpoint; it simply belongs to Loki
+rather than to Celmis code. Every port binds to 127.0.0.1 and is reached over an SSH
+tunnel, because Loki has no authentication of its own.
+
 ## What it does not do
 
-Celmis has **no log-ingestion endpoint and no log store**. It starts from the alert your
-monitoring already sent; it reads a log file only when a person attaches one to a session
-by hand; and it embeds no Grafana. The repository ships an *optional* compose overlay
-(Prometheus, Loki, Promtail, Grafana) which, if enabled, tails that host's container logs
-into a Grafana the operator runs — not into Celmis.
-
-It also does not claim regulatory compliance on anyone's behalf, and says so in the
-evidence pack it generates.
+It does not claim regulatory compliance on anyone's behalf, and says so in the evidence
+pack it generates. It does not watch your services — your existing monitoring does that,
+and Celmis starts from what it sends.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis

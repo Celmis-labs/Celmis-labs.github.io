@@ -57,14 +57,24 @@ finding that took <strong>220 seconds</strong>, from whatever device the alert r
 <p>Celmis does not watch your services. Grafana, or whatever you already run, does
 that and does it well. This is the part that comes after the alert: the walk from a
 firing rule to a diff someone can review.</p>
-<p>To be exact, because the distinction is easy to blur: Celmis has <strong>no log-ingestion
-endpoint and no log store</strong>. It starts from the alert your monitoring already sent,
-reads a log file only when a person attaches one to a session by hand, and embeds no
-Grafana. This repository does ship an <em>optional</em> Prometheus/Loki/Promtail/Grafana
-compose overlay — <a href="https://github.com/Celmis-labs/Celmis/blob/main/docker-compose.observability.yml"><code>docker-compose.observability.yml</code></a>
-— and if you enable it, Promtail tails that host's container logs into a Grafana <strong>you</strong>
-run, not into Celmis. Read its own header before enabling it: it publishes its ports on
-all interfaces, unlike the main compose file.</p>
+<p>To be exact, because the line is easy to blur. The application ingests no logs of its
+own — it starts from the alert. But <strong>the repository ships an optional observability
+overlay</strong>, and that does collect them:</p>
+<pre><code class="language-bash">docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
+</code></pre>
+<p>That brings up Prometheus, Loki, Promtail and Grafana.
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/docker-compose.observability.yml"><code>docker-compose.observability.yml</code></a> is deliberately
+<strong>platform-wide rather than Celmis-only</strong>: Promtail tails the Docker daemon's container
+logs and labels each stream by container name, so <em>every</em> service on that host — all
+thirty of them, if you run thirty — shows up in Grafana's Loki explorer, filterable by
+container. Prometheus scrapes <code>api:8000/metrics</code> for Celmis's own counters alongside.</p>
+<p>Every port binds to <code>127.0.0.1</code> and is reached over an SSH tunnel:</p>
+<pre><code class="language-bash">ssh -L 3100:localhost:3100 -L 9090:localhost:9090 you@your-server
+</code></pre>
+<p>That is not caution for its own sake. Loki has no authentication, so
+<code>POST /loki/api/v1/push</code> accepts writes from anyone who can reach it, and a log store
+strangers can write to is not a log store. <code>GRAFANA_ADMIN_PASSWORD</code> is required — the
+stack will not start without one.</p>
 <p>That loop is the product. It closes because everything sits on one index: a symbol
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
