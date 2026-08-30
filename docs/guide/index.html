@@ -317,8 +317,13 @@ they say &quot;send us your SBOM&quot;.</p>
 </li>
 <li>
 <p><strong>Evidence pack</strong> — the audit as a filing: every SBOM, every finding, the
-timeline of past runs, and a sha256 of each file, so a third party can check
-nothing was edited afterwards <em>without having to trust us</em>. A folder whose
+timeline of past runs, and a sha256 of each file. Those hashes prove the
+archive is internally consistent; they do not on their own prove it is the
+archive that left here, because the manifest records no hash for itself and
+anyone who edits a file can rewrite its entry. The export returns the
+manifest's own sha256 in <code>X-Celmis-Manifest-SHA256</code> — publish that where the
+pack is not, and a third party can then check it <em>without having to trust
+us</em>, against a value you did not hand them with the file. A folder whose
 contents can be changed later proves nothing; the manifest is what makes it
 evidence.</p>
 <p>That last sentence used to be a claim nobody could act on: checking a pack

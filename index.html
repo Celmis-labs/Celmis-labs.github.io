@@ -126,7 +126,7 @@
      "name": "Does Celmis make my product CRA compliant?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "No, and it deliberately does not claim to. Celmis produces an evidence pack — a CycloneDX SBOM, findings, a timeline and a manifest of sha256 digests — that a third party can verify without trusting the machine that produced it. Compliance is a judgement about your organisation, not an output a tool can emit."
+      "text": "No, and it deliberately does not claim to. Celmis produces an evidence pack — a CycloneDX SBOM, findings, a timeline and a manifest of sha256 digests a third party can recompute. The manifest holds no hash of itself, so those digests prove the archive is internally consistent rather than unforgeable; the export returns the manifest's own sha256 in a header, and published separately it gives the recipient a value that did not travel with the file. Compliance is a judgement about your organisation, not an output a tool can emit."
      }
     }
    ]
@@ -275,8 +275,8 @@
       </div>
       <div class="row rv">
         <div class="who">A customer or an auditor asks for your SBOM</div>
-        <p class="what">One button, CycloneDX, plus an evidence pack whose manifest lets
-          them verify it without trusting you.
+        <p class="what">One button, CycloneDX, plus an evidence pack whose manifest they
+          recompute themselves — against a hash you publish where the pack is not.
           <span class="to">dependencies and evidence</span></p>
       </div>
       <div class="row rv">
@@ -342,11 +342,15 @@
              alt="Evidence pack contents: CycloneDX SBOM, findings, timeline and a manifest of sha256 digests">
       </div>
       <figcaption><b>Dependencies, SBOM and the evidence pack.</b> CycloneDX plus findings,
-        a timeline and a manifest of sha256 digests — so a third party can verify the pack
-        without trusting the machine that produced it. That check is its own package, with
-        no dependencies and no network calls: <code>pip install celmis</code>, then
-        <code>celmis verify pack.zip</code>, on any Python from 3.9 and on a machine that
-        has never run Celmis. Celmis does not claim regulatory compliance on your behalf,
+        a timeline and a manifest of sha256 digests. Those digests prove the archive is
+        internally consistent — not that it is the archive that left, since the manifest
+        holds no hash of itself and an editor rewrites the entry along with the file. The
+        export returns the manifest's own sha256 in a header; publish it where the pack is
+        not, and the recipient checks against a value you never handed them. That check is
+        its own package, with no dependencies and no network calls:
+        <code>pip install celmis</code>, then
+        <code>celmis verify pack.zip --manifest-sha256 &lt;hex&gt;</code>, on any Python
+        from 3.9 and on a machine that has never run Celmis. Celmis does not claim regulatory compliance on your behalf,
         and says so in its own output.</figcaption>
     </figure>
 

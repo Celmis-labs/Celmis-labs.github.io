@@ -185,13 +185,33 @@
 
     <p>What turns it into evidence is a manifest: a list of every file in the pack with
       a cryptographic digest of its contents. The recipient recomputes the digests. If
-      they match, the files are the ones the manifest describes. If a single byte of the
-      component list changed after the fact, the digest does not match and the pack fails
-      its own check.</p>
+      they match, the files are the ones the manifest describes.</p>
 
-    <p>That is the property worth designing for — <strong>a third party can verify the
-      pack without trusting the machine that produced it, or the people who ran it</strong>.
-      Everything else in a compliance conversation is easier once that holds.</p>
+    <p>That is worth having, and it is worth being exact about what it buys, because the
+      obvious next sentence — <em>change one byte and the pack fails its own check</em> —
+      is false, and it is false in most manifest formats, not just ours. The manifest is
+      a file in the archive like any other, and it carries no digest of itself. Someone
+      who edits <code>findings.json</code> to drop an inconvenient vulnerability rewrites
+      the one line in <code>MANIFEST.json</code> that describes it, and the pack verifies
+      clean. We only know this because we tried it against a real export: the forged pack
+      came back <code>OK</code>, exit code 0.</p>
+
+    <p>So the digests prove the archive is <em>internally consistent</em> — that these
+      files match this manifest. Standing alone, they do not prove it is the archive that
+      was exported, and a compliance conversation that treats the two as the same thing
+      is resting on nothing.</p>
+
+    <p>The gap closes with one more move, and it is a cheap one: <strong>the digest of the
+      manifest has to reach the recipient by a route the archive did not travel</strong>.
+      Celmis returns it in an <code>X-Celmis-Manifest-SHA256</code> header at export and
+      writes it to the log. Put that value somewhere the pack is not — the audit ticket,
+      a release note, the email that says the pack is coming — and the recipient checks
+      against a number nobody handed them along with the file. Then, and only then, does
+      <strong>a third party verify the pack without trusting the machine that produced
+      it, or the people who ran it</strong>.</p>
+
+    <p>Publishing the digest is the part that requires a person to have thought about it.
+      A tool cannot do it for you, which is presumably why so few packs come with one.</p>
 
     <h2 id="worked-example">A worked example</h2>
 

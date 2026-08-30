@@ -197,9 +197,15 @@ timeline.jsonl         when each fact entered the record
 MANIFEST.json          sha256 of every file above
 ```
 
-That last file is the point. An archive of files is not evidence — nothing in it stops
-the contents from having been edited afterwards. A manifest of digests means **a third
-party can verify the pack without trusting the machine that produced it**:
+That last file is the point, with one qualification that most write-ups skip. An archive
+of files is not evidence — nothing in it stops the contents from having been edited
+afterwards. A manifest of digests fixes the archive to itself: recompute them, and you
+know these files match this manifest. It does not, on its own, make the pack unforgeable,
+because the manifest holds no digest of itself and whoever edits a file rewrites its entry
+on the way past. The export returns the manifest's own sha256 in an
+`X-Celmis-Manifest-SHA256` header; published where the pack is not, it gives the recipient
+a value that did not travel with the file, and **then** a third party can verify the pack
+without trusting the machine that produced it:
 
 ```json
 {
