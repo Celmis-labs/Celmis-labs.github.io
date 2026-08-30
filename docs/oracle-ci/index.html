@@ -44,15 +44,26 @@
   </div>
   <div class="doclayout">
     <article class="prose">
-<h1>Free CI/CD: GitHub Actions → Oracle Always Free</h1>
-<p>Push to <code>main</code> → GitHub Actions rsyncs the repo to your Oracle box and runs
-<code>docker compose up -d --build</code> <strong>on the box</strong>. The ARM box builds arm64 images
-natively (no cross-build, no registry). GitHub's hosted runner only orchestrates
-over SSH, so it stays inside the free minutes and works for private repos too.</p>
-<pre><code>git push ──▶ GitHub Actions (free runner) ──rsync+ssh──▶ Oracle VM
-                                                         └─ docker compose build+up (arm64, native)
-                                                         └─ Caddy → HTTP
+<h1>Running Celmis on an Oracle Always Free box</h1>
+<p><strong>This page described a pipeline that no longer exists.</strong> It said a push to
+<code>main</code> made GitHub Actions rsync the repository to the box and run
+<code>docker compose up -d --build</code> <strong>there</strong>. That is what
+<code>.github/workflows/release.yml</code> was written to replace: building on the
+production box took 485 seconds and 4.2GB of a disk with 4.2GB free, reused no
+cache, and the rented runner was billed for the minutes it spent watching over
+SSH — which is what exhausted the account's free Actions minutes. There is no
+rsync and no <code>--build</code> in any workflow now, and no &quot;Deploy to Oracle&quot; workflow
+to run.</p>
+<p>What happens instead: images are built <strong>once, on a tag</strong>, published to GHCR,
+and pulled by the box. Deploying is one command on the box.</p>
+<pre><code>git tag v0.1.x ──▶ Release images (GitHub-hosted, amd64+arm64) ──▶ ghcr.io
+                                                                     │
+                        on the box:  scripts/deploy-on-server.sh v0.1.x
+                                     └─ docker compose pull + up -d
+                                     └─ Caddy → HTTP
 </code></pre>
+<p>A user installs by pulling three images rather than building them, which is
+the point of the change; the Oracle box is just one more place that pulls.</p>
 <p>Files in the repo: <a href="https://github.com/Celmis-labs/Celmis/blob/main/scripts/deploy-on-server.sh">scripts/deploy-on-server.sh</a>,
 <a href="https://github.com/Celmis-labs/Celmis/blob/main/deploy/oracle/caddy-http.yml">deploy/oracle/caddy-http.yml</a>,
 <a href="https://github.com/Celmis-labs/Celmis/blob/main/deploy/oracle/Caddyfile.http">deploy/oracle/Caddyfile.http</a>.</p>
@@ -150,8 +161,13 @@ CELMIS_CORS_ORIGINS=https://app.example.com
 CELMIS_TRUST_PROXY=1
 
 # --- keep web/api off the public interface; only Caddy is exposed ---
-API_HOST_PORT=127.0.0.1:8000
-WEB_HOST_PORT=127.0.0.1:3000
+# The PORT only. docker-compose.yml already writes the loopback address in
+# front of it — `&quot;127.0.0.1:${API_HOST_PORT:-8000}:8000&quot;` — so an address
+# here is a second one, and `docker compose config` refuses the file with
+# `invalid IP address: 127.0.0.1:127.0.0.1`. This page used to say
+# `API_HOST_PORT=127.0.0.1:8000`, which does not start.
+API_HOST_PORT=8000
+WEB_HOST_PORT=3000
 </code></pre>
 <hr />
 <h2 id="3-github-secrets"><a class="anchor" href="#3-github-secrets" aria-label="Link to this section">#</a>3. GitHub secrets</h2>
@@ -207,15 +223,27 @@ WEB_HOST_PORT=127.0.0.1:3000
 </tr>
 </tbody>
 </table></div>
-<p>Set these <strong>before</strong> the first deploy so Caddy can obtain certs.</p>
+<p>Set these before the first deploy if you intend to put TLS in front of the
+box later; the overlay named above serves HTTP and obtains no certificate.</p>
 <hr />
 <h2 id="5-go"><a class="anchor" href="#5-go" aria-label="Link to this section">#</a>5. Go</h2>
-<pre><code class="language-bash">git push origin main         # or run the workflow manually (Actions → Deploy to Oracle → Run)
+<pre><code class="language-bash"># on your machine: cut the release, and let Actions build and publish it
+git tag -a v0.1.x -m v0.1.x &amp;&amp; git push origin v0.1.x
+
+# on the box: pull that tag and bring the stack up
+cd /root/celmis &amp;&amp; git fetch --tags &amp;&amp; git reset --hard origin/main
+bash scripts/deploy-on-server.sh v0.1.x
 </code></pre>
-<p>Watch <strong>Actions</strong> for the run, then <code>docker compose logs -f caddy</code> on the box for
-<code>certificate obtained</code>. Open <code>https://app.example.com/signup</code> — <strong>the first user
-becomes admin</strong> → Settings → LLM to add keys (they persist in the <code>/workspace</code>
-volume across redeploys).</p>
+<p>The script prints the version it settled on and waits for the API to report
+healthy, so a deploy that did not take says so rather than looking finished.
+Then open <code>http://&lt;your-box&gt;/signup</code> — <strong>the first user becomes admin</strong> →
+Settings → LLM to add keys (they persist in the <code>/workspace</code> volume across
+redeploys).</p>
+<p><strong>HTTP, not HTTPS.</strong> The overlay this page names serves plain HTTP and the TLS
+overlays that used to sit beside it were deleted; <code>tests/security/ test_no_service_faces_the_internet.py</code> reads the same overlay, which is what
+keeps the two from drifting again. Section 4's DNS records are worth setting
+anyway, but nothing here obtains a certificate — that needs a TLS overlay you
+supply.</p>
 <hr />
 <h2 id="alternatives"><a class="anchor" href="#alternatives" aria-label="Link to this section">#</a>Alternatives</h2>
 <ul>
@@ -226,9 +254,10 @@ webhook, and brings its own Traefik + TLS. Same result, no Actions file.</li>
 (<code>runs-on: [self-hosted, ARM64]</code>) and skip SSH entirely. Great for a <strong>private</strong>
 repo; avoid on a public repo (fork PRs could run on your box).</li>
 <li><strong>GitLab CI:</strong> identical shape — a job that installs an SSH key from CI
-variables and runs the same <code>rsync</code> + <code>ssh … compose up -d --build</code>.</li>
-<li><strong>First-run tip:</strong> on a fresh box <code>docker compose up --build</code> needs <code>.env</code>
-present (step 2) or it fails on missing secrets. Create it before the first push.</li>
+variables and runs <code>ssh … scripts/deploy-on-server.sh &lt;tag&gt;</code>. Build once and
+pull; building on the box is the thing this setup moved away from.</li>
+<li><strong>First-run tip:</strong> on a fresh box the deploy needs <code>.env</code> present (step 2) or
+it fails on missing secrets. Create it before the first deploy.</li>
 </ul>
 
       <div class="docnav"><a href="/docs/litellm/">← LiteLLM gateway</a><a href="/docs/backup/">Backup and restore →</a></div>

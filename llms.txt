@@ -18,6 +18,17 @@
 > own. It runs on a single machine under `docker compose`, with the model provider of
 > your choice behind it.
 
+## What it does not do
+
+Celmis has **no log-ingestion endpoint and no log store**. It starts from the alert your
+monitoring already sent; it reads a log file only when a person attaches one to a session
+by hand; and it embeds no Grafana. The repository ships an *optional* compose overlay
+(Prometheus, Loki, Promtail, Grafana) which, if enabled, tails that host's container logs
+into a Grafana the operator runs — not into Celmis.
+
+It also does not claim regulatory compliance on anyone's behalf, and says so in the
+evidence pack it generates.
+
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis
 

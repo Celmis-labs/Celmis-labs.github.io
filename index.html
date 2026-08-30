@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Celmis — from the alert to the fixed pull request, self-hosted</title>
-<meta name="description" content="Your monitoring already told you something broke. Celmis is what happens next: it knows which repository the alert belongs to, and an embedded Claude Code session on your own subscription fixes it and opens a pull request. Self-hosted on one machine, AGPLv3.">
+<meta name="description" content="Your monitoring told you something broke. Celmis knows whose code it is, and an embedded session fixes it and opens the pull request. Self-hosted, AGPLv3.">
 <link rel="canonical" href="https://celmis-labs.github.io/">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
@@ -190,6 +190,13 @@
       <p class="rv">Celmis does not watch your services; Grafana or whatever you already
         run does that, and it is good at it. This is the part that comes after the alert —
         the walk from a firing rule to a diff someone can review.</p>
+      <p class="rv small">To be exact about it, since the distinction is easy to blur:
+        Celmis has <strong>no log-ingestion endpoint and no log store</strong>. It starts
+        from the alert your monitoring already sent, reads a log file only when a person
+        attaches one to a session by hand, and embeds no Grafana — the repository ships an
+        <em>optional</em> Prometheus/Loki/Promtail/Grafana compose overlay which, if you
+        turn it on, tails that host's container logs into a Grafana <em>you</em> run, not
+        into Celmis.</p>
       <p class="rv"><strong>Fix with Claude</strong> is the name of that step. It starts
         from a production alert or from a dependency finding, opens an embedded
         <strong>Claude Code</strong> session pre-filled with the repository, the package,

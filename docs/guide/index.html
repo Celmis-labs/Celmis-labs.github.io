@@ -57,6 +57,14 @@ finding that took <strong>220 seconds</strong>, from whatever device the alert r
 <p>Celmis does not watch your services. Grafana, or whatever you already run, does
 that and does it well. This is the part that comes after the alert: the walk from a
 firing rule to a diff someone can review.</p>
+<p>To be exact, because the distinction is easy to blur: Celmis has <strong>no log-ingestion
+endpoint and no log store</strong>. It starts from the alert your monitoring already sent,
+reads a log file only when a person attaches one to a session by hand, and embeds no
+Grafana. This repository does ship an <em>optional</em> Prometheus/Loki/Promtail/Grafana
+compose overlay — <a href="https://github.com/Celmis-labs/Celmis/blob/main/docker-compose.observability.yml"><code>docker-compose.observability.yml</code></a>
+— and if you enable it, Promtail tails that host's container logs into a Grafana <strong>you</strong>
+run, not into Celmis. Read its own header before enabling it: it publishes its ports on
+all interfaces, unlike the main compose file.</p>
 <p>That loop is the product. It closes because everything sits on one index: a symbol
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
@@ -118,7 +126,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>An alert fires at 02:00 and you are not at a desk</strong></td>
-<td>It lands in Celmis, a web push reaches your phone, and <em>Fix with Claude</em> opens a session already holding the alert. The runner opens the pull request → <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></td>
+<td>It lands in Celmis and goes out to the workspace's chat channel, and <em>Fix with Claude</em> opens a session already holding the alert. The runner opens the pull request → <a href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></td>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
@@ -415,9 +423,10 @@ design</strong> — monitoring systems cannot do OAuth — and <strong>tenant-bo
 construction</strong>: a token can only ever write into the workspace it belongs to.</p>
 <p>What that buys is the route with no laptop in it:</p>
 <ol>
-<li>An alert fires. It reaches Celmis and a web push notification reaches your phone
-— real web push, VAPID and a service worker, so it arrives whether or not the tab
-is open.</li>
+<li>An alert fires. It reaches Celmis and goes straight out to whatever channel the
+workspace has bound — Slack, Discord, Google Chat or a plain webhook — so it
+finds you where you already are rather than on a page you have to remember to
+open.</li>
 <li>You open it. The alert carries its repository, because <code>route_incident</code> can take
 a stack trace and say which repository and which owner it belongs to.</li>
 <li>You press <strong>Fix with Claude</strong>. The session opens already holding the alert — not
