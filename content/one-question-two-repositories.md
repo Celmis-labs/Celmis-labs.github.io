@@ -151,12 +151,11 @@ Two things worth stealing from how this is wired, both of which I got wrong firs
 Correct → `202`. Replay the exact same delivery → `{"status": "duplicate"}` rather than a
 second review and a second bill. Delivery IDs are cheap; duplicated model calls are not.
 
-**A failed channel test must not echo the URL it tested.** Google Chat webhook URLs carry
-`key` and `token` in the query string — **the URL is a credential**. `httpx` puts the
-request URL in the exception text, and an early version of the endpoint returned
-`str(exc)` verbatim, which meant a failed test handed the caller back the secret it was
-testing. If you are building anything that tests a user-supplied webhook, go and check
-that path in your own code right now.
+**A failed channel test must not echo back what it tested.** Chat webhook URLs often carry
+credentials in the query string, so an error message that quotes the request URL is an
+error message that quotes a secret. Failures on that path report the status and nothing
+else. If you are building anything that tests a user-supplied webhook, go and check what
+your own error text contains.
 
 ## Fixing, on your subscription and your machine
 
