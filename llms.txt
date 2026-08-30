@@ -67,8 +67,10 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   who else calls what is being changed, including from another repository.
 - **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
   and a manifest of sha256 digests, so a third party can verify the pack without
-  trusting the machine that produced it. Celmis does not claim regulatory
-  compliance on the operator's behalf.
+  trusting the machine that produced it. That check is a separate, dependency-free
+  package: `pip install celmis` then `celmis verify pack.zip`, offline, on any
+  Python from 3.9, on a machine that has never run Celmis. Celmis does not claim
+  regulatory compliance on the operator's behalf.
 - **Ask for work across repositories** — every other surface acts on one thing at a
   time. This one takes a sentence: "generate documentation for every service that has
   none", "audit everything under acme-ai not audited in thirty days". The answer to

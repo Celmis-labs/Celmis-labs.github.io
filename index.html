@@ -343,8 +343,11 @@
       </div>
       <figcaption><b>Dependencies, SBOM and the evidence pack.</b> CycloneDX plus findings,
         a timeline and a manifest of sha256 digests — so a third party can verify the pack
-        without trusting the machine that produced it. Celmis does not claim regulatory
-        compliance on your behalf, and says so in its own output.</figcaption>
+        without trusting the machine that produced it. That check is its own package, with
+        no dependencies and no network calls: <code>pip install celmis</code>, then
+        <code>celmis verify pack.zip</code>, on any Python from 3.9 and on a machine that
+        has never run Celmis. Celmis does not claim regulatory compliance on your behalf,
+        and says so in its own output.</figcaption>
     </figure>
 
     <figure class="rv">
