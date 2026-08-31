@@ -99,7 +99,8 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 - **Access control** — per-repository visibility of none, metadata or code, with
   deny globs that win even at code level, so two teams can share an integration
   without sharing credentials.
-- **MCP server** — eighteen tools over the same index, under the same access
+- **MCP server** — twenty-three tools over the same index, eighteen of them
+  read-only, under the same access
   rules, for any MCP client.
 
 ## Measured facts

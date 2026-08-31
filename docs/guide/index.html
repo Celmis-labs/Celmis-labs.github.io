@@ -79,7 +79,7 @@ stack will not start without one.</p>
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
 CycloneDX SBOM and a verifiable evidence pack, generates documentation, and serves
-eighteen tools over MCP — surfaces worth having, and none of them the point on
+twenty-three tools over MCP — surfaces worth having, and none of them the point on
 their own.</p>
 <p>It runs on one machine under <code>docker compose</code>, with the model provider of your
 choice behind it, and nothing leaves your network except the calls you configure.</p>
@@ -140,7 +140,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
-<td>Point it at <code>/mcp/</code>. Eighteen tools over the same index, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
+<td>Point it at <code>/mcp/</code>. Twenty-three tools over the same index, eighteen of them read-only, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
 </tr>
 </tbody>
 </table></div>
@@ -653,7 +653,12 @@ docker compose exec api analyzer mcp issue-token \
 }
 </code></pre>
 <h3 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h3>
-<p>The HTTP mount serves <strong>18 tools</strong>. They answer the questions a grep cannot:</p>
+<p>The HTTP mount serves <strong>23 tools</strong>, and a client does not necessarily see all of
+them. Eighteen are read-only; the five that write — <code>add_repo</code>, <code>start_dep_audit</code>,
+<code>generate_docs</code>, <code>set_auto_review</code>, <code>migrate_consumers</code> — require a scope no
+read token carries, so they are absent from a read client's tool list rather than
+merely refused when called. This is what the read-only ones answer, and they are
+the questions a grep cannot:</p>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -713,8 +718,9 @@ Claude Code picks it up automatically when this repository is open.</p>
 <p>One <code>search_symbols</code> call, one contract symbol, and it comes back from two
 repositories in two languages — to a client that has checked out neither. The
 boundary a diff never crosses is the one this makes ordinary.</p>
-<p>Eighteen tools, served over Streamable HTTP at <code>/mcp/</code> and authenticated with the
-same bearer token as <code>/api/</code>:</p>
+<p>Twenty-three tools, served over Streamable HTTP at <code>/mcp/</code> and authenticated with
+the same bearer token as <code>/api/</code>. Eighteen read, five write, and a token sees only
+the ones its scopes allow:</p>
 <div class="tablewrap"><table>
 <thead>
 <tr>
