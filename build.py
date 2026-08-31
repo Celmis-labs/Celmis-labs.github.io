@@ -11,6 +11,7 @@ import datetime
 import html
 import pathlib
 import re
+import shutil
 import sys
 
 try:
@@ -227,12 +228,68 @@ def shell(title, desc, canonical, head_extra, body):
            head_extra=head_extra, nav=NAV, body=body, foot=FOOT, js=THEME_JS)
 
 
+def copy_images(src_root: pathlib.Path, out_root: pathlib.Path) -> None:
+    """Bring every referenced picture across, and say what is missing.
+
+    `rewrite_links` turns `docs/images/x.png` into `/img/x.png` and NOTHING
+    copied the file. So a screenshot added to the product repository rendered
+    as a broken image here until somebody remembered to copy it by hand, and
+    for `alert-to-fix.png` nobody did: the guide page has been serving a 404
+    in the middle of the alerts section. It was not visible in the build log,
+    because the build never looked.
+
+    The listing is printed either way. A silent copy is how the last one went
+    unnoticed for as long as it did.
+    """
+    src_dir = src_root / "docs" / "images"
+    out_dir = out_root / "img"
+    if not src_dir.is_dir():
+        print("  no docs/images in the source tree — nothing to copy")
+        return
+    out_dir.mkdir(exist_ok=True)
+
+    wanted = set()
+    for page in PAGES:
+        src = src_root / page["src"]
+        if src.exists():
+            wanted |= set(re.findall(r"\]\((?:docs/)?images/([^)]+)\)",
+                                    src.read_text(encoding="utf-8")))
+
+    copied, missing = [], []
+    for name in sorted(wanted):
+        origin = src_dir / name
+        if not origin.is_file():
+            missing.append(name)
+            continue
+        target = out_dir / name
+        if not target.exists() or target.read_bytes() != origin.read_bytes():
+            shutil.copy2(origin, target)
+            copied.append(name)
+
+    orphans = sorted(p.name for p in out_dir.iterdir()
+                     if p.is_file() and p.name not in wanted
+                     and p.name.startswith(("agent-", "alert-", "ask-", "compliance-",
+                                            "first-", "mcp-", "pr-", "project-",
+                                            "session-", "fix-")))
+    print(f"  images: {len(wanted)} referenced, {len(copied)} copied")
+    for name in copied:
+        print(f"    + {name}")
+    for name in orphans:
+        print(f"    orphan in img/ (nothing references it): {name}")
+    if missing:
+        raise SystemExit(
+            "  MISSING, and the page would serve a 404 for each:\n    "
+            + "\n    ".join(missing))
+
+
 def build():
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", default=str(pathlib.Path.home() / "Desktop" / "Celmis"))
     args = ap.parse_args()
     src_root = pathlib.Path(args.source)
     out_root = pathlib.Path(__file__).parent
+
+    copy_images(src_root, out_root)
 
     md = MarkdownIt("commonmark", {"html": True, "linkify": False})
     md.enable("table").enable("strikethrough")
