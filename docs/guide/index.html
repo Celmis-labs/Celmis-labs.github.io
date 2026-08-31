@@ -120,7 +120,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>A customer or an auditor asks for your SBOM</strong></td>
-<td>One button, CycloneDX, plus an evidence pack whose manifest lets them verify it without trusting you → <a href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></td>
+<td>One button, CycloneDX, plus an evidence pack whose manifest they recompute themselves — against a hash you publish where the pack is not → <a href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></td>
 </tr>
 <tr>
 <td><strong>A vulnerability lands in a dependency</strong></td>
@@ -207,7 +207,7 @@ of every finding it scored false, and the command that reproduces both are in
 <p>Postgres and Qdrant are <strong>bundled</strong> — no external cluster to provision. No
 Python or Node.js install is needed for the Docker flow.</p>
 <h3 id="start-it"><a class="anchor" href="#start-it" aria-label="Link to this section">#</a>Start it</h3>
-<pre><code class="language-bash">git clone &lt;your-fork-url&gt; celmis
+<pre><code class="language-bash">git clone https://github.com/Celmis-labs/Celmis.git celmis
 cd celmis
 
 # Generates .env and fills every secret in the format each one needs.
@@ -851,9 +851,10 @@ of them is &quot;the model is weak&quot; — all four are about what the model w
 The largest is an identifier declared in the same file but outside the excerpt
 the agent received: a method parameter 26 lines up, an import on line 3, an
 <code>attr_reader</code> on line 18.</p>
-<p>The full report gives the claim, the code at that commit, the verdict, the
-reasoning and a permalink for each of the 79, so any verdict can be disputed
-with the same evidence in front of you.</p>
+<p><a href="https://celmis-labs.github.io/writing/auditing-79-false-positives/">The full report</a>
+gives the claim, the code at that commit, the verdict, the reasoning and a
+permalink for each of the 79, so any verdict can be disputed with the same
+evidence in front of you.</p>
 <h2 id="test-repositories"><a class="anchor" href="#test-repositories" aria-label="Link to this section">#</a>Test repositories</h2>
 <p>Every review in the run above is still live and public. These are real pull
 requests from real projects, forked with their history, carrying the inline
