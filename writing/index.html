@@ -39,10 +39,28 @@
   <div class="dochead">
     <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
     <h1 class="docttl">Writing</h1>
-    <p class="docsub">Two pieces so far. One is about the tool; the other is about a number the tool was given, and whether it means what it appears to mean.</p>
+    <p class="docsub">Four pieces so far. One is about the tool; one is about a number the tool was given, and whether it means what it appears to mean; two are about the problems it was built for.</p>
   </div>
   <div class="doclayout">
     <article class="prose">
+      <h2><a href="/writing/remembering-the-conversation-is-not-knowing-the-code/">A memory server remembers your conversation. That is not the same as knowing your code.</a></h2>
+      <p class="docmeta"><span>2026-09-01</span></p>
+      <p>The Model Context Protocol has no memory primitive and no memory extension, and its
+      July 2026 revision deprecated two of the three client features it used to have. So every
+      memory over MCP is a server implementing one with ordinary tools — and what those servers
+      remember is the right thing for them to remember. Conversation is personal, stated and
+      durable. Knowing a codebase is shared, derived and perishable. Same word, opposite
+      requirements, and a remembered fact about code does not decay into silence but into a
+      confident wrong answer.</p>
+
+      <h2><a href="/writing/documentation-that-goes-stale-loudly/">The wiki cannot fail. That is what is wrong with it.</a></h2>
+      <p class="docmeta"><span>2026-09-01</span></p>
+      <p>Documentation with no build has no failure mode. Nothing breaks when it stops being
+      true, so it decays into a confident wrong answer that reads exactly like a right one —
+      which is worse than no documentation, because a new joiner cannot tell the difference.
+      What changes when the document is an artefact with a build, a provenance record naming
+      the commit it describes, and a way to be seen failing.</p>
+
       <h2><a href="/writing/auditing-79-false-positives/">33 of 79 false positives on a code review benchmark were real defects</a></h2>
       <p class="docmeta"><span>2026-08-28</span></p>
       <p>The Martian Code Review Bench offline set scored this run at 48.0% precision. A benchmark

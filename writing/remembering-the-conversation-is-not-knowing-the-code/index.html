@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A memory server remembers your conversation. That is not the same as knowing your code. — Celmis</title>
+<meta name="description" content="MCP has no memory primitive, and the July 2026 revision deprecated two of its three client features. Conversation is personal, stated and durable; code knowledge is shared, derived and perishable. Same word, opposite requirements.">
+<link rel="canonical" href="https://celmis-labs.github.io/writing/remembering-the-conversation-is-not-knowing-the-code/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A memory server remembers your conversation. That is not the same as knowing your code. — Celmis">
+<meta property="og:description" content="MCP has no memory primitive, and the July 2026 revision deprecated two of its three client features. Conversation is personal, stated and durable; code knowledge is shared, derived and perishable. Same word, opposite requirements.">
+<meta property="og:url" content="https://celmis-labs.github.io/writing/remembering-the-conversation-is-not-knowing-the-code/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"A memory server remembers your conversation. That is not the same as knowing your code.","description":"MCP has no memory primitive, and the July 2026 revision deprecated two of its three client features. Conversation is personal, stated and durable; code knowledge is shared, derived and perishable. Same word, opposite requirements.","url":"https://celmis-labs.github.io/writing/remembering-the-conversation-is-not-knowing-the-code/","datePublished":"2026-09-01","dateModified":"2026-09-01","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">A memory server remembers your conversation. That is not the same as knowing your code.</h1>
+    <p class="docsub">MCP has no memory primitive, and the July 2026 revision deprecated two of its three client features. Conversation is personal, stated and durable; code knowledge is shared, derived and perishable. Same word, opposite requirements.</p>
+    <p class="docmeta"><span>2026-09-01</span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<p>A session ends. Your agent had worked out, over forty minutes, that the retry logic lives in
+one service and the thing that gives up on it lives in another, that the queue name is spelled
+two different ways, and that the person to ask about any of it left last year. Tomorrow you
+open a new session and it knows none of that. Neither does your colleague's session. Neither
+does the agent reviewing the pull request that comes out of it.</p>
+<p>It is the same forty minutes a new engineer spends in week one, and the same forty minutes the
+README would have saved if it were still true. It is why a manager asking &quot;where is this up to&quot;
+has to interrupt someone who knows. The knowledge exists; it has nowhere to live but in people
+and chat logs.</p>
+<p>The reflex is to reach for memory. That reflex is worth interrogating, because there are two
+different problems hiding under one word, and only one of them is what memory servers are for.</p>
+<h2 id="what-mcp-actually-specifies"><a class="anchor" href="#what-mcp-actually-specifies" aria-label="Link to this section">#</a>What MCP actually specifies</h2>
+<p>It helps to be exact, because &quot;MCP memory&quot; gets said as though it were a feature of the
+protocol. It is not — and the current revision makes that harder to miss rather than easier.</p>
+<p>Read the base protocol's own three-line summary in revision <code>2026-07-28</code>: JSON-RPC message
+format, <strong>stateless, self-contained requests</strong>, per-request capability negotiation. Servers
+offer three features — Resources, Prompts and Tools. Clients offer one: Elicitation. Sampling
+and Roots, which used to make that three, were deprecated in this same revision under SEP-2577,
+along with Logging and Dynamic Client Registration; the migration note against Sampling reads
+&quot;integrate directly with LLM provider APIs&quot;.</p>
+<p>There is no memory primitive and no persistence primitive. There is no memory <em>extension</em>
+either — the official list is the two authorization extensions, MCP Apps, Skills over MCP, and
+Tasks. Tasks is the one worth pre-empting, because it advertises &quot;durable handles&quot; and that
+sounds adjacent: a task ID survives a disconnect so a client can resume polling a long-running
+call, it carries a TTL, and what it holds is the status and eventual result of that one call.
+It is durable in the sense a job ID is durable. It is not somewhere knowledge goes to live.</p>
+<p>So every memory you have seen over MCP is a server implementing memory with ordinary tools.
+Anthropic's own Memory MCP server keeps a knowledge graph in a JSONL file; other community
+servers do the same job over different storage. Claude Code, separately from MCP altogether,
+ships Auto Memory — a <code>MEMORY.md</code> per project, on by default since 2.1.59.</p>
+<p>This is a compliment to those projects, not a criticism. They took a gap the protocol
+deliberately left open and filled it with plain tools — exactly what the tool primitive is for.</p>
+<h2 id="what-they-remember-and-why-that-is-the-right-thing-for-them-to-remember"><a class="anchor" href="#what-they-remember-and-why-that-is-the-right-thing-for-them-to-remember" aria-label="Link to this section">#</a>What they remember, and why that is the right thing for them to remember</h2>
+<p>A memory server stores what was said. Your preferences. The decision you made on Tuesday and
+the reason you gave. The fact that you want British spelling and no bullet lists. Entities,
+relations and observations, accumulated from conversation.</p>
+<p>Two properties of that content matter here.</p>
+<p>It is <strong>personal</strong>. My conversational memory is a bad thing to hand to you. It contains my
+half-formed conclusions, my shortcuts, and things I said and then revised. Sharing it is not
+an unimplemented feature; it is a category error. The value is that it is <em>mine</em>.</p>
+<p>It is <strong>stated</strong>. It is true because someone asserted it. Nothing in the repository can
+contradict it, because it was never derived from the repository in the first place.</p>
+<p>For remembering a conversation, both properties are correct. Now hold them against the other
+problem.</p>
+<h2 id="knowing-the-code-has-the-opposite-shape"><a class="anchor" href="#knowing-the-code-has-the-opposite-shape" aria-label="Link to this section">#</a>Knowing the code has the opposite shape</h2>
+<p>&quot;Where is this symbol used, in every repository, with file and line&quot; is not personal. There is
+exactly one right answer and everybody who has read access to those repositories is entitled
+to the same one. Storing it per person means storing the same fact many times and being wrong
+in a different way in each copy.</p>
+<p>It is not stated, either. It is <strong>derived</strong> — a function of the current commit, and therefore
+<strong>perishable</strong> in a way conversational memory is not. If I told you on Tuesday that I prefer
+tabs, that is still true on Friday. If an agent noted on Tuesday that <code>apply_refund</code> had three
+callers, that is a claim about a commit, and a merge on Wednesday can make it false without
+anyone touching the note. A memory store cannot know that happened, because nothing said it.</p>
+<p>That is the failure mode worth naming, and it is the same one that makes stale documentation
+worse than none. A remembered fact about code does not decay into silence. It decays into a
+confident wrong answer, indistinguishable in tone from a right one.</p>
+<p>So: conversation is personal, stated and durable. Code knowledge is shared, derived and
+perishable. Same word, opposite requirements. The fix for the second is not a better memory —
+it is not memory at all. It is an index that is rebuilt from the code, that many callers read,
+and that has a stated relationship to a commit.</p>
+<h2 id="one-implementation-which-you-can-read"><a class="anchor" href="#one-implementation-which-you-can-read" aria-label="Link to this section">#</a>One implementation, which you can read</h2>
+<p>Celmis is mine, so treat what follows as a worked example rather than a recommendation. It is a self-hosted platform for most of a
+development cycle — the alert that arrives, the fix that goes out, the dependency and SBOM
+evidence underneath — and what this article is about is one layer of it: the index. It is
+AGPL-3.0, with a carve-out for <code>ee/</code> that today holds no product code, and every claim below
+names the file, so you can disagree with me by reading it.</p>
+<p>It builds a tree-sitter symbol graph per repository and serves that same graph over MCP. Eight
+languages have hand-written extractors — TypeScript, Vue, Python, Go, PHP, Java, C#, C++ — and
+sixteen more (Ruby, Rust, Kotlin, Swift, Scala, Elixir, Dart, Lua, R, Solidity, OCaml, F#, Elm,
+Gleam, Racket, Fortran) come from the grammar authors' own tags queries, registered at the
+lowest priority so a real extractor always wins. Dockerfiles, Compose files, Helm charts and CI
+workflows are matched by filename or path rather than suffix, and Kubernetes manifests by
+sniffing the first few kilobytes for <code>apiVersion</code> and <code>kind</code>. Terraform is the ordinary case —
+<code>.tf</code>.</p>
+<p>The HTTP mount registers 23 tools, eighteen of which read and five of which write. A sample of
+what the read half returns:</p>
+<ul>
+<li><code>search_symbols</code> — name, kind, file, line, signature and repo slug, for definitions matching
+a name across every repository in a project.</li>
+<li><code>find_consumers</code> — who calls a symbol, with repo, file and line. The list of what breaks.</li>
+<li><code>get_api_surface</code> — functions whose <em>names</em> look like HTTP handlers, with a route path guessed
+from the name by turning underscores into slashes, plus method, file and line. A name-convention
+heuristic over the symbol index and nothing more; it does not read route decorators, and the
+source says so.</li>
+<li><code>get_architecture</code> — the cached orientation summary for a repository, with the model that
+produced it and the timestamp, so you can see how old it is.</li>
+<li><code>get_owner</code> — top git-blame authors plus matched CODEOWNERS entries for a path. This is the
+one that answers &quot;who do I ask&quot; without asking.</li>
+<li><code>list_accessible_repos</code> and <code>get_my_access</code> — the agent asking what it is allowed to look at,
+and being told which path globs are denied.</li>
+<li><code>start_integration_walk</code> — an ordered checklist of the other tool calls, returned as data, for
+a client that would otherwise fire ten guesses.</li>
+</ul>
+<p>Three things about that list are load-bearing.</p>
+<p><strong>It is the same index, not a copy.</strong> The MCP tools open <code>settings.repo_graph_path(slug)</code>. So
+does the retrieval layer answering a human's question in the web UI. So does the pull-request
+reviewer. One graph file per repository, three readers. Celmis does hold its own clone and index
+it — one copy, on your infrastructure, not one per agent or per session.</p>
+<p><strong>It is the same access rules, with one exception I will name.</strong> Every tool that returns code,
+ownership or review content calls <code>caller_access</code>, which calls <code>resolve_access</code> from
+<code>src/access</code> — the identical function behind the human REST endpoint and behind multi-repository
+question answering. A repository you may not research is omitted and named in <code>blocked_repos</code>;
+a denied path is filtered out of the matches, and <code>search_symbols</code> also reports how many it hid,
+in <code>hidden_symbol_count</code>, though not every tool yet returns that count. The exception:
+<code>list_deprecations</code> reads its table today without a workspace or access predicate. That is a
+bug on my side, not a design, and it is being fixed. While I am being exact: the scope filter on
+<code>tools/list</code> is listing hygiene, not authorisation — a scoped read client is not <em>shown</em> the
+write tools, but the HTTP mount carries no per-call scope check, and a token with no scopes sees
+everything. Writes are gated on the token resolving to a workspace, not on its scopes. Do not
+treat a read scope as a boundary.</p>
+<p><strong>It has a stated relationship to a commit.</strong> A daily sweep runs <code>git ls-remote</code> — one network
+round trip, no clone, no fetch — and compares the branch head with <code>last_indexed_sha</code>. It
+reports three outcomes, not two: up to date, behind, and <em>could not tell</em>, because a check that
+cannot reach the remote and renders as &quot;no new changes&quot; is worse than no check. Behind enqueues
+an incremental pass that diffs <code>last_sha..HEAD</code>, drops the symbols for every touched file and
+re-extracts them, rather than re-parsing the whole repository because one file moved.</p>
+<p>The stdio server carries a raw-Cypher escape hatch too: it tokenises the query and rejects any
+of eleven write keywords before running it — a denylist, not a parser, as its own docstring says.
+It is not one of the HTTP mount's 23.</p>
+<h2 id="what-this-does-not-do"><a class="anchor" href="#what-this-does-not-do" aria-label="Link to this section">#</a>What this does not do</h2>
+<p>Celmis's MCP server has no memory. Zero hits for memory, persist, recall or remember across
+<code>src/mcp_server/</code>. It will not remember that you decided to deprecate the old endpoint, or why.
+That is conversational, it is yours, and a memory server is the right tool for it — run one
+alongside, and let it keep the decisions while the index keeps the code.</p>
+<p>The honest claim is narrower than &quot;your agent finally has long-term memory&quot;, and better. The
+next engineer's agent starts out knowing what yours knew about the code, because that knowledge
+was never in your chat log to begin with. It is in an index, derived from the commit, readable
+by every session under the same rules, and rebuilt when the commit moves.</p>
+<hr />
+<hr />
+<p>The pull-request reviewer placed 17th of 50 on the Martian Code Review Bench offline set —
+seventeenth under all three judges, F1 between 42.7% and 47.5% depending on who is judging.
+That is a deliberately unflattering number about one surface of the product and it stays. The
+cross-repository capability described above contributed nothing to it: the benchmark set is
+isolated single-repository pull requests and the graph came back empty on all 50, so nothing
+in that table is evidence for or against this path.</p>
+<p>Check it the way I would want it checked — register two services, put them in one project,
+call <code>find_consumers</code> with a symbol you know one calls in the other, and see whether the repo,
+file and line are right. The source and the docs are in
+<a href="https://github.com/Celmis-labs/Celmis">the repository</a>; the <code>list_deprecations</code> gap named
+above is the kind of thing worth mailing me about, at
+<a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a>.</p>
+
+      <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-mcp-actually-specifies">What MCP actually specifies</a></li><li><a class="lvl2" href="#what-they-remember-and-why-that-is-the-right-thing-for-them-to-remember">What they remember, and why that is the right thing for them to remember</a></li><li><a class="lvl2" href="#knowing-the-code-has-the-opposite-shape">Knowing the code has the opposite shape</a></li><li><a class="lvl2" href="#one-implementation-which-you-can-read">One implementation, which you can read</a></li><li><a class="lvl2" href="#what-this-does-not-do">What this does not do</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The wiki cannot fail. That is what is wrong with it. — Celmis</title>
+<meta name="description" content="Documentation with no build has no failure mode: it decays into a confident wrong answer that reads exactly like a right one. What an artefact with a provenance record does instead.">
+<link rel="canonical" href="https://celmis-labs.github.io/writing/documentation-that-goes-stale-loudly/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The wiki cannot fail. That is what is wrong with it. — Celmis">
+<meta property="og:description" content="Documentation with no build has no failure mode: it decays into a confident wrong answer that reads exactly like a right one. What an artefact with a provenance record does instead.">
+<meta property="og:url" content="https://celmis-labs.github.io/writing/documentation-that-goes-stale-loudly/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The wiki cannot fail. That is what is wrong with it.","description":"Documentation with no build has no failure mode: it decays into a confident wrong answer that reads exactly like a right one. What an artefact with a provenance record does instead.","url":"https://celmis-labs.github.io/writing/documentation-that-goes-stale-loudly/","datePublished":"2026-09-01","dateModified":"2026-09-01","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">The wiki cannot fail. That is what is wrong with it.</h1>
+    <p class="docsub">Documentation with no build has no failure mode: it decays into a confident wrong answer that reads exactly like a right one. What an artefact with a provenance record does instead.</p>
+    <p class="docmeta"><span>2026-09-01</span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<p>There is a diagram your organisation has never drawn. On it, one box holds most of what is
+known about how the system works: which service owns the settlement flow, why the retry lives
+on the consumer and not the producer. The box is a person. They are competent, generous with
+their time, and currently in Croatia.</p>
+<p>Everyone knows this. What gets missed is that the wiki does not fix it. The wiki was written
+during a documentation push eighteen months ago and has been quietly wrong since the week
+after. The README describes a deployment that no longer exists. The architecture page still
+shows the monolith that was split in March.</p>
+<p>An absent document and a false one are not the same failure. An absent one sends you to the
+code, which is annoying and correct. A false one sends you somewhere confidently, and you find
+out forty minutes later, having built a mental model on top of it. The wiki nobody trusts is not
+neutral. It is a trap already sprung on several new joiners, and the response is always the
+same: ask the person.</p>
+<p>So the person is the interface, and the wiki is a decoy pointing at them.</p>
+<h2 id="two-ways-to-go-stale"><a class="anchor" href="#two-ways-to-go-stale" aria-label="Link to this section">#</a>Two ways to go stale</h2>
+<p>Take any statement about a codebase — &quot;requests are authenticated in the gateway&quot;. At some
+moment it stops being true. What happens then is the entire distinction.</p>
+<p><strong>Hand-written documentation goes stale silently.</strong> There is no event. Somebody merges a pull
+request, and a page in Confluence becomes false. Nothing fires, no build turns red, the
+timestamp does not move. Its confidence is unchanged, which is the problem: the page is now
+more sure of itself than the code justifies. A stranger discovers it months later, at the worst
+possible time, and between falsity and discovery the document costs more than not having it.</p>
+<p><strong>Documentation derived from the code goes stale loudly</strong>, because the generator runs again.
+The commit that made a statement false is the input to the next run. Staleness stops being an
+unobserved property of a page and becomes an event with a timestamp: a job, a diff, a
+regenerated file, a failure. You can put that on a dashboard. You cannot page on Confluence
+being wrong, because nothing knows.</p>
+<p>That is the whole argument, and it is smaller than it sounds. Not that machines write better
+prose — they very often do not. It is a claim about <em>observability of decay</em>, and decay is what
+kills documentation, not prose quality.</p>
+<h2 id="where-the-loud-kind-fails-before-i-sell-you-on-it"><a class="anchor" href="#where-the-loud-kind-fails-before-i-sell-you-on-it" aria-label="Link to this section">#</a>Where the loud kind fails, before I sell you on it</h2>
+<p>Four honest limits, because the sales version of this argument skips all of them.</p>
+<p><strong>A generator recovers <em>what</em>, never <em>why</em>.</strong> It can tell you this module publishes to that
+topic. It cannot tell you the retry sits on the consumer because of an incident in 2023 and a
+vendor who would not fix their idempotency. That was never in the code and no parsing recovers
+it; it lives in the person in Croatia. Generated documentation shrinks the set of questions that
+need a person; it does not empty it.</p>
+<p><strong>Regeneration is not free.</strong> Every regenerated page is model spend. A system that rewrites
+everything on every commit gets switched off, and a generator that is switched off is a
+hand-written wiki with extra steps.</p>
+<p><strong>Silent success is the real bug.</strong> A run that produces nothing looks identical from outside to
+a run that worked: job completed, no errors, folder empty. If a pipeline fails quietly, the
+loudness you paid for is gone.</p>
+<p><strong>Derived documentation must name what it does not cover.</strong> A generated set that silently skips
+six of nine services is the same trap as the stale wiki, in a fresher timestamp.</p>
+<p>Build this yourself and those four are the specification. Below is one worked answer.</p>
+<h2 id="one-worked-answer"><a class="anchor" href="#one-worked-answer" aria-label="Link to this section">#</a>One worked answer</h2>
+<p>This part is about Celmis, which is mine — a self-hosted
+platform for the middle of a development cycle, AGPL-3.0-or-later, under docker compose. It
+keeps an index of the code current, and several things come out of that index: alerts you can
+act on, a dependency and vulnerability picture, questions answered across repository
+boundaries. Documentation is the one this piece is about. Every claim below is in the tree,
+including the two places where it does less than you would assume.</p>
+<p><strong>Noticing.</strong> A scheduled sweep, once a day by default, does one <code>git ls-remote</code> per registered
+repository: one round trip, no clone, no fetch. It records four outcomes, not two — up to date,
+behind, never indexed, and <em>could not tell</em>. The fourth matters most: a check that cannot reach
+the remote and renders as &quot;no new changes&quot; answers wrongly while wearing a fresh timestamp. The
+sweep is the floor under the push webhook: a webhook only fires where somebody registered one.</p>
+<p><strong>Narrowing.</strong> When the branch has moved, the re-index is incremental: it walks
+<code>git diff last_sha..HEAD</code> and touches only what changed. A reverse index — built by reading
+which source files each generated note names in its frontmatter — resolves those changed files
+back to the documents that name them. Their vectors are dropped from the search index at once,
+so search stops returning removed content before any rewrite starts. Module notes are then
+rewritten against the current code; everything else is re-embedded from disk, which restores
+search without paying a model for prose that may not have moved.</p>
+<p>And the limit I would rather write than have you find. Feature and integration notes record
+their symbols as <code>file::name</code> graph ids, so a changed file resolves to them. A module note
+records a <em>directory</em> plus bare symbol names, and the lookup is an exact match on the changed
+file's full path — so editing <code>src/auth/login.py</code> does not currently select <code>modules/auth.md</code>.
+The note type that gets the real rewrite is the one the index is worst at selecting. Thirty
+lines in <code>src/vault/reverse_index.py</code>, and exactly the class of bug a hand-written wiki has no
+way to even have.</p>
+<p><strong>Not paying twice.</strong> Each note carries the commit it was written from, and for module notes —
+the bulk of a vault — a matching commit is skipped outright next run. Better: when the commit
+differs but none of that module's files changed between the two, the stamp is advanced and no
+model is called. If git cannot answer — a shallow clone, a missing revision — the code
+regenerates rather than skips. Feature and integration notes carry the same stamp but are not
+yet gated on it: generate twice at one commit and you pay for those twice.</p>
+<p><strong>Refusing.</strong> Ask it to document a repository that was never indexed and it refuses that
+repository by name and says why, rather than writing pages from filenames. Ask for everything,
+and a <code>missing_only</code> condition means what people actually want — the services that have none —
+not a rewrite of all of them.</p>
+<p><strong>Failing loudly.</strong> A run in which every document failed used to report success, because the
+markdown folder existed. It now raises. So does a subtler one: three production jobs reported
+<code>completed</code>, <code>attempts: 1</code>, <code>last_error: null</code> and wrote zero vectors — the documents existed,
+only the embedding half had failed. The job is not done unless both halves land.</p>
+<p><strong>Saying what produced it.</strong> Every note a model wrote carries a provenance block: generator and
+version, commit, engine, model, timestamp, and — the useful one — the number of index lookups
+the writer made. There are two engines. One packs code and metadata into a single prompt.
+The other is an agent holding the platform's own MCP tools and nothing else — no shell, no file
+reads, no grep — so it cannot open a file and can only ask the index: what calls this, what is
+the public surface, what is deprecated. A document written after twelve lookups deserves
+different weight from one written from a single prompt: on an agent-written document that count
+is in the frontmatter, not a log, and a single-prompt document names its engine and carries no
+count. The three assembled pages — index, architecture overview, security findings — come from
+the graph and the scanner rather than a model, and carry no block yet. An awkward gap: the
+architecture page is the one most likely to be exported and forwarded.</p>
+<p>The block survives export, and the model name is rewritten on the way out to drop this
+installation's own workspace identifier, which would otherwise ride into an emailed Word file
+and tell a stranger nothing but an internal id. That redaction is on the export path, not the
+stored note: open the frontmatter on disk and the full deployment name is still there.</p>
+<p><strong>Naming the gaps.</strong> Exporting every repository's documentation as one archive writes a
+<code>MISSING.txt</code> listing the repositories that have none. A download that silently covers six of
+nine services is the failure this is meant to avoid, and counting folders is not how anyone
+finds out.</p>
+<p>Underneath is a tree-sitter symbol graph — hand-written extractors for the major languages,
+generic tag-query extractors for a long tail, and Dockerfiles, compose files, Kubernetes
+manifests, Helm charts, Terraform and CI workflows in the same graph, not a separate one.
+Repositories can be grouped, and deployment references that cross a repository boundary — a
+compose or Kubernetes image, a build context — are resolved to the repository that provides them
+and stored as edges in the group's graph; cross-repository calls and imports are not
+materialised that way yet. When the platform answers in prose, the citations it renders as links
+are re-checked against the files on disk: the file must exist, the cited line must be inside it,
+and any quoted code must actually appear there — that last check exists because a model once
+invented a plausible function and hung it under a real path. Failures are reported beside the
+answer, not dropped.</p>
+<h2 id="what-it-still-does-not-do"><a class="anchor" href="#what-it-still-does-not-do" aria-label="Link to this section">#</a>What it still does not do</h2>
+<p>It does not know why. It does not replace the person in Croatia; it shortens the queue outside
+their inbox and moves the questions in it from &quot;how does this work&quot; towards &quot;why did we decide
+this&quot;. It cannot document a repository it has not indexed, and says so rather than guessing. It
+costs model spend, bounded but not zero. And two of its own mechanisms are narrower than you
+would assume — which is why they are named above rather than left for you to trip over.</p>
+<p>None of that is fixed by better prose. It is fixed by documentation being an artefact with a
+build, a provenance record, and a failure mode that shows up on a dashboard instead of in the
+face of a new joiner nine months from now.</p>
+<p>The wiki cannot fail. That is what is wrong with it.</p>
+<hr />
+<p>The source and the docs are in <a href="https://github.com/Celmis-labs/Celmis">the repository</a>.
+The two narrow mechanisms named above are the ones I would push on first if I were reading
+this sceptically; if you do, <a href="mailto:kostiantynmakoid@gmail.com">kostiantynmakoid@gmail.com</a>.</p>
+
+      <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#two-ways-to-go-stale">Two ways to go stale</a></li><li><a class="lvl2" href="#where-the-loud-kind-fails-before-i-sell-you-on-it">Where the loud kind fails, before I sell you on it</a></li><li><a class="lvl2" href="#one-worked-answer">One worked answer</a></li><li><a class="lvl2" href="#what-it-still-does-not-do">What it still does not do</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

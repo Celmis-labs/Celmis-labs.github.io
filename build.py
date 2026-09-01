@@ -63,6 +63,22 @@ WRITING = [
          blurb="Self-hosted code intelligence over a symbol graph: what it does, what it "
                "refuses to claim, and how to run it on one machine.",
          date="2026-08-27"),
+    dict(slug="remembering-the-conversation-is-not-knowing-the-code",
+         src="content/remembering-the-conversation-is-not-knowing-the-code.md",
+         title="A memory server remembers your conversation. That is not the same as "
+               "knowing your code.",
+         blurb="MCP has no memory primitive, and the July 2026 revision deprecated two of "
+               "its three client features. Conversation is personal, stated and durable; "
+               "code knowledge is shared, derived and perishable. Same word, opposite "
+               "requirements.",
+         date="2026-09-01"),
+    dict(slug="documentation-that-goes-stale-loudly",
+         src="content/documentation-that-goes-stale-loudly.md",
+         title="The wiki cannot fail. That is what is wrong with it.",
+         blurb="Documentation with no build has no failure mode: it decays into a "
+               "confident wrong answer that reads exactly like a right one. What an "
+               "artefact with a provenance record does instead.",
+         date="2026-09-01"),
 ]
 
 
