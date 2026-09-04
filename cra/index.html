@@ -235,6 +235,21 @@
         first.</figcaption>
     </figure>
 
+    <p>A real one, so this is not a claim you have to take on trust. Celmis's own
+      dependency audit, exported the way the pack above describes:</p>
+
+    <p style="margin:0 0 4px"><a href="https://github.com/Celmis-labs/Celmis/releases/download/v0.1.29/evidence-pack.zip"><code>evidence-pack.zip</code></a>
+      — SBOM, findings, timeline, and <code>MANIFEST.json</code>, 16.9&nbsp;KB.</p>
+    <p style="margin:0 0 12px">Its own manifest, published on this page rather than
+      inside the archive:</p>
+    <pre style="overflow-x:auto"><code>X-Celmis-Manifest-SHA256: 64cff1226bfdb7cbe6931c4ff67f84cab0fd95bb6eee5c41877c358943c88bbd</code></pre>
+    <p>Download the pack, unzip it, and hash <code>MANIFEST.json</code> on its own —
+      <code>sha256sum MANIFEST.json</code> — then compare that against the line above,
+      which came from this page rather than from inside the zip. If they match, the
+      manifest is the one that was generated for this pack; recomputing the digests it
+      lists then checks every other file against it. If the manifest is edited after the
+      fact, this number changes and the two will not agree.</p>
+
     <h2 id="refusal">What we will not tell you</h2>
 
     <div class="refuse">
