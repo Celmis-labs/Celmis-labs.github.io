@@ -789,11 +789,15 @@ docker compose exec api analyzer mcp issue-token \
 }
 </code></pre>
 <h3 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h3>
-<p>The HTTP mount serves <strong>23 tools</strong>, and a client does not necessarily see all of
-them. Eighteen are read-only; the five that write — <code>add_repo</code>, <code>start_dep_audit</code>,
-<code>generate_docs</code>, <code>set_auto_review</code>, <code>migrate_consumers</code> — require a scope no
-read token carries, so they are absent from a read client's tool list rather than
-merely refused when called. This is what the read-only ones answer, and they are
+<p>The HTTP mount serves <strong>48 tools</strong>, and a client does not necessarily see all of
+them. Thirty-two are read-only; the sixteen that write — <code>add_repo</code>,
+<code>start_dep_audit</code>, <code>cancel_dep_audit</code>, <code>generate_docs</code>, <code>set_auto_review</code>,
+<code>migrate_consumers</code>, <code>ack_alert</code>, <code>retry_job</code>, <code>cancel_job</code>, <code>set_budget</code>,
+<code>update_review_setting</code>, <code>propose_review_rules</code>, <code>generate_review_rules</code>,
+<code>review_pr</code>, <code>index_repo</code>, <code>update_issue</code> —
+require a write scope (<code>write:repos</code>, <code>write:config</code>, <code>write:reviews</code>) that a
+default token does not carry, so they are absent from a read client's tool list
+and refused if called by name. This is what the read-only ones answer, and they are
 the questions a grep cannot:</p>
 <div class="tablewrap"><table>
 <thead>
@@ -839,11 +843,29 @@ the questions a grep cannot:</p>
 <td><code>get_review</code> · <code>get_review_policy</code></td>
 <td>the latest review of a PR, and which agents run where</td>
 </tr>
+<tr>
+<td><code>list_reviews</code> · <code>get_review_run</code></td>
+<td>the newest review runs, and one run's findings (by run id, or repo + PR number)</td>
+</tr>
+<tr>
+<td><code>list_issues</code></td>
+<td>tracked review issues, worst first, with counts per status</td>
+</tr>
+<tr>
+<td><code>ask_code</code> · <code>search_code</code></td>
+<td>a written answer about the code (one model call, booked as Q&amp;A); symbol, usages, owner and architecture lookups</td>
+</tr>
 </tbody>
 </table></div>
+<p>The HTTP mount also writes with <code>review_pr</code> (queue a review of one PR or every open one), <code>index_repo</code> and <code>update_issue</code> (set an issue's status), all behind <code>write:repos</code>.
+| <code>get_review_settings</code> | the review settings in force and where each value comes from |
+| <code>get_spend</code> · <code>get_usage</code> · <code>get_budget</code> | LLM spend by model, surface and day; review usage; the monthly cap |
+| <code>list_alerts</code> · <code>list_jobs</code> | incoming alerts; background jobs with counts per status |
+| <code>audit_delta</code> · <code>export_sbom</code> | what changed since the previous audit; the SBOM download URL |
+| <code>list_members</code> | workspace members with roles and teams |</p>
 <p><strong>The two transports are not the same set.</strong> <code>analyzer mcp serve</code> over stdio
 serves 13 older, graph-shaped tools (<code>find_symbol</code>, <code>find_callers</code>,
-<code>query_graph</code>); the HTTP mount serves the 18 above. Neither is a subset of the
+<code>query_graph</code>); the HTTP mount serves the 32 read-only ones above. Neither is a subset of the
 other — pick the transport for the tools you want.</p>
 <p>A step-by-step guide, with the scopes each tool needs and the failure modes,
 is in <a href="https://github.com/Celmis-labs/Celmis/blob/main/claude/skills/celmis-mcp/SKILL.md"><code>.claude/skills/celmis-mcp/SKILL.md</code></a>.
