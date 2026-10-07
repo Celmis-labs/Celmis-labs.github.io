@@ -84,7 +84,7 @@ stack will not start without one.</p>
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
 CycloneDX SBOM and a verifiable evidence pack, generates documentation, and serves
-twenty-three tools over MCP — surfaces worth having, and none of them the point on
+forty-nine tools over MCP — surfaces worth having, and none of them the point on
 their own.</p>
 <p>It runs on one machine under <code>docker compose</code>, with the model provider of your
 choice behind it, and nothing leaves your network except the calls you configure.</p>
@@ -145,7 +145,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
-<td>Point it at <code>/mcp/</code>. Twenty-three tools over the same index, eighteen of them read-only, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
+<td>Point it at <code>/mcp/</code>. Forty-nine tools over the same index, thirty-three of them read-only, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
 </tr>
 </tbody>
 </table></div>
@@ -434,6 +434,36 @@ including the findings the audit below marks wrong.</p>
 who else calls the symbol being changed, including from another repository.
 Where it is not built, the review still runs — it just answers the narrower
 question, which is what the benchmark measured.</p>
+<h3 id="talking-to-the-reviewer-and-what-it-learns"><a class="anchor" href="#talking-to-the-reviewer-and-what-it-learns" aria-label="Link to this section">#</a>Talking to the reviewer, and what it learns</h3>
+<p>Beyond the first review, the reviewer works inside the pull request:</p>
+<ul>
+<li><strong>Comment commands.</strong> <code>@celmis help</code>, <code>start-review</code>, <code>review --force</code>,
+<code>remember: &lt;rule&gt;</code>, and a free-text question answered in the same thread
+(<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/PR_COMMANDS.md">PR commands</a>).</li>
+<li><strong>Incremental review and cadence.</strong> A new push is reviewed from the last
+reviewed commit; a repository can pause automatic reviews after a burst of
+pushes, skip titles by keyword, and write the overview into the description
+(<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/REVIEW_SETTINGS.md">Review settings</a>).</li>
+<li><strong>Team memories and learning.</strong> Rules the team states, and findings it
+dismisses, shape later reviews, with a shadow mode to judge the effect first
+(<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/MEMORIES_AND_LEARNING.md">Memories and learning</a>).</li>
+<li><strong>Issues backlog.</strong> Findings are followed across pushes and after the merge,
+and resolve themselves when the code shows the defect is gone
+(<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/ISSUES_BACKLOG.md">Issues backlog</a>).</li>
+<li><strong>Jira task context.</strong> The business-logic agent checks the change against the
+task a pull request names, with an acceptance-criteria checklist
+(<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/JIRA.md">Jira</a>).</li>
+<li><strong>Productivity metrics.</strong> Cycle time and the four DORA measures from your pull
+request history, for owners and admins (<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/PRODUCTIVITY.md">Productivity</a>).</li>
+<li><strong>Who can see what.</strong> <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/ROLES_AND_ACCESS.md">Roles and access</a>. Every
+one of these features reads a repository only for people who may read it, by
+the same rule as MCP (<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/mcp-access.md">MCP access</a>); chat replies and the
+Jira check never quote code the asker cannot open.</li>
+<li><strong>A compact MCP profile for coding assistants.</strong> <code>/mcp/dev</code> serves nine
+read-only tools sized for an editor, with <code>howto</code> for &quot;how does this service
+do auth&quot; and a Claude Code plugin (<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/MCP_DEV.md">The developer profile</a>,
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/mcp-howto.md">howto</a>).</li>
+</ul>
 <p>Every finding the benchmark scored false was opened in the source and published
 with a verdict. Thirty-three of seventy-nine turned out to be real defects the
 gold set does not contain. That work is in
@@ -763,10 +793,14 @@ the people whose job it is assess them.</p>
 <p>Celmis exposes its index over MCP, so an agent can search symbols, read API
 surfaces and find consumers instead of grepping a checkout it does not have.</p>
 <p><strong>Over HTTP</strong> (the running stack serves it at <code>/mcp/</code>):</p>
-<pre><code class="language-bash"># Mint a token (or issue one from Settings → MCP in the UI)
+<pre><code class="language-bash"># A token is per person and names the repositories it may read. The
+# superadmin issues it (Administration, MCP tokens) or on the server:
 docker compose exec api analyzer mcp issue-token \
-  --scopes &quot;read:graph read:groups&quot; --duration 86400
+  --user dev@example.com --workspace acme --repos 'acme/shop-*' --days 30
 </code></pre>
+<p>The token never reaches a repository its person cannot read, and every call is
+audited. A repository nobody has a rule for is closed to members. How access,
+tokens and the audit work is in <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/mcp-access.md">MCP access</a>.</p>
 <pre><code class="language-jsonc">// ~/.claude.json  (or .mcp.json in a project)
 {
   &quot;mcpServers&quot;: {
@@ -789,8 +823,8 @@ docker compose exec api analyzer mcp issue-token \
 }
 </code></pre>
 <h3 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h3>
-<p>The HTTP mount serves <strong>48 tools</strong>, and a client does not necessarily see all of
-them. Thirty-two are read-only; the sixteen that write — <code>add_repo</code>,
+<p>The HTTP mount serves <strong>49 tools</strong>, and a client does not necessarily see all of
+them. Thirty-three are read-only; the sixteen that write — <code>add_repo</code>,
 <code>start_dep_audit</code>, <code>cancel_dep_audit</code>, <code>generate_docs</code>, <code>set_auto_review</code>,
 <code>migrate_consumers</code>, <code>ack_alert</code>, <code>retry_job</code>, <code>cancel_job</code>, <code>set_budget</code>,
 <code>update_review_setting</code>, <code>propose_review_rules</code>, <code>generate_review_rules</code>,
@@ -862,10 +896,11 @@ the questions a grep cannot:</p>
 | <code>get_spend</code> · <code>get_usage</code> · <code>get_budget</code> | LLM spend by model, surface and day; review usage; the monthly cap |
 | <code>list_alerts</code> · <code>list_jobs</code> | incoming alerts; background jobs with counts per status |
 | <code>audit_delta</code> · <code>export_sbom</code> | what changed since the previous audit; the SBOM download URL |
-| <code>list_members</code> | workspace members with roles and teams |</p>
+| <code>list_members</code> | workspace members with roles and teams |
+| <code>howto</code> | how a repository does one thing (db, auth, config, http_client, logging, messaging, cache): code slices, the env and setting names it reads and where their values come from, never the values; needs <code>read:graph</code> on <code>/mcp/</code>, <code>read:code</code> on <code>/mcp/dev/</code> |</p>
 <p><strong>The two transports are not the same set.</strong> <code>analyzer mcp serve</code> over stdio
 serves 13 older, graph-shaped tools (<code>find_symbol</code>, <code>find_callers</code>,
-<code>query_graph</code>); the HTTP mount serves the 32 read-only ones above. Neither is a subset of the
+<code>query_graph</code>); the HTTP mount serves the 33 read-only ones above. Neither is a subset of the
 other — pick the transport for the tools you want.</p>
 <p>A step-by-step guide, with the scopes each tool needs and the failure modes,
 is in <a href="https://github.com/Celmis-labs/Celmis/blob/main/claude/skills/celmis-mcp/SKILL.md"><code>.claude/skills/celmis-mcp/SKILL.md</code></a>.
@@ -876,9 +911,10 @@ Claude Code picks it up automatically when this repository is open.</p>
 <p>One <code>search_symbols</code> call, one contract symbol, and it comes back from two
 repositories in two languages — to a client that has checked out neither. The
 boundary a diff never crosses is the one this makes ordinary.</p>
-<p>Twenty-three tools, served over Streamable HTTP at <code>/mcp/</code> and authenticated with
-the same bearer token as <code>/api/</code>. Eighteen read, five write, and a token sees only
-the ones its scopes allow:</p>
+<p>The table below is the stdio server's graph-shaped set (<code>analyzer mcp serve</code>, 13 tools).
+The HTTP mount at <code>/mcp/</code> serves 49 tools in all (33 read, 16 write) over Streamable HTTP,
+authenticated like <code>/api/</code>, and a token sees only the ones its scopes allow. The graph
+lookups:</p>
 <div class="tablewrap"><table>
 <thead>
 <tr>
@@ -1318,7 +1354,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl3" href="#workspace-roles">Workspace roles</a></li><li><a class="lvl3" href="#getting-in-invites-and-access-requests">Getting in: invites and access requests</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-from-here">Fix from here</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl3" href="#workspace-roles">Workspace roles</a></li><li><a class="lvl3" href="#getting-in-invites-and-access-requests">Getting in: invites and access requests</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl3" href="#talking-to-the-reviewer-and-what-it-learns">Talking to the reviewer, and what it learns</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-from-here">Fix from here</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>
