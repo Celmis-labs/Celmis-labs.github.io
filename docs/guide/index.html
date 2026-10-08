@@ -84,7 +84,7 @@ stack will not start without one.</p>
 graph Celmis builds from your repositories once. The same index answers questions
 that cross repository boundaries, reviews pull requests, audits dependencies into a
 CycloneDX SBOM and a verifiable evidence pack, generates documentation, and serves
-forty-nine tools over MCP — surfaces worth having, and none of them the point on
+fifty-one tools over MCP — surfaces worth having, and none of them the point on
 their own.</p>
 <p>It runs on one machine under <code>docker compose</code>, with the model provider of your
 choice behind it, and nothing leaves your network except the calls you configure.</p>
@@ -145,7 +145,7 @@ the other repository open.</p>
 </tr>
 <tr>
 <td><strong>Your own agent or editor needs to understand the codebase</strong></td>
-<td>Point it at <code>/mcp/</code>. Forty-nine tools over the same index, thirty-three of them read-only, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
+<td>Point it at <code>/mcp/</code>. Fifty-one tools over the same index, thirty-five of them read-only, under the same access rules — no second copy of your code anywhere → <a href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></td>
 </tr>
 </tbody>
 </table></div>
@@ -812,6 +812,11 @@ tokens and the audit work is in <a href="https://github.com/Celmis-labs/Celmis/b
   }
 }
 </code></pre>
+<p><strong>One project, for an outside client.</strong> On a project's page the superadmin can
+create a project token (<code>cmcp_...</code>, one hour to 90 days, shown once, revocable).
+It reaches only that project's repositories, narrowed by the project's file
+scope, through two tools, <code>search_project</code> and <code>ask_project</code>. Details and the
+<code>claude mcp add</code> command are in <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/archives-and-project-tokens.md">Archives and project tokens</a>.</p>
 <p><strong>Over stdio</strong>, without the HTTP hop:</p>
 <pre><code class="language-jsonc">{
   &quot;mcpServers&quot;: {
@@ -823,8 +828,8 @@ tokens and the audit work is in <a href="https://github.com/Celmis-labs/Celmis/b
 }
 </code></pre>
 <h3 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h3>
-<p>The HTTP mount serves <strong>49 tools</strong>, and a client does not necessarily see all of
-them. Thirty-three are read-only; the sixteen that write — <code>add_repo</code>,
+<p>The HTTP mount serves <strong>51 tools</strong>, and a client does not necessarily see all of
+them. Thirty-five are read-only; the sixteen that write — <code>add_repo</code>,
 <code>start_dep_audit</code>, <code>cancel_dep_audit</code>, <code>generate_docs</code>, <code>set_auto_review</code>,
 <code>migrate_consumers</code>, <code>ack_alert</code>, <code>retry_job</code>, <code>cancel_job</code>, <code>set_budget</code>,
 <code>update_review_setting</code>, <code>propose_review_rules</code>, <code>generate_review_rules</code>,
@@ -900,7 +905,7 @@ the questions a grep cannot:</p>
 | <code>howto</code> | how a repository does one thing (db, auth, config, http_client, logging, messaging, cache): code slices, the env and setting names it reads and where their values come from, never the values; needs <code>read:graph</code> on <code>/mcp/</code>, <code>read:code</code> on <code>/mcp/dev/</code> |</p>
 <p><strong>The two transports are not the same set.</strong> <code>analyzer mcp serve</code> over stdio
 serves 13 older, graph-shaped tools (<code>find_symbol</code>, <code>find_callers</code>,
-<code>query_graph</code>); the HTTP mount serves the 33 read-only ones above. Neither is a subset of the
+<code>query_graph</code>); the HTTP mount serves the 35 read-only ones (the two project-token tools, <code>search_project</code> and <code>ask_project</code>, among them). Neither is a subset of the
 other — pick the transport for the tools you want.</p>
 <p>A step-by-step guide, with the scopes each tool needs and the failure modes,
 is in <a href="https://github.com/Celmis-labs/Celmis/blob/main/claude/skills/celmis-mcp/SKILL.md"><code>.claude/skills/celmis-mcp/SKILL.md</code></a>.
@@ -912,7 +917,7 @@ Claude Code picks it up automatically when this repository is open.</p>
 repositories in two languages — to a client that has checked out neither. The
 boundary a diff never crosses is the one this makes ordinary.</p>
 <p>The table below is the stdio server's graph-shaped set (<code>analyzer mcp serve</code>, 13 tools).
-The HTTP mount at <code>/mcp/</code> serves 49 tools in all (33 read, 16 write) over Streamable HTTP,
+The HTTP mount at <code>/mcp/</code> serves 51 tools in all (35 read, 16 write) over Streamable HTTP,
 authenticated like <code>/api/</code>, and a token sees only the ones its scopes allow. The graph
 lookups:</p>
 <div class="tablewrap"><table>
