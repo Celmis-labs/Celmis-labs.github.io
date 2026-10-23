@@ -459,6 +459,9 @@ request history, for owners and admins (<a href="https://github.com/Celmis-labs/
 one of these features reads a repository only for people who may read it, by
 the same rule as MCP (<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/mcp-access.md">MCP access</a>); chat replies and the
 Jira check never quote code the asker cannot open.</li>
+<li><strong>Share a repository with another workspace.</strong> For research, for a fixed time, to the
+few people whose developer tokens name it, with paths hidden and questions off unless the
+owner allows them (<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/SHARING.md">Sharing</a>).</li>
 <li><strong>A compact MCP profile for coding assistants.</strong> <code>/mcp/dev</code> serves eleven
 read-only tools sized for an editor, with <code>howto</code> for &quot;how does this service
 do auth&quot;, <code>brief</code> and <code>skills</code> for the workspace's own knowledge packs, and a
@@ -1352,8 +1355,9 @@ whose name contains <code>.ee.</code>, is covered by <a href="https://github.com
 <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSING.md">LICENSING.md</a> states the boundary in full — <code>LICENSE</code> itself is
 the unmodified AGPL text, because a licence file with a preamble in front of
 it is not recognised as that licence.
-Two enterprise features live behind it today — single sign-on (OIDC /
-Keycloak) and review analytics, in <code>src/ee/</code> and <code>web/ee/</code>, switched on by an
+Three enterprise features live behind it today — single sign-on (OIDC /
+Keycloak), review analytics, and making a repository share (the rest of
+<a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/SHARING.md">sharing</a> is AGPL), in <code>src/ee/</code> and <code>web/ee/</code>, switched on by an
 offline licence key (see <a href="https://github.com/Celmis-labs/Celmis/blob/main/ee/README.md">ee/README.md</a>). The boundary was drawn
 before the first tag because adding it afterwards means re-asking every
 contributor who has already sent work under an unqualified AGPL.</p>
