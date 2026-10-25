@@ -51,47 +51,83 @@
     <article class="prose">
 <div align="center">
 <h1>Celmis</h1>
-<p><strong>Self-hosted — from the alert your monitoring already sent, through to a pull request someone can review</strong></p>
-<p><a href="https://celmis-labs.github.io"><strong>celmis-labs.github.io</strong></a> · <a href="https://celmis-labs.github.io/docs/">Documentation</a> · <a href="#quick-start">Quick start</a> · <a href="#results">Results</a></p>
+<p><strong>From the alert your monitoring already sent, to a pull request someone can review.</strong>
+Self-hosted. One machine. Your model, your subscription, your network.</p>
+<p><a href="https://celmis-labs.github.io"><strong>Website</strong></a> · <a href="https://celmis-labs.github.io/docs/">Documentation</a> · <a href="#quick-start">Quick start</a> · <a href="#whats-new-in-v3">What's new</a> · <a href="#results">Results</a></p>
+<p><img src="https://img.shields.io/badge/licence-AGPLv3-0E5537" alt="licence" /> <img src="https://img.shields.io/github/v/release/Celmis-labs/Celmis?color=3DBE83" alt="release" /> <img src="https://img.shields.io/badge/MCP%20tools-51-C08A3E" alt="MCP tools" /> <img src="https://img.shields.io/badge/languages%20parsed-23-0E5537" alt="languages" /></p>
+<p><img src="/img/alert-to-fix.png" alt="An alert becomes a pull request" /></p>
 </div>
-<p>An alert arrives from a service you run. Celmis already knows which repository
-that service is and who owns it, so the fix starts there: an embedded Claude Code
-session — on <em>your</em> subscription, inside <em>your</em> installation — edits the code, and
-the runner commits, pushes a branch and opens a pull request. On one measured
-finding that took <strong>220 seconds</strong>, from whatever device the alert reached first.</p>
-<p>Celmis does not watch your services. Grafana, or whatever you already run, does
-that and does it well. This is the part that comes after the alert: the walk from a
-firing rule to a diff someone can review.</p>
-<p>To be exact, because the line is easy to blur. The application ingests no logs of its
-own — it starts from the alert. But <strong>the repository ships an optional observability
-overlay</strong>, and that does collect them:</p>
+<p>An alert arrives from a service you run. Celmis already knows which repository that
+service is and who owns it, so the fix starts there: an embedded Claude Code session,
+on <em>your</em> subscription and inside <em>your</em> installation, edits the code, and the runner
+commits, pushes a branch and opens a pull request. On one measured finding that took
+<strong>220 seconds</strong>, from whatever device the alert reached first.</p>
+<p>That loop closes because everything sits on <strong>one index</strong>: a symbol graph built once
+from your repositories, with no model involved in building it. Every other surface
+reads the same index.</p>
+<h2 id="what-it-does"><a class="anchor" href="#what-it-does" aria-label="Link to this section">#</a>What it does</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fix from here</strong></td>
+<td>An alert or a dependency finding becomes an embedded session, then a branch, then a pull request. A human reviews and merges; Celmis never merges. <a href="#fix-from-here">Fix from here</a> · <a href="#alerts-and-fixing-from-a-phone">Alerts</a></td>
+</tr>
+<tr>
+<td><strong>Pull-request review</strong></td>
+<td>Agents read the diff and, where the graph exists, who else calls what changed, across repositories. Talk to it with <code>@celmis</code>, teach it with <code>remember</code>, and it stays quiet when there is nothing to say. <a href="#pull-request-review">Review</a></td>
+</tr>
+<tr>
+<td><strong>Ask the code</strong></td>
+<td>Questions across several repositories, answered with <code>file:line</code> citations on both sides of a call. <a href="#ask-the-code">Ask the code</a></td>
+</tr>
+<tr>
+<td><strong>Codebase and MCP</strong></td>
+<td>51 tools over MCP, a compact <code>/mcp/dev</code> profile for editors, a Claude Code plugin, and versioned knowledge packs of the skills your team already explains out loud. <a href="#connect-claude-code-and-other-mcp-clients">MCP</a> · <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/CODEBASE.md">Packs</a></td>
+</tr>
+<tr>
+<td><strong>Evidence</strong></td>
+<td>Dependency audit, CycloneDX SBOM and an evidence pack whose manifest a third party recomputes. <a href="#dependencies-sbom-and-the-evidence-pack">SBOM and evidence</a></td>
+</tr>
+<tr>
+<td><strong>Access you can defend</strong></td>
+<td>Repositories are closed by default, MCP tokens are issued per person, every call is audited, secrets are withheld at the source, and a repository can be shared with another workspace for a fixed time. <a href="#who-can-see-what">Who can see what</a> · <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/SHARING.md">Sharing</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="install"><a class="anchor" href="#install" aria-label="Link to this section">#</a>Install</h2>
+<pre><code class="language-bash">git clone https://github.com/Celmis-labs/Celmis.git celmis &amp;&amp; cd celmis
+./scripts/init-env.sh              # writes .env and fills every secret
+docker compose --env-file .env up -d
+</code></pre>
+<p>Then open <a href="http://localhost">http://localhost</a> and paste one model provider key under Settings → LLM Setup.</p>
+<p><strong>197 seconds</strong> from clone to six healthy services on a clean server. Postgres and
+Qdrant are bundled; about 4 GB of RAM. Details in <a href="#quick-start">Quick start</a>.
+An installation without a licence admits up to five people; see <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSING.md">Licensing</a>.</p>
+<h2 id="whats-new-in-v3"><a class="anchor" href="#whats-new-in-v3" aria-label="Link to this section">#</a>What's new in v3</h2>
+<ul>
+<li><strong>Review that earns its comments.</strong> Findings below your comment level never reach the pull request; a review with nothing to say approves. Comments are the problem, the reason and the fix, in the repository's language (3.1).</li>
+<li><strong>A reviewer you can talk to.</strong> <code>@celmis</code> commands and questions in the thread, <code>remember</code> rules, learning from what the team dismisses, incremental review of each push, Jira acceptance criteria checked in the summary (2.3).</li>
+<li><strong>Knowledge packs.</strong> Versioned skills, API examples and checklists per workspace, readable in the app and by coding assistants through <code>brief</code> and <code>skills</code>; <code>celmis-pack</code> publishes them (3.0).</li>
+<li><strong>Access closed by default.</strong> A repository nobody has a rule for is invisible; MCP tokens belong to a person; every call is audited (2.3.7). Stricter secret hiding in 3.0.2.</li>
+<li><strong>Sharing between workspaces.</strong> For research, for a fixed time, with hidden paths and a ceiling on readers (3.1).</li>
+<li><strong>A developer MCP profile and a Claude Code plugin</strong> sized for an editor (2.3.7).</li>
+</ul>
+<p>Every release is in the <a href="https://github.com/Celmis-labs/Celmis/blob/main/CHANGELOG.md">changelog</a>.</p>
+<h2 id="logs-and-where-the-line-falls"><a class="anchor" href="#logs-and-where-the-line-falls" aria-label="Link to this section">#</a>Logs, and where the line falls</h2>
+<p>Celmis does not watch your services; Grafana or whatever you already run does that.
+The application ingests no logs of its own and starts from the alert. The repository
+ships an <strong>optional observability overlay</strong> (Prometheus, Loki, Promtail, Grafana) that
+does collect them, platform-wide rather than Celmis-only:</p>
 <pre><code class="language-bash">docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
 </code></pre>
-<p>That brings up Prometheus, Loki, Promtail and Grafana.
-<a href="https://github.com/Celmis-labs/Celmis/blob/main/docker-compose.observability.yml"><code>docker-compose.observability.yml</code></a> is deliberately
-<strong>platform-wide rather than Celmis-only</strong>: Promtail tails the Docker daemon's container
-logs and labels each stream by container name, so <em>every</em> service on that host — all
-thirty of them, if you run thirty — shows up in Grafana's Loki explorer, filterable by
-container. Prometheus scrapes <code>api:8000/metrics</code> for Celmis's own counters alongside.</p>
-<p>Every port binds to <code>127.0.0.1</code> and is reached over an SSH tunnel:</p>
-<pre><code class="language-bash">ssh -L 3100:localhost:3100 -L 9090:localhost:9090 you@your-server
-</code></pre>
-<p>That is not caution for its own sake. Loki has no authentication, so
-<code>POST /loki/api/v1/push</code> accepts writes from anyone who can reach it, and a log store
-strangers can write to is not a log store. <code>GRAFANA_ADMIN_PASSWORD</code> is required — the
-stack will not start without one.</p>
-<p>That loop is the product. It closes because everything sits on one index: a symbol
-graph Celmis builds from your repositories once. The same index answers questions
-that cross repository boundaries, reviews pull requests, audits dependencies into a
-CycloneDX SBOM and a verifiable evidence pack, generates documentation, and serves
-fifty-one tools over MCP — surfaces worth having, and none of them the point on
-their own.</p>
-<p>It runs on one machine under <code>docker compose</code>, with the model provider of your
-choice behind it, and nothing leaves your network except the calls you configure.</p>
-<p>In the oldest telling, Kelmis was the smelter — one of the three Idaean Dactyls,
-alongside Damnameneus the hammer and Acmon the anvil, to whom the working of iron
-was credited. The index does the reducing here; the surfaces are what work the
-result.</p>
+<p>Every port binds to <code>127.0.0.1</code> and is reached over an SSH tunnel, because Loki has no
+authentication. <code>GRAFANA_ADMIN_PASSWORD</code> is required.</p>
 <h2 id="what-that-buys-you-that-a-diff-only-tool-cannot"><a class="anchor" href="#what-that-buys-you-that-a-diff-only-tool-cannot" aria-label="Link to this section">#</a>What that buys you that a diff-only tool cannot</h2>
 <p>Ask a question that spans two repositories, and the answer quotes both:</p>
 <p><img src="/img/ask-the-code-cross-repo.png" alt="Ask the code, answering across two repositories" /></p>
@@ -1369,7 +1405,7 @@ code goes.</p>
 
       <div class="docnav"><a href="/docs/">← All documentation</a><a href="/docs/litellm/">LiteLLM gateway →</a></div>
     </article>
-    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl3" href="#workspace-roles">Workspace roles</a></li><li><a class="lvl3" href="#getting-in-invites-and-access-requests">Getting in: invites and access requests</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl3" href="#talking-to-the-reviewer-and-what-it-learns">Talking to the reviewer, and what it learns</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-from-here">Fix from here</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#what-it-does">What it does</a></li><li><a class="lvl2" href="#install">Install</a></li><li><a class="lvl2" href="#whats-new-in-v3">What&#x27;s new in v3</a></li><li><a class="lvl2" href="#logs-and-where-the-line-falls">Logs, and where the line falls</a></li><li><a class="lvl2" href="#what-that-buys-you-that-a-diff-only-tool-cannot">What that buys you that a diff-only tool cannot</a></li><li><a class="lvl2" href="#nine-things-people-do-with-it">Nine things people do with it</a></li><li><a class="lvl2" href="#three-numbers">Three numbers</a></li><li><a class="lvl2" href="#quick-start">Quick start</a></li><li><a class="lvl3" href="#what-you-need">What you need</a></li><li><a class="lvl3" href="#start-it">Start it</a></li><li><a class="lvl3" href="#stop">Stop</a></li><li><a class="lvl2" href="#first-user-and-admin">First user and admin</a></li><li><a class="lvl3" href="#workspace-roles">Workspace roles</a></li><li><a class="lvl3" href="#getting-in-invites-and-access-requests">Getting in: invites and access requests</a></li><li><a class="lvl2" href="#connect-a-repository">Connect a repository</a></li><li><a class="lvl2" href="#ask-the-code">Ask the code</a></li><li><a class="lvl2" href="#pull-request-review">Pull-request review</a></li><li><a class="lvl3" href="#talking-to-the-reviewer-and-what-it-learns">Talking to the reviewer, and what it learns</a></li><li><a class="lvl2" href="#dependencies-sbom-and-the-evidence-pack">Dependencies, SBOM and the evidence pack</a></li><li><a class="lvl2" href="#fix-from-here">Fix from here</a></li><li><a class="lvl3" href="#it-runs-on-your-subscription-on-your-machine">It runs on your subscription, on your machine</a></li><li><a class="lvl3" href="#what-the-runner-allows-and-what-it-does-not">What the runner allows, and what it does not</a></li><li><a class="lvl2" href="#alerts-and-fixing-from-a-phone">Alerts, and fixing from a phone</a></li><li><a class="lvl2" href="#ask-for-work-across-repositories">Ask for work across repositories</a></li><li><a class="lvl2" href="#who-can-see-what">Who can see what</a></li><li><a class="lvl2" href="#languages-and-formats">Languages and formats</a></li><li><a class="lvl2" href="#deterministic-checks-no-model-no-false-positives">Deterministic checks — no model, no false positives</a></li><li><a class="lvl2" href="#connect-claude-code-and-other-mcp-clients">Connect Claude Code and other MCP clients</a></li><li><a class="lvl3" href="#what-an-agent-can-ask">What an agent can ask</a></li><li><a class="lvl3" href="#what-the-agent-can-ask-for">What the agent can ask for</a></li><li><a class="lvl2" href="#results">Results</a></li><li><a class="lvl2" href="#audit-of-the-false-positives">Audit of the false positives</a></li><li><a class="lvl2" href="#test-repositories">Test repositories</a></li><li><a class="lvl2" href="#configuration">Configuration</a></li><li><a class="lvl2" href="#operations">Operations</a></li><li><a class="lvl2" href="#local-development">Local development</a></li><li><a class="lvl2" href="#cli-reference">CLI reference</a></li><li><a class="lvl2" href="#architecture">Architecture</a></li><li><a class="lvl2" href="#troubleshooting">Troubleshooting</a></li><li><a class="lvl2" href="#project-layout">Project layout</a></li><li><a class="lvl2" href="#provenance-and-rights">Provenance and rights</a></li></ol></aside>
   </div>
 </main>
 <footer>
