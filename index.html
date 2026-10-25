@@ -47,7 +47,7 @@
     "CycloneDX SBOM and an evidence pack whose manifest of sha256 digests a third party can verify independently",
     "Fix from here: an embedded session edits the repository and the runner opens a pull request",
     "Per-repository access control with visibility levels and deny globs",
-    "MCP server exposing twenty-three tools over the same index under the same access rules, eighteen of them read-only",
+    "MCP server exposing 51 tools over the same index under the same access rules, 35 of them read-only, plus a compact developer profile and a Claude Code plugin",
     "23 languages parsed"
    ],
    "softwareRequirements": "Docker 24+ with Compose v2, about 4 GB of free RAM, and an API key for Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. Postgres and Qdrant are bundled.",
@@ -174,7 +174,7 @@
       <span class="badge"><b>AGPLv3</b> · source-available to every user</span>
       <span class="badge"><span class="g">●</span> <b>self-hosted</b> · one machine</span>
       <span class="badge"><b>23</b> languages parsed</span>
-      <span class="badge"><b>18</b> MCP tools</span>
+      <span class="badge"><b>51</b> MCP tools</span>
     </div>
   </div>
 </div>
@@ -297,7 +297,7 @@
       </div>
       <div class="row rv">
         <div class="who">Your own agent or editor needs to understand the codebase</div>
-        <p class="what">Point it at <code>/mcp/</code>. Twenty-three tools over the same index,
+        <p class="what">Point it at <code>/mcp/</code>. Fifty-one tools over the same index,
           under the same access rules — no second copy of your code anywhere.
           <a class="to" href="/mcp/">mcp server</a></p>
       </div>
@@ -305,6 +305,37 @@
     <p class="small dim rv" style="margin-top:28px;max-width:68ch">The first three are the
       ones a code-review tool does not do at all, and they are the reason this is a platform
       rather than a reviewer.</p>
+  </div>
+</section>
+
+<section id="new">
+  <div class="wrap">
+    <p class="eyebrow rv">Since the first release</p>
+    <div class="col">
+      <h2 class="rv">The review and the codebase side grew up</h2>
+    </div>
+    <div class="rows">
+      <div class="row rv">
+        <div class="who">A reviewer that comments on everything gets muted</div>
+        <p class="what">Findings below your comment level never reach the pull request, and a review with nothing to say approves. A comment is the problem, the reason and the fix, in the repository's language.
+          <a class="to" href="/docs/guide/#pull-request-review">pull-request review</a></p>
+      </div>
+      <div class="row rv">
+        <div class="who">You want to talk to the reviewer, not read a wall of text</div>
+        <p class="what"><code>@celmis</code> commands and questions answer in the thread; <code>remember</code> teaches it a rule; what the team dismisses is not posted again; each push is reviewed by what is new in it, and a Jira task's acceptance criteria are checked in the summary.
+          <a class="to" href="/docs/guide/#talking-to-the-reviewer-and-what-it-learns">talking to the reviewer</a></p>
+      </div>
+      <div class="row rv">
+        <div class="who">Your team keeps explaining the same procedure to every new assistant</div>
+        <p class="what">Versioned knowledge packs of skills, API examples and checklists per workspace, read in the app and by coding assistants through a compact <code>/mcp/dev</code> profile and a Claude Code plugin.
+          <a class="to" href="/docs/guide/#connect-claude-code-and-other-mcp-clients">codebase packs</a></p>
+      </div>
+      <div class="row rv">
+        <div class="who">Security asks who can reach the code, and what an agent saw</div>
+        <p class="what">A repository nobody has a rule for is invisible. MCP tokens belong to a person, every call is audited, secrets are withheld at the source, and a repository can be shared with another workspace for a fixed time, with paths hidden.
+          <a class="to" href="/docs/guide/#who-can-see-what">access you can defend</a></p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -380,7 +411,7 @@
         <img src="img/mcp-cross-repo.svg" loading="lazy" decoding="async"
              alt="MCP transcript: one query resolving a symbol across two repositories">
       </div>
-      <figcaption><b>Twenty-three tools over MCP.</b> One query, two repositories, two
+      <figcaption><b>Fifty-one tools over MCP.</b> One query, two repositories, two
         languages, the same contract symbol — from a client that has never checked either
         of them out.</figcaption>
     </figure>

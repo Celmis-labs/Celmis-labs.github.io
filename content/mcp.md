@@ -44,8 +44,8 @@ There is also a stdio transport, without the HTTP hop:
 ```
 
 **The two transports are not the same set.** stdio serves thirteen older, graph-shaped
-tools — `find_symbol`, `find_callers`, `query_graph`. The HTTP mount serves the eighteen
-below. Neither is a subset of the other, so pick the transport for the tools you want
+tools — `find_symbol`, `find_callers`, `query_graph`. The HTTP mount serves the fifty-one
+in the product README. Neither is a subset of the other, so pick the transport for the tools you want
 rather than for the convenience.
 
 ## A real session
@@ -75,7 +75,7 @@ never checked either of them out:
           }
 ```
 
-![An MCP client listing eighteen tools and resolving one symbol across two repositories](/img/mcp-cross-repo.svg)
+![An MCP client listing the tools and resolving one symbol across two repositories](/img/mcp-cross-repo.svg)
 
 ## What an agent can ask
 
@@ -105,7 +105,7 @@ from inside a single repository.
 
 ## Tools you cannot see
 
-Twenty-three tools are registered. A read-only token sees eighteen.
+Fifty-one tools are registered on the HTTP mount. A read-only token sees thirty-five.
 
 The five that write — `add_repo`, `start_dep_audit`, `generate_docs`, `set_auto_review`,
 `migrate_consumers` — require `write:repos` or `write:reviews`, which a token issued for

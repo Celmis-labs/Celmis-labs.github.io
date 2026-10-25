@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MCP server — Celmis</title>
-<meta name="description" content="Eighteen tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.">
+<meta name="description" content="Fifty-one tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.">
 <link rel="canonical" href="https://celmis-labs.github.io/mcp/">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MCP server — Celmis">
-<meta property="og:description" content="Eighteen tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.">
+<meta property="og:description" content="Fifty-one tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.">
 <meta property="og:url" content="https://celmis-labs.github.io/mcp/">
 <meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
 <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"MCP server","description":"Eighteen tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.","url":"https://celmis-labs.github.io/mcp/","datePublished":"2026-08-28","dateModified":"2026-08-28","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"MCP server","description":"Fifty-one tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.","url":"https://celmis-labs.github.io/mcp/","datePublished":"2026-08-28","dateModified":"2026-08-28","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
 </head>
 <body>
 <header class="bar" id="bar">
@@ -44,7 +44,7 @@
   <div class="dochead">
     <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
     <h1 class="docttl">MCP server</h1>
-    <p class="docsub">Eighteen tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.</p>
+    <p class="docsub">Fifty-one tools over the same index, under the same access rules — for Claude Code, Cursor, and any other MCP client.</p>
     <p class="docmeta"><span>2026-08-28</span></p>
   </div>
   <div class="doclayout">
@@ -83,8 +83,8 @@ interface, or from the command line:</p>
 }
 </code></pre>
 <p><strong>The two transports are not the same set.</strong> stdio serves thirteen older, graph-shaped
-tools — <code>find_symbol</code>, <code>find_callers</code>, <code>query_graph</code>. The HTTP mount serves the eighteen
-below. Neither is a subset of the other, so pick the transport for the tools you want
+tools — <code>find_symbol</code>, <code>find_callers</code>, <code>query_graph</code>. The HTTP mount serves the fifty-one
+in the product README. Neither is a subset of the other, so pick the transport for the tools you want
 rather than for the convenience.</p>
 <h2 id="a-real-session"><a class="anchor" href="#a-real-session" aria-label="Link to this section">#</a>A real session</h2>
 <p>One query, resolved across two repositories and two languages, from a client that has
@@ -109,7 +109,7 @@ never checked either of them out:</p>
             &quot;count&quot;: 2
           }
 </code></pre>
-<p><img src="/img/mcp-cross-repo.svg" alt="An MCP client listing eighteen tools and resolving one symbol across two repositories" /></p>
+<p><img src="/img/mcp-cross-repo.svg" alt="An MCP client listing the tools and resolving one symbol across two repositories" /></p>
 <h2 id="what-an-agent-can-ask"><a class="anchor" href="#what-an-agent-can-ask" aria-label="Link to this section">#</a>What an agent can ask</h2>
 <p>These answer the questions a grep cannot, because a grep has one repository open and no
 notion of who calls what.</p>
@@ -183,7 +183,7 @@ notion of who calls what.</p>
 this</em> is a question about a graph, not about text, and no amount of searching answers it
 from inside a single repository.</p>
 <h2 id="tools-you-cannot-see"><a class="anchor" href="#tools-you-cannot-see" aria-label="Link to this section">#</a>Tools you cannot see</h2>
-<p>Twenty-three tools are registered. A read-only token sees eighteen.</p>
+<p>Fifty-one tools are registered on the HTTP mount. A read-only token sees thirty-five.</p>
 <p>The five that write — <code>add_repo</code>, <code>start_dep_audit</code>, <code>generate_docs</code>, <code>set_auto_review</code>,
 <code>migrate_consumers</code> — require <code>write:repos</code> or <code>write:reviews</code>, which a token issued for
 reading does not carry. They are <strong>absent from <code>tools/list</code></strong>, not merely refused when

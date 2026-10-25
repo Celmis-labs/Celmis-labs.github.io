@@ -54,7 +54,7 @@ PAGES = [
 WRITING = [
     dict(slug="mcp", path="mcp", src="content/mcp.md",
          title="MCP server",
-         blurb="Eighteen tools over the same index, under the same access rules — for "
+         blurb="Fifty-one tools over the same index, under the same access rules — for "
                "Claude Code, Cursor, and any other MCP client.",
          date="2026-08-28"),
     dict(slug="one-question-two-repositories",
@@ -79,8 +79,14 @@ WRITING = [
                "confident wrong answer that reads exactly like a right one. What an "
                "artefact with a provenance record does instead.",
          date="2026-09-01"),
+    dict(slug="a-review-that-says-nothing-when-there-is-nothing-to-say",
+         src="content/a-review-that-says-nothing-when-there-is-nothing-to-say.md",
+         title="A review that says nothing when there is nothing to say",
+         blurb="A comment level that still counted the findings it hid, a reasoning "
+               "sentence that came back in English, and what release 3.1.1 changed so a "
+               "pull request only hears what is worth reading.",
+         date="2026-10-24"),
 ]
-
 
 def slugify(text: str) -> str:
     """Match GitHub's heading anchors, so in-document links keep working."""

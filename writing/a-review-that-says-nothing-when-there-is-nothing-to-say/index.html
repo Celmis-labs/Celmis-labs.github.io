@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A review that says nothing when there is nothing to say — Celmis</title>
+<meta name="description" content="A comment level that still counted the findings it hid, a reasoning sentence that came back in English, and what release 3.1.1 changed so a pull request only hears what is worth reading.">
+<link rel="canonical" href="https://celmis-labs.github.io/writing/a-review-that-says-nothing-when-there-is-nothing-to-say/">
+<meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A review that says nothing when there is nothing to say — Celmis">
+<meta property="og:description" content="A comment level that still counted the findings it hid, a reasoning sentence that came back in English, and what release 3.1.1 changed so a pull request only hears what is worth reading.">
+<meta property="og:url" content="https://celmis-labs.github.io/writing/a-review-that-says-nothing-when-there-is-nothing-to-say/">
+<meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"A review that says nothing when there is nothing to say","description":"A comment level that still counted the findings it hid, a reasoning sentence that came back in English, and what release 3.1.1 changed so a pull request only hears what is worth reading.","url":"https://celmis-labs.github.io/writing/a-review-that-says-nothing-when-there-is-nothing-to-say/","datePublished":"2026-10-24","dateModified":"2026-10-24","inLanguage":"en","author":{"@type":"Organization","name":"Celmis Labs"},"publisher":{"@type":"Organization","name":"Celmis Labs","url":"https://celmis-labs.github.io/"}}</script>
+</head>
+<body>
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="mark" href="/"><span class="core"><i></i></span>celmis</a>
+    <nav>
+      <a href="/docs/">Docs</a>
+      <a href="/#uses" class="opt">Uses</a>
+      <a href="/#start">Install</a>
+      <a href="https://github.com/Celmis-labs/Celmis">GitHub</a>
+      <button class="tog" id="tog" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 1 1 9.6 3.5a6.9 6.9 0 0 0 10.9 10.9z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <div class="dochead">
+    <p class="crumbs"><a href="/">Celmis</a><span>/</span>Writing</p>
+    <h1 class="docttl">A review that says nothing when there is nothing to say</h1>
+    <p class="docsub">A comment level that still counted the findings it hid, a reasoning sentence that came back in English, and what release 3.1.1 changed so a pull request only hears what is worth reading.</p>
+    <p class="docmeta"><span>2026-10-24</span></p>
+  </div>
+  <div class="doclayout">
+    <article class="prose">
+<p>A review tool has two ways to lose a team's trust. It can miss the defect, or it can talk so much that people stop reading it. The second one is cheaper to cause and harder to notice, because every comment looks defensible on its own.</p>
+<p>Release 3.1.1 of Celmis is about the second failure.</p>
+<h2 id="the-bug-that-counted-what-it-hid"><a class="anchor" href="#the-bug-that-counted-what-it-hid" aria-label="Link to this section">#</a>The bug that counted what it hid</h2>
+<p>Celmis lets a repository set a comment level, the lowest severity worth interrupting a person for. Below it, a finding is kept for the web app and left out of the inline comments.</p>
+<p>That was only half the rule. The summary comment and the pull request description still counted the hidden findings. A reviewer could write &quot;1 warning&quot; under a pull request where there was nothing to read, and the same hidden finding turned an approval into a plain comment. The setting kept the noise out of the diff and let it back in through the front door.</p>
+<p>Now the counts, the breakdown, the verdict and the description are all computed from the findings at or above the level. A review with nothing at or above it approves. What forbids an approval is unchanged: a failed critical agent, a blocking compliance finding, an incomplete review, an installation with approvals switched off. When one of those applies, the comment says so in one line.</p>
+<p>One consequence is worth stating plainly, because it changes behaviour. Under a &quot;critical only&quot; level, errors no longer request changes, since they are below the level. A repository that wants warnings to hold a pull request back sets the level to <code>warning</code>.</p>
+<h2 id="a-comment-is-the-problem-the-reason-and-the-fix"><a class="anchor" href="#a-comment-is-the-problem-the-reason-and-the-fix" aria-label="Link to this section">#</a>A comment is the problem, the reason and the fix</h2>
+<p>The finders are asked for a title that is one line stating the problem, at most two short sentences of body that do not repeat the reason, and the concrete fix, with code when there is code. No preamble, no retelling of the code, no hedging, no advice that would fit any code. The closing comment follows the same rule: one verdict line, the number of inline comments, anything that did not fit under the per-review cap, and the two commands that matter. An approval is a heading and one line.</p>
+<h2 id="in-the-language-the-repository-chose"><a class="anchor" href="#in-the-language-the-repository-chose" aria-label="Link to this section">#</a>In the language the repository chose</h2>
+<p>A review in Ukrainian used to arrive with its reasoning sentence in English, because the language instruction named titles and bodies and not the field that opens every finding, and the prompt's examples were English. The instruction now names every field a person reads, comes after the output format, and is repeated as the last line of the request.</p>
+<p>Instructions are not a guarantee, so there is a check after them. Once the findings are final, the text that will be posted goes through a cheap deterministic test: a sentence in the wrong script, or, for Latin-script languages, a sentence made of English function words. What fails is rewritten in one batched call. A finding is never dropped for its language, a finding a program proved is never touched, and a rewrite that lost a piece of code is not used. The check can add one model call to a review, and only when a comment fails it.</p>
+<h2 id="what-it-does-not-claim"><a class="anchor" href="#what-it-does-not-claim" aria-label="Link to this section">#</a>What it does not claim</h2>
+<p>The language check cannot tell Ukrainian from Russian, and for Latin-script languages it is best effort. The position of this release on the public benchmark is also unchanged because it has not been measured again: the 17th place of 50 predates these changes, and the review has changed a lot since. When there is a new number it will go on the page with the command that reproduces it.</p>
+<p>Release notes and upgrade steps are in the <a href="https://github.com/Celmis-labs/Celmis/blob/main/CHANGELOG.md">changelog</a>. The reviewer's commands are in the <a href="/docs/guide/#talking-to-the-reviewer-and-what-it-learns">documentation</a>.</p>
+
+      <div class="docnav"><a href="/">← Celmis</a><a href="/docs/">Documentation →</a></div>
+    </article>
+    <aside class="toc"><span class="k">On this page</span><ol><li><a class="lvl2" href="#the-bug-that-counted-what-it-hid">The bug that counted what it hid</a></li><li><a class="lvl2" href="#a-comment-is-the-problem-the-reason-and-the-fix">A comment is the problem, the reason and the fix</a></li><li><a class="lvl2" href="#in-the-language-the-repository-chose">In the language the repository chose</a></li><li><a class="lvl2" href="#what-it-does-not-claim">What it does not claim</a></li></ol></aside>
+  </div>
+</main>
+<footer>
+  <div class="wrap fgrid">
+    <div>
+      <p><strong>Celmis</strong> is free software under the GNU Affero General Public
+        License v3.0, with one exception noted in the licence file. If you run it for
+        others over a network, they are entitled to its source.</p>
+      <p style="margin:0">Built by <a href="https://github.com/Celmis-labs">Celmis Labs</a>.</p>
+    </div>
+    <nav>
+      <a href="/docs/">Documentation</a>
+      <a href="https://github.com/Celmis-labs/Celmis">Source</a>
+      <a href="https://github.com/Celmis-labs/Celmis#results">Benchmark results</a>
+      <a href="https://github.com/Celmis-labs/Celmis/blob/main/LICENSE">Licence</a>
+    </nav>
+  </div>
+</footer>
+<script>
+(function(){var r=document.documentElement;
+try{var v=localStorage.getItem('celmis-theme');if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}
+function dark(){var a=r.getAttribute('data-theme');return a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+var t=document.getElementById('tog');
+if(t)t.addEventListener('click',function(){var n=dark()?'light':'dark';r.setAttribute('data-theme',n);
+try{localStorage.setItem('celmis-theme',n);}catch(e){}});
+var b=document.getElementById('bar');
+function s(){b.classList.toggle('stuck',scrollY>8);}s();addEventListener('scroll',s,{passive:true});
+/* mark the contents entry for the section being read */
+var links=[].slice.call(document.querySelectorAll('.toc a'));
+if(links.length&&'IntersectionObserver'in window){
+ var map={};
+ links.forEach(function(a){var el=document.getElementById(decodeURIComponent(a.hash.slice(1)));
+  if(el)map[el.id]=a;});
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(!e.isIntersecting)return;
+  links.forEach(function(a){a.classList.remove('on');});
+  var a=map[e.target.id];if(a)a.classList.add('on');});},
+  {rootMargin:'-70px 0px -72% 0px',threshold:0});
+ Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+}
+})();
+</script>
+</body>
+</html>

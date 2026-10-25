@@ -13,7 +13,7 @@
 > once from your repositories with tree-sitter, no model involved in constructing it.
 > That same index also answers questions across repository boundaries, reviews pull
 > requests, audits dependencies into a CycloneDX SBOM and a verifiable evidence pack,
-> generates documentation, enforces per-repository access rules, and serves eighteen
+> generates documentation, enforces per-repository access rules, and serves 51
 > tools over MCP. Those are surfaces worth having; none of them is the point on its
 > own. It runs on a single machine under `docker compose`, with the model provider of
 > your choice behind it.
@@ -64,7 +64,20 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   repository boundary. The symbol graph itself is built deterministically with
   tree-sitter; no model takes part in constructing it.
 - **Pull-request review** — agents read the diff and, where the graph is built,
-  who else calls what is being changed, including from another repository.
+  who else calls what is being changed, including from another repository. The
+  reviewer works inside the pull request: `@celmis` commands and questions in the
+  thread, `remember` rules, learning from the findings a team dismisses, incremental
+  review of each push, and a Jira task's acceptance criteria checked in the summary.
+  A finding below the repository's comment level never reaches the pull request, and a
+  review with nothing at or above it approves. Comments are the problem, the reason and
+  the fix, written in the repository's language.
+- **Codebase and the developer MCP profile** — versioned knowledge packs (skills, API
+  examples, checklists) per workspace, readable in the app and by coding assistants
+  through `/mcp/dev`, a compact read-only profile, and a Claude Code plugin;
+  `celmis-pack` publishes them.
+- **Sharing between workspaces** — a repository can be shared with one other workspace
+  for research, for a fixed time, with hidden paths, a ceiling on readers and questions
+  off unless the owner allows them. Checked on every call.
 - **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
   and a manifest of sha256 digests. Those digests prove the archive is internally
   consistent; on their own they do not prove it is the archive that was exported,
@@ -99,15 +112,16 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 - **Access control** — per-repository visibility of none, metadata or code, with
   deny globs that win even at code level, so two teams can share an integration
   without sharing credentials.
-- **MCP server** — twenty-three tools over the same index, eighteen of them
-  read-only and five requiring a write scope, under the same access rules,
+- **MCP server** — fifty-one tools over the same index, thirty-five of them
+  read-only and sixteen requiring a write scope, under the same access rules,
   for any MCP client.
 
 ## Measured facts
 
 - 197 seconds from `git clone` to six healthy services on a clean server.
 - $0.118 per pull request reviewed, on the model it ships with.
-- 17th of 50 on the Martian Code Review Bench offline set, under all three judges.
+- 17th of 50 on the Martian Code Review Bench offline set, under all three judges
+  (measured before the 2.3 and 3.x review changes; not yet re-run).
   This measures pull-request review on isolated single-repository pull requests,
   a set with no sibling service for a symbol to have consumers in, so the
   cross-repository work the product is built around is absent from the number.
@@ -120,7 +134,8 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
 Docker 24+ with Compose v2, about 4 GB of free RAM, and an API key for one of
 Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. Postgres and
 Qdrant are bundled. Nothing is sent anywhere except the calls the operator
-configures: no telemetry, no licence check.
+configures: no telemetry. An installation without a licence admits up to five people;
+a licence is an offline signed token checked at start-up, never over the network.
 
 ## Links
 
