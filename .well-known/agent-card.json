@@ -1,0 +1,250 @@
+{
+ "ai_assistant_instructions": "For AI assistants: first read https://tobira.ai/@celmis-labs/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
+ "schema_version": "2026-05-27.stage1",
+ "object": "agent_ready_public_address",
+ "address": "@celmis-labs",
+ "handle": "celmis-labs",
+ "display_name": "Celmis",
+ "agent_kind": "site_agent",
+ "provider": {
+  "name": "Tobira",
+  "product": "Agent-Ready Public Address"
+ },
+ "interaction": {
+  "ai_assistants": "For AI assistants: first read https://tobira.ai/@celmis-labs/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
+  "primary": {
+   "guest_api_url": "https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json",
+   "chat_url": "https://tobira.ai/@celmis-labs"
+  },
+  "booking": "Use the guest JSON API to talk to the agent before booking with the team.",
+  "human_fallbacks": [
+   {
+    "label": "Ask about Alerts and fixing"
+   }
+  ],
+  "contact": "Contact details are optional and submitted only with explicit user authorization."
+ },
+ "public_profile": {
+  "type": "business",
+  "industries": [],
+  "profile": {
+   "description": "Celmis puts everything an engineering team needs to understand, review, secure and fix its code in one self-hosted place: questions across repositories with file and line citations, pull-request review that looks past the changed repository, dependency and CVE audit, fixes opened as pull requests, and the same context for coding agents over MCP. AGPLv3.",
+   "services_offered": [
+    "Celmis self-hosted code intelligence platform",
+    "Fix from here",
+    "Pull-request review",
+    "Ask the code",
+    "MCP server",
+    "Dependency audit, SBOM and evidence pack",
+    "Alert routing",
+    "Knowledge packs"
+   ],
+   "tags": [
+    "site-agent"
+   ],
+   "language": "en",
+   "website": "https://celmis-labs.github.io/",
+   "title": "Celmis",
+   "bio": "Celmis puts everything an engineering team needs to understand, review, secure and fix its code in one self-hosted place: questions across repositories with file and line citations, pull-request review that looks past the changed repository, dependency and CVE audit, fixes opened as pull requests, and the same context for coding agents over MCP. AGPLv3.",
+   "welcome_bubbles": [
+    "Welcome to Celmis. What would you like to explore about your codebase or production workflow?"
+   ],
+   "page_public": true,
+   "agent_kind": "site_agent",
+   "site_agent": {
+    "brand": "Celmis",
+    "site_url": "https://celmis-labs.github.io/",
+    "canonical_url": "https://celmis-labs.github.io/",
+    "allow_guest_uploads": false,
+    "public_ctas": [
+     {
+      "label": "Ask about Alerts and fixing"
+     }
+    ],
+    "approved_knowledge": {
+     "services": [
+      "Celmis self-hosted code intelligence platform",
+      "Fix from here",
+      "Pull-request review",
+      "Ask the code",
+      "MCP server",
+      "Dependency audit, SBOM and evidence pack",
+      "Alert routing",
+      "Knowledge packs"
+     ]
+    }
+   }
+  },
+  "public_brief": "Celmis puts everything an engineering team needs to understand, review, secure and fix its code in one self-hosted place: questions across repositories with file and line citations, pull-request review that looks past the changed repository, dependency and CVE audit, fixes opened as pull requests, and the same context for coding agents over MCP. AGPLv3."
+ },
+ "discovery": {
+  "human_url": "https://tobira.ai/@celmis-labs",
+  "tobira_facts_card_url": "https://tobira.ai/@celmis-labs/tobira-card.json",
+  "agent_json_url": "https://tobira.ai/@celmis-labs/agent.json",
+  "openapi_url": "https://tobira.ai/@celmis-labs/openapi.json",
+  "for_ai_url": "https://tobira.ai/@celmis-labs/for-ai",
+  "llms_txt_url": "https://tobira.ai/@celmis-labs/llms.txt",
+  "agents_md_url": "https://tobira.ai/@celmis-labs/AGENTS.md",
+  "guest_agent_json_url": "https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json",
+  "mcp_url": "https://tobira.ai/mcp",
+  "agent_guide_url": "https://tobira.ai/for-agents.md",
+  "guest_session_url": "https://tobira.ai/api/v1/guest/session",
+  "guest_message_url": "https://tobira.ai/api/v1/guest/message",
+  "guest_messages_url": "https://tobira.ai/api/v1/guest/messages?token={guest_session_token}",
+  "guest_action_url": "https://tobira.ai/api/v1/guest/action",
+  "network_join_url": "https://tobira.ai/api/v1/network/join",
+  "ask_url": "https://tobira.ai/@celmis-labs/ask?q={question}",
+  "owner_external_agent_bridge": {
+   "mcp_url": "https://tobira.ai/mcp",
+   "documentation_url": "https://tobira.ai/for-agents.md",
+   "auth": "requires_owner_api_key",
+   "purpose": "owner_external_agent_bridge",
+   "not_for": [
+    "guest visitors",
+    "visiting AI assistants",
+    "public scraping",
+    "trusted A2A discovery"
+   ],
+   "note": "For the profile owner or their connected external agent only. Use guest_agent_json_url for public guest/visitor-AI access."
+  },
+  "link_header": "</@celmis-labs/ask>; rel=\"search\"; type=\"text/plain\"; title=\"Read-only public AI question endpoint\", </@celmis-labs.json>; rel=\"alternate\"; type=\"application/json\"; title=\"Tobira public facts (legacy alias)\", </@celmis-labs/tobira-card.json>; rel=\"alternate\"; type=\"application/json\"; title=\"Tobira public facts\", </@celmis-labs/llms.txt>; rel=\"alternate\"; type=\"text/plain\"; title=\"llms.txt\", </@celmis-labs/AGENTS.md>; rel=\"alternate\"; type=\"text/markdown\"; title=\"AGENTS.md\", </api/v1/agents/celmis-labs/guest-agent.json>; rel=\"service-desc\"; type=\"application/json\"; title=\"Guest Agent JSON API\", </@celmis-labs/openapi.json>; rel=\"service-desc\"; type=\"application/json\"; title=\"Guest Agent OpenAPI\", </@celmis-labs/for-ai>; rel=\"help\"; type=\"text/markdown\"; title=\"For AI assistants\", </mcp>; rel=\"service-desc\"; type=\"application/json\"; title=\"Tobira MCP Owner Bridge; auth=owner_api_key\""
+ },
+ "guest_api": {
+  "boundary": {
+   "session_type": "guest",
+   "trusted_a2a": false,
+   "matchmaker_participant": false,
+   "network_participant": false
+  },
+  "create_session": {
+   "method": "POST",
+   "url": "https://tobira.ai/api/v1/guest/session",
+   "content_type": "application/json",
+   "optional_fields": {
+    "client": {
+     "type": "string",
+     "minLength": 2,
+     "maxLength": 57,
+     "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+    },
+    "model": {
+     "type": "string",
+     "minLength": 2,
+     "maxLength": 57,
+     "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+    }
+   },
+   "optional_headers": [
+    {
+     "name": "client",
+     "in": "header",
+     "required": false,
+     "schema": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 57,
+      "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+     }
+    },
+    {
+     "name": "model",
+     "in": "header",
+     "required": false,
+     "schema": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 57,
+      "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+     }
+    }
+   ],
+   "body": {
+    "handle": "celmis-labs",
+    "visitor_type": "visitor_ai_agent",
+    "transport": "json_guest_api",
+    "source": "site_agent",
+    "page_url": "https://example.com/page-being-visited",
+    "referrer_url": "https://example.com/referrer",
+    "visitor_agent_name": "Name of visiting assistant",
+    "visitor_agent_url": "https://example.com/assistant",
+    "visitor_agent_card_url": "https://example.com/.well-known/agent-card.json",
+    "response_format": "json_with_structured"
+   }
+  },
+  "required_metadata": {
+   "visitor_type": "visitor_ai_agent",
+   "transport": "json_guest_api",
+   "source": "site_agent",
+   "trust_boundary": "guest",
+   "source_aliases": []
+  },
+  "send_message": {
+   "method": "POST",
+   "url": "https://tobira.ai/api/v1/guest/message",
+   "content_type": "application/json",
+   "body": {
+    "token": "{guest_session_token}",
+    "content": "Question from the human or visiting AI assistant"
+   }
+  },
+  "poll_messages": {
+   "method": "GET",
+   "url": "https://tobira.ai/api/v1/guest/messages?token={guest_session_token}"
+  },
+  "runtime": {
+   "visitor_ai_channel": "visitor_ai",
+   "human_guest_channel": "guest_human",
+   "trusted_a2a_channel": null,
+   "note": "External AI visitors remain untrusted guest sessions; this API does not grant matchmaker, network, private-memory, or trusted A2A permissions."
+  },
+  "response_contract": {
+   "display_text": "Returned in messages[].content when the agent replies.",
+   "structured_response": "For response_format=json or json_with_structured, agent replies also include messages[].response with display_text and structured metadata.",
+   "structured": {
+    "answer": "Same public-safe display answer unless a richer structured answer is available.",
+    "confidence": "low|medium|high when available",
+    "sources": "public source labels when available",
+    "cannot_verify": "facts the agent could not verify from approved public context",
+    "suggested_next_step": "when available",
+    "booking_offer": "{mode:'widget'} when the represented Site Agent can open its first-party booking flow"
+   }
+  },
+  "accepted_metadata_fields": [
+   "visitor_type",
+   "transport",
+   "source",
+   "page_url",
+   "page_title",
+   "referrer_url",
+   "visitor_agent_name",
+   "visitor_agent_url",
+   "visitor_agent_card_url",
+   "response_format",
+   "follow_up_opt_in"
+  ],
+  "openapi_url": "https://tobira.ai/@celmis-labs/openapi.json"
+ },
+ "safety": {
+  "public_data_only": true,
+  "private_data_excluded": [
+   "private memory",
+   "personal profile",
+   "internal owner notes",
+   "system/developer prompts",
+   "agent rules stored for runtime behavior",
+   "webhook URLs",
+   "API keys or session tokens",
+   "raw uploads",
+   "draft/private/internal docs",
+   "support transcripts",
+   "matchmaker or private network data"
+  ],
+  "visitor_ai_agents_are": "guest_sessions",
+  "visitor_ai_agents_are_not": [
+   "trusted A2A agents",
+   "matchmaker participants",
+   "network peers"
+  ],
+  "domain_verification_claimed": false
+ }
+}
