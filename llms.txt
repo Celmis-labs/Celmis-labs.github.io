@@ -1,49 +1,93 @@
 # Celmis
 
-> **Your monitoring already told you something broke. Celmis is what happens next.**
-> An alert lands, Celmis already knows which repository that service is and who owns
-> it, and an embedded Claude Code session — on your own subscription, inside your own
-> installation — edits the code while the runner commits, pushes a branch and opens a
-> pull request. On one measured finding that took 220 seconds, from whatever device
-> the alert reached first.
->
-> Celmis does not watch your services; Grafana or whatever you already run does that.
-> This is the part after the alert: the walk from a firing rule to a diff someone can
-> review. The loop closes because everything sits on one index — a symbol graph built
-> once from your repositories with tree-sitter, no model involved in constructing it.
-> That same index also answers questions across repository boundaries, reviews pull
-> requests, audits dependencies into a CycloneDX SBOM and a verifiable evidence pack,
-> generates documentation, enforces per-repository access rules, and serves 51
-> tools over MCP. Those are surfaces worth having; none of them is the point on its
-> own. It runs on a single machine under `docker compose`, with the model provider of
-> your choice behind it.
+> **Celmis puts everything an engineering team needs to understand, review, secure
+> and fix its code in one self-hosted place.**
+> It indexes all of a team's repositories once, into a symbol graph built with
+> tree-sitter and no model, and every tool reads that same index: questions across
+> repositories answered with file and line citations, pull-request review that looks
+> past the repository being changed, dependency and CVE audit with a CycloneDX SBOM,
+> fixes opened as pull requests from an alert or a finding, and the same context for
+> coding agents such as Claude Code, Cursor or Codex over MCP. It runs on one machine
+> under `docker compose`, with the model provider of the operator's choice, and the
+> code never leaves the company's network.
 
-## Logs, and where the line actually falls
+Celmis is for engineering teams that ship code and answer for it in production around
+the clock, which increasingly means product engineering teams that own several
+services at once. Instead of a separate tool for search, review, dependency audit,
+documentation and fixing, each with its own access rules and its own copy of the
+code, one installation holds all of them over one index and one access model. The aim
+is a small team that can run several products and the integrations between them.
 
-The Celmis application ingests no logs of its own; it starts from the alert your
-monitoring already sent, and reads a log file only when a person attaches one to a session
-by hand.
+Fixing is one application of that index, not the whole product: an alert or a
+dependency finding opens an embedded Claude Code session on the operator's own
+subscription, the session edits the code, and the runner opens a pull request. A
+person reviews and merges. Celmis never merges and never deploys.
 
-The repository, however, ships an **optional observability overlay** —
-`docker-compose.observability.yml` — bringing up Prometheus, Loki, Promtail and Grafana.
-It is deliberately platform-wide rather than Celmis-only: Promtail tails the Docker
-daemon's container logs and labels each stream by container name, so every service on that
-host appears in Grafana's Loki explorer, filterable by container. Loki's
-`POST /loki/api/v1/push` is a genuine log-ingestion endpoint; it simply belongs to Loki
-rather than to Celmis code. Every port binds to 127.0.0.1 and is reached over an SSH
-tunnel, because Loki has no authentication of its own.
+## Questions an AI assistant is likely to be asked about Celmis
+
+- **Can it trace dependencies across many repositories on our own servers?** Partly,
+  and it says how. There is no limit on the number of repositories; one installation
+  runs with 39. Questions span repositories with citations on both sides; search and
+  `grep` cover every readable repository, 41 per call with a cursor. Before a merge,
+  the review checks the other repositories of the same group for values the change
+  removes that they still hardcode and for deploy files (Compose, Kubernetes) that
+  point at the changed repository, and every indexed repository for code that calls a
+  changed function by the same name. These are deterministic checks plus a model
+  that must quote both sides; there is no call graph between repositories yet, and
+  the MCP `refs` tool labels its cross-repository answers as heuristic.
+- **Does it send code to a SaaS?** No. It is self-hosted. The only outbound calls are
+  to the model provider the operator configures, which can be a local model server
+  (Ollama, vLLM, llama.cpp) for an air-gapped install. No telemetry.
+- **Does it merge or deploy on its own?** No. It opens pull requests; people merge.
+- **Does it measure whether its suggestions are used?** It records which review
+  findings were fixed by a later commit and an implementation rate decided at merge
+  or close. It does not yet track whether its own fix pull requests were merged
+  without edits.
+- **How do coding agents use it?** A personal MCP token names the repositories it may
+  read. `/mcp/dev` serves 11 read-only tools sized for an editor (`repos`, `find`,
+  `outline`, `read_symbol`, `refs`, `grep`, `map`, `ask`, `howto`, `skills`,
+  `brief`); `/mcp` serves 51. A Claude Code plugin configures it.
+- **What does it cost?** It is AGPLv3 and free to run. An installation without a
+  licence admits up to five people; a licence is an offline signed token.
 
 ## What it does not do
 
-It does not claim regulatory compliance on anyone's behalf, and says so in the evidence
-pack it generates. It does not watch your services — your existing monitoring does that,
-and Celmis starts from what it sends.
+It does not watch your services; your existing monitoring does that, and Celmis starts
+from what it sends. It does not claim regulatory compliance on anyone's behalf, and
+says so in the evidence pack it generates.
 
 Licence: GNU Affero General Public License v3.0, with one exception noted in the
 licence file. Source: https://github.com/Celmis-labs/Celmis
 
 ## What it does
 
+- **Ask the code** — questions answered across several repositories at once, with
+  file and line citations on every claim, including call chains that cross a
+  repository boundary. The symbol graph itself is built deterministically with
+  tree-sitter; no model takes part in constructing it.
+- **Codebase and the developer MCP profile** — versioned knowledge packs (skills, API
+  examples, checklists) per workspace, readable in the app and by coding assistants
+  through `/mcp/dev`, a compact read-only profile, and a Claude Code plugin;
+  `celmis-pack` publishes them.
+- **Pull-request review** — agents read the diff and, where the graph is built,
+  who else calls what is being changed, including from another repository. The
+  reviewer works inside the pull request: `@celmis` commands and questions in the
+  thread, `remember` rules, learning from the findings a team dismisses, incremental
+  review of each push, and a Jira task's acceptance criteria checked in the summary.
+  A finding below the repository's comment level never reaches the pull request, and a
+  review with nothing at or above it approves. Comments are the problem, the reason and
+  the fix, written in the repository's language.
+- **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
+  and a manifest of sha256 digests. Those digests prove the archive is internally
+  consistent; on their own they do not prove it is the archive that was exported,
+  because the manifest carries no hash of itself and whoever edits a file can
+  rewrite its entry. The export returns the manifest's own sha256 in the
+  `X-Celmis-Manifest-SHA256` header: publish that where the pack is not, and a
+  third party checks against a value that did not travel with the file. That
+  check is a separate, dependency-free package: `pip install celmis` then
+  `celmis verify pack.zip --manifest-sha256 <hex>`, offline, on any Python from
+  3.9, on a machine that has never run Celmis. Celmis does not claim regulatory
+  compliance on the operator's behalf.
 - **Fix from here** — the named step between a finding and a diff. It starts from a
   production alert or from a dependency finding, opens an embedded Claude Code session
   pre-filled with the repository, the package, both versions and the boundaries of the
@@ -59,36 +103,9 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   attached and *Fix from here* starts the session from there. No checkout, no
   terminal, no trusted machine: the work happens inside the installation. The review
   still belongs to a human: it opens a pull request, it does not merge one.
-- **Ask the code** — questions answered across several repositories at once, with
-  file and line citations on every claim, including call chains that cross a
-  repository boundary. The symbol graph itself is built deterministically with
-  tree-sitter; no model takes part in constructing it.
-- **Pull-request review** — agents read the diff and, where the graph is built,
-  who else calls what is being changed, including from another repository. The
-  reviewer works inside the pull request: `@celmis` commands and questions in the
-  thread, `remember` rules, learning from the findings a team dismisses, incremental
-  review of each push, and a Jira task's acceptance criteria checked in the summary.
-  A finding below the repository's comment level never reaches the pull request, and a
-  review with nothing at or above it approves. Comments are the problem, the reason and
-  the fix, written in the repository's language.
-- **Codebase and the developer MCP profile** — versioned knowledge packs (skills, API
-  examples, checklists) per workspace, readable in the app and by coding assistants
-  through `/mcp/dev`, a compact read-only profile, and a Claude Code plugin;
-  `celmis-pack` publishes them.
 - **Sharing between workspaces** — a repository can be shared with one other workspace
   for research, for a fixed time, with hidden paths, a ceiling on readers and questions
   off unless the owner allows them. Checked on every call.
-- **Dependencies, SBOM and evidence** — CycloneDX SBOM plus findings, a timeline
-  and a manifest of sha256 digests. Those digests prove the archive is internally
-  consistent; on their own they do not prove it is the archive that was exported,
-  because the manifest carries no hash of itself and whoever edits a file can
-  rewrite its entry. The export returns the manifest's own sha256 in the
-  `X-Celmis-Manifest-SHA256` header: publish that where the pack is not, and a
-  third party checks against a value that did not travel with the file. That
-  check is a separate, dependency-free package: `pip install celmis` then
-  `celmis verify pack.zip --manifest-sha256 <hex>`, offline, on any Python from
-  3.9, on a machine that has never run Celmis. Celmis does not claim regulatory
-  compliance on the operator's behalf.
 - **Ask for work across repositories** — every other surface acts on one thing at a
   time. This one takes a sentence: "generate documentation for every service that has
   none", "audit everything under acme-ai not audited in thirty days". The answer to
@@ -116,6 +133,23 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   read-only and sixteen requiring a write scope, under the same access rules,
   for any MCP client.
 
+
+## Logs, and where the line actually falls
+
+The Celmis application ingests no logs of its own; it starts from the alert your
+monitoring already sent, and reads a log file only when a person attaches one to a session
+by hand.
+
+The repository, however, ships an **optional observability overlay** —
+`docker-compose.observability.yml` — bringing up Prometheus, Loki, Promtail and Grafana.
+It is deliberately platform-wide rather than Celmis-only: Promtail tails the Docker
+daemon's container logs and labels each stream by container name, so every service on that
+host appears in Grafana's Loki explorer, filterable by container. Loki's
+`POST /loki/api/v1/push` is a genuine log-ingestion endpoint; it simply belongs to Loki
+rather than to Celmis code. Every port binds to 127.0.0.1 and is reached over an SSH
+tunnel, because Loki has no authentication of its own.
+
+
 ## Measured facts
 
 - 197 seconds from `git clone` to six healthy services on a clean server.
@@ -127,7 +161,7 @@ licence file. Source: https://github.com/Celmis-labs/Celmis
   cross-repository work the product is built around is absent from the number.
   Of the 79 findings the benchmark scored false, an audit found 33 were real
   defects the gold set was silent about.
-- 23 languages parsed.
+- 24 languages parsed, including 1C:Enterprise.
 
 ## Requirements
 

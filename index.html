@@ -3,21 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Celmis — from the alert to the fixed pull request, self-hosted</title>
-<meta name="description" content="Your monitoring told you something broke. Celmis knows whose code it is, and an embedded session fixes it and opens the pull request. Self-hosted, AGPLv3.">
+<title>Celmis · understand, review, secure and fix your code in one self-hosted place</title>
+<meta name="description" content="Celmis puts everything an engineering team needs to understand, review, secure and fix its code in one self-hosted place: questions across repositories, pull-request review, CVE audit and fixes opened as pull requests, for people and for coding agents over MCP. AGPLv3.">
 <link rel="canonical" href="https://celmis-labs.github.io/">
 <link rel="me" href="https://mastodon.social/@constantinemakoid">
 <link rel="me" href="https://infosec.exchange/@constantinemakoid">
 <meta name="theme-color" content="#FBFCFB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#080A09" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Celmis — from the alert to the fixed pull request">
-<meta property="og:description" content="Your Grafana already told you. Celmis is what happens next — it knows whose code the alert is, and the fix opens as a pull request, from a laptop or a phone. Self-hosted, AGPLv3.">
+<meta property="og:site_name" content="Celmis">
+<meta property="og:title" content="Celmis · understand, review, secure and fix your code in one place">
+<meta property="og:description" content="One self-hosted place for the code a team ships and answers for: ask across repositories, review beyond the changed repository, audit dependencies, and fix from an alert as a pull request. The code never leaves your network. AGPLv3.">
 <meta property="og:url" content="https://celmis-labs.github.io/">
 <meta property="og:image" content="https://celmis-labs.github.io/img/og-celmis-2.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Celmis — self-hosted platform taking a production alert through to a fixed pull request">
+<meta property="og:image:alt" content="Celmis, a self-hosted place to understand, review, secure and fix code across repositories">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0F0D'/><circle cx='16' cy='16' r='4.5' fill='%233DBE83'/><circle cx='16' cy='16' r='9.5' fill='none' stroke='%233DBE83' stroke-opacity='.4' stroke-width='1.6'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,15 +41,17 @@
    "codeRepository": "https://github.com/Celmis-labs/Celmis",
    "license": "https://www.gnu.org/licenses/agpl-3.0.html",
    "isAccessibleForFree": true,
-   "description": "Self-hosted code intelligence. Celmis indexes your repositories once and keeps a symbol graph of them; asking questions, reviewing pull requests, auditing dependencies and generating documentation are all different ways of reading that one graph. It runs on a single machine under docker compose, with the model provider of your choice behind it, and nothing leaves your network except the calls you configure.",
+   "description": "Celmis puts everything an engineering team needs to understand, review, secure and fix its code in one self-hosted place. It indexes all of a team's repositories once into a symbol graph, and every tool reads that index: questions across repositories with file and line citations, pull-request review that looks past the changed repository, dependency and CVE audit with a CycloneDX SBOM, fixes opened as pull requests from an alert or a finding, and the same context for coding agents over MCP. It runs on a single machine under docker compose with the model provider of your choice, and the code never leaves your network.",
+   "audience": {"@type": "Audience", "audienceType": "Engineering teams that ship code and own it in production"},
    "featureList": [
     "Ask questions across several repositories at once, answered with file and line citations",
-    "Pull-request review that also reads who else calls what is being changed, including from another repository",
-    "CycloneDX SBOM and an evidence pack whose manifest of sha256 digests a third party can verify independently",
-    "Fix from here: an embedded session edits the repository and the runner opens a pull request",
+    "Knowledge packs of a team's skills, checklists and API examples, served to coding agents through MCP",
+    "Pull-request review that checks other repositories for hardcoded values and same-named callers a change affects",
+    "Dependency and CVE audit, a CycloneDX SBOM and an evidence pack whose manifest of sha256 digests a third party can verify independently",
+    "Fix from here: an alert or a finding opens an embedded session that edits the repository, and the runner opens a pull request; Celmis never merges or deploys",
     "Per-repository access control with visibility levels and deny globs",
     "MCP server exposing 51 tools over the same index under the same access rules, 35 of them read-only, plus a compact developer profile and a Claude Code plugin",
-    "23 languages parsed"
+    "24 languages parsed, including 1C:Enterprise"
    ],
    "softwareRequirements": "Docker 24+ with Compose v2, about 4 GB of free RAM, and an API key for Google Gemini, Anthropic, OpenAI, OpenRouter, Groq or Mistral. Postgres and Qdrant are bundled.",
    "offers": {
@@ -88,7 +91,39 @@
      "name": "What is Celmis?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Celmis is self-hosted code intelligence. It reads your repositories once and keeps a symbol graph of them. Asking questions, reviewing pull requests, auditing dependencies and generating documentation are all different ways of reading that one index."
+      "text": "Celmis is one self-hosted place to understand, review, secure and fix code. It indexes all of a team's repositories once and keeps a symbol graph of them; asking questions across repositories, reviewing pull requests, auditing dependencies for CVEs, fixing from an alert as a pull request and serving coding agents over MCP are all ways of reading that one index. Fixing is one application of it, not the whole product."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Who is Celmis for?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Engineering teams that ship code and answer for it in production around the clock, especially product engineering teams that own several services at once. Instead of separate tools for search, review, dependency audit and fixing, each with its own access rules, one installation holds them over one index, so a small team can run several products and the integrations between them."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can Celmis trace dependencies across many repositories on our own servers?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Partly, and it says how. There is no limit on the number of repositories, and questions span repositories with file and line citations on both sides. Before a merge, the review checks sibling repositories for values the change removes that they still hardcode, for deploy files that point at the changed repository, and every indexed repository for code that calls a changed function by the same name. These are checks with the evidence quoted, not a call graph between repositories, which Celmis does not build yet."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Does Celmis merge or deploy fixes on its own?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Fix from here opens a pull request from an embedded session; a person reviews and merges. Celmis never merges and never deploys."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How do coding agents such as Claude Code use Celmis?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Through MCP. A personal token names the repositories it may read; the /mcp/dev profile serves 11 read-only tools sized for an editor, including search across every readable repository and brief, which returns the team's own skills and checklists for a task. A Claude Code plugin configures it."
      }
     },
     {
@@ -162,10 +197,10 @@
   <canvas id="graph" aria-hidden="true"></canvas>
   <p class="hint" id="hint">hover a node — its consumers light up</p>
   <div class="wrap">
-    <h1 class="rv">Celmis<span class="sr"> — a self-hosted platform that takes a production alert through to a fixed pull request</span></h1>
-    <p class="lede rv">From the alert to the <em>fixed pull request</em>.</p>
-    <p class="sub rv">Your monitoring already told you. This is what happens next —
-      self-hosted, open source, on one machine.</p>
+    <h1 class="rv">Celmis<span class="sr"> — one self-hosted place to understand, review, secure and fix code across all of a team's repositories</span></h1>
+    <p class="lede rv">Understand, review, secure and fix your code. <em>In one place.</em></p>
+    <p class="sub rv">For the engineering team that ships the code and answers for it at
+      3 a.m. Self-hosted, open source, on one machine.</p>
     <div class="cta rv">
       <a class="btn primary" href="#start">Install in 197 seconds <span class="arw">→</span></a>
       <a class="btn" href="https://github.com/Celmis-labs/Celmis">Read the source</a>
@@ -173,7 +208,7 @@
     <div class="badges rv">
       <span class="badge"><b>AGPLv3</b> · source-available to every user</span>
       <span class="badge"><span class="g">●</span> <b>self-hosted</b> · one machine</span>
-      <span class="badge"><b>23</b> languages parsed</span>
+      <span class="badge"><b>24</b> languages parsed</span>
       <span class="badge"><b>51</b> MCP tools</span>
     </div>
   </div>
@@ -183,31 +218,38 @@
   <div class="wrap">
     <h2 class="introq rv">What is Celmis?</h2>
     <div class="introgrid">
-      <p class="rv">An alert arrives from a service you run. Celmis already knows which
-        repository that service is and who owns it, so the fix starts there: an embedded
-        Claude Code session — on <em>your</em> subscription, inside <em>your</em>
-        installation — edits the code, and the runner opens a pull request. On one
-        measured finding that took <strong>220 seconds</strong>, from a phone or a laptop,
-        whichever the alert reached first.</p>
-      <p class="rv">Celmis does not watch your services; Grafana or whatever you already
-        run does that, and it is good at it. This is the part that comes after the alert —
-        the walk from a firing rule to a diff someone can review.</p>
-      <p class="rv small">To be exact, because the line is easy to blur. The application
-        itself ingests no logs — it starts from the alert. But the repository ships an
-        <strong>optional observability overlay</strong>: one extra compose file brings up
-        Prometheus, Loki, Promtail and Grafana, and Promtail then tails
-        <em>every container on that host</em> — all thirty of them, if you run thirty —
-        into a Loki you own, browsable in the bundled Grafana and filterable by container.
-        Platform-wide, not Celmis-only. Every port binds to <code>127.0.0.1</code> and is
-        reached over an SSH tunnel, because a log store strangers can write to is not a log
-        store.</p>
-      <p class="rv"><strong>Fix from here</strong> is the name of that step. It starts
-        from a production alert or from a dependency finding, opens an embedded
-        <strong>Claude Code</strong> session pre-filled with the repository, the package,
-        both versions and the boundaries of the job, and runs it on <em>your</em> Anthropic
-        subscription inside <em>your</em> installation. The session edits the checkout; the
-        Celmis runner commits, pushes a branch and opens a pull request. A human reviews and
-        merges — it opens a pull request, it does not merge one.</p>
+      <p class="rv">Celmis puts everything an engineering team needs to work with its
+        code in one self-hosted place. It indexes all of your repositories once, and
+        every tool reads that same index: <strong>understand</strong> code nobody
+        documented, with questions across repositories answered with file and line
+        citations; <strong>review</strong> pull requests with what the change touches
+        beyond its own repository; <strong>secure</strong> the dependencies with a CVE
+        audit, a CycloneDX SBOM and an evidence pack; and <strong>fix</strong> what an
+        alert or a finding points at, as a pull request. Coding agents such as Claude
+        Code, Cursor or Codex get the same context over MCP.</p>
+      <p class="rv">It is built for the team that ships the code and answers for it
+        around the clock. Instead of a separate tool for search, review, dependency audit
+        and fixing, each with its own access rules and its own copy of your code, one
+        installation holds them all, on your servers, with your model. The aim is a small
+        team that can run several products and the integrations between them, not a large
+        one struggling to keep two in sync.</p>
+      <p class="rv"><strong>Beyond the repository, honestly.</strong> Before a merge, the
+        review checks the other repositories for values the change removes that they still
+        hardcode, for deploy files that point at the changed repository, and for code that
+        calls a changed function by the same name, and quotes both sides. These are checks,
+        not a call graph between repositories; that graph is not built yet.</p>
+      <p class="rv"><strong>Fix from here</strong> is one application of the index, not the
+        whole product. An alert or a dependency finding opens an embedded
+        <strong>Claude Code</strong> session on <em>your</em> subscription inside
+        <em>your</em> installation; the session edits the code and the runner opens a pull
+        request. On one measured finding that took <strong>220 seconds</strong>. A person
+        reviews and merges: Celmis never merges and never deploys.</p>
+      <p class="rv small">Celmis does not watch your services; Grafana or whatever you
+        already run does that, and Celmis starts from the alert it sends. The application
+        ingests no logs of its own, but the repository ships an <strong>optional
+        observability overlay</strong>: one extra compose file brings up Prometheus, Loki,
+        Promtail and Grafana for every container on that host, with every port bound to
+        <code>127.0.0.1</code> and reached over an SSH tunnel.</p>
       <p class="etym rv">In the oldest telling, <b>Kelmis</b> was the smelter — one of
         three who found how to work iron with fire. The index does the reducing here; the
         surfaces are what work the result.</p>
@@ -217,12 +259,13 @@
 
 <section id="thesis">
   <div class="wrap">
-    <p class="eyebrow rv">Why the loop closes</p>
+    <p class="eyebrow rv">Why one place works</p>
     <div class="col">
-      <h2 class="rv">One index underneath, so the platform knows whose code it is</h2>
-      <p class="h2sub rv">An alert can be routed to an owner, and a fix can be scoped, only
-        because something already read the code. Celmis builds a symbol graph from your
-        repositories once; every surface above reads that one index. Here it answers a
+      <h2 class="rv">One index underneath, so every tool reads the same code</h2>
+      <p class="h2sub rv">A question can be answered across services, a review can look past
+        its own repository and an alert can be routed to its owner only because something
+        already read the code. Celmis builds a symbol graph from your repositories once;
+        every tool reads that one index. Here it answers a
         question spanning two repositories — tracing the call chain, then noticing,
         unprompted, that the Kafka topic name is hardcoded in both and that changing one
         silently breaks the other.</p>
