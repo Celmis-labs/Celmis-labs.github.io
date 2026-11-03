@@ -51,7 +51,9 @@ rather than for the convenience.
 ## A real session
 
 One query, resolved across two repositories and two languages, from a client that has
-never checked either of them out:
+never checked either of them out. It was recorded on an earlier release with a
+token scoped to one project, so `tools/list` shows fewer tools than the fifty-one a
+personal token with every scope sees today:
 
 ```
 --> initialize
