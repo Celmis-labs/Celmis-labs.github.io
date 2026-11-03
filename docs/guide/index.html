@@ -51,20 +51,35 @@
     <article class="prose">
 <div align="center">
 <h1>Celmis</h1>
-<p><strong>From the alert your monitoring already sent, to a pull request someone can review.</strong>
-Self-hosted. One machine. Your model, your subscription, your network.</p>
+<p><strong>Understand, review, secure and fix your code, in one self-hosted place.</strong>
+One machine. Your model, your network. The code never leaves the company.</p>
 <p><a href="https://celmis-labs.github.io"><strong>Website</strong></a> · <a href="https://celmis-labs.github.io/docs/">Documentation</a> · <a href="#quick-start">Quick start</a> · <a href="#whats-new-in-v3">What's new</a> · <a href="#results">Results</a></p>
-<p><img src="https://img.shields.io/badge/licence-AGPLv3-0E5537" alt="licence" /> <img src="https://img.shields.io/github/v/release/Celmis-labs/Celmis?color=3DBE83" alt="release" /> <img src="https://img.shields.io/badge/MCP%20tools-51-C08A3E" alt="MCP tools" /> <img src="https://img.shields.io/badge/languages%20parsed-23-0E5537" alt="languages" /></p>
-<p><img src="/img/alert-to-fix.png" alt="An alert becomes a pull request" /></p>
+<p><img src="https://img.shields.io/badge/licence-AGPLv3-0E5537" alt="licence" /> <img src="https://img.shields.io/github/v/release/Celmis-labs/Celmis?color=3DBE83" alt="release" /> <img src="https://img.shields.io/badge/MCP%20tools-51-C08A3E" alt="MCP tools" /> <img src="https://img.shields.io/badge/languages%20parsed-24-0E5537" alt="languages" /></p>
+<p><img src="/img/ask-the-code-cross-repo.png" alt="One question answered across two repositories, with citations in both" /></p>
 </div>
-<p>An alert arrives from a service you run. Celmis already knows which repository that
-service is and who owns it, so the fix starts there: an embedded Claude Code session,
-on <em>your</em> subscription and inside <em>your</em> installation, edits the code, and the runner
-commits, pushes a branch and opens a pull request. On one measured finding that took
-<strong>220 seconds</strong>, from whatever device the alert reached first.</p>
-<p>That loop closes because everything sits on <strong>one index</strong>: a symbol graph built once
-from your repositories, with no model involved in building it. Every other surface
-reads the same index.</p>
+<p>Celmis puts everything an engineering team needs to work with its code in one place.
+It indexes all of your repositories once, into a symbol graph built without a model,
+and every tool reads that same index:</p>
+<ul>
+<li><strong>understand</strong> code nobody documented: questions across repositories answered with
+<code>file:line</code> citations, in the app or from a coding agent (Claude Code, Cursor, Codex)
+over MCP, plus the team's own skills and checklists for the task at hand;</li>
+<li><strong>review</strong> pull requests with what the change touches beyond its own repository;</li>
+<li><strong>secure</strong> the dependencies: CVE audit, a CycloneDX SBOM and an evidence pack a third
+party can verify;</li>
+<li><strong>fix</strong> what an alert or a finding points at: an embedded Claude Code session on
+<em>your</em> subscription edits the code and the runner opens a pull request (220 seconds on
+one measured finding). A person reviews and merges; Celmis never merges or deploys.</li>
+</ul>
+<p>It is built for the team that ships the code and answers for it in production. Instead
+of a separate tool for each of those jobs, each with its own access rules and its own
+copy of your code, one installation holds them all. The aim is a small team that can
+run several products and the integrations between them.</p>
+<p><strong>What &quot;beyond its own repository&quot; means today.</strong> Before a merge, the review checks the
+other repositories for values the change removes that they still hardcode, for deploy
+files that point at the changed repository, and for code that calls a changed function
+by the same name, quoting both sides. These are checks, not a call graph between
+repositories; that graph is not built yet.</p>
 <h2 id="what-it-does"><a class="anchor" href="#what-it-does" aria-label="Link to this section">#</a>What it does</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -75,14 +90,6 @@ reads the same index.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Fix from here</strong></td>
-<td>An alert or a dependency finding becomes an embedded session, then a branch, then a pull request. A human reviews and merges; Celmis never merges. <a href="#fix-from-here">Fix from here</a> · <a href="#alerts-and-fixing-from-a-phone">Alerts</a></td>
-</tr>
-<tr>
-<td><strong>Pull-request review</strong></td>
-<td>Agents read the diff and, where the graph exists, who else calls what changed, across repositories. Talk to it with <code>@celmis</code>, teach it with <code>remember</code>, and it stays quiet when there is nothing to say. <a href="#pull-request-review">Review</a></td>
-</tr>
-<tr>
 <td><strong>Ask the code</strong></td>
 <td>Questions across several repositories, answered with <code>file:line</code> citations on both sides of a call. <a href="#ask-the-code">Ask the code</a></td>
 </tr>
@@ -91,8 +98,16 @@ reads the same index.</p>
 <td>51 tools over MCP, a compact <code>/mcp/dev</code> profile for editors, a Claude Code plugin, and versioned knowledge packs of the skills your team already explains out loud. <a href="#connect-claude-code-and-other-mcp-clients">MCP</a> · <a href="https://github.com/Celmis-labs/Celmis/blob/main/docs/CODEBASE.md">Packs</a></td>
 </tr>
 <tr>
+<td><strong>Pull-request review</strong></td>
+<td>Agents read the diff and, where the graph exists, who else calls what changed, across repositories. Talk to it with <code>@celmis</code>, teach it with <code>remember</code>, and it stays quiet when there is nothing to say. <a href="#pull-request-review">Review</a></td>
+</tr>
+<tr>
 <td><strong>Evidence</strong></td>
 <td>Dependency audit, CycloneDX SBOM and an evidence pack whose manifest a third party recomputes. <a href="#dependencies-sbom-and-the-evidence-pack">SBOM and evidence</a></td>
+</tr>
+<tr>
+<td><strong>Fix from here</strong></td>
+<td>An alert or a dependency finding becomes an embedded session, then a branch, then a pull request. A human reviews and merges; Celmis never merges. <a href="#fix-from-here">Fix from here</a> · <a href="#alerts-and-fixing-from-a-phone">Alerts</a></td>
 </tr>
 <tr>
 <td><strong>Access you can defend</strong></td>
@@ -129,9 +144,8 @@ does collect them, platform-wide rather than Celmis-only:</p>
 <p>Every port binds to <code>127.0.0.1</code> and is reached over an SSH tunnel, because Loki has no
 authentication. <code>GRAFANA_ADMIN_PASSWORD</code> is required.</p>
 <h2 id="what-that-buys-you-that-a-diff-only-tool-cannot"><a class="anchor" href="#what-that-buys-you-that-a-diff-only-tool-cannot" aria-label="Link to this section">#</a>What that buys you that a diff-only tool cannot</h2>
-<p>Ask a question that spans two repositories, and the answer quotes both:</p>
-<p><img src="/img/ask-the-code-cross-repo.png" alt="Ask the code, answering across two repositories" /></p>
-<p>That is not a search result. The gateway and the payments service are separate
+<p>Ask a question that spans two repositories, and the answer quotes both, as in the
+screenshot at the top of this page. That is not a search result. The gateway and the payments service are separate
 repositories with no shared code, and the answer traces the call chain between
 them — then notices, unprompted, that the Kafka topic name is hardcoded in both
 and that changing one silently breaks the other.</p>
@@ -449,7 +463,7 @@ clone URL. Indexing is queued; the job shows on the same page.</li>
 calls, imports — what the review agents reason over) and embeddings in Qdrant
 (what Q&amp;A retrieves). A 120k-symbol repository takes about a minute on four
 cores.</p>
-<p>Twenty-three languages parse into the graph. A file in a language without a
+<p>Twenty-four languages parse into the graph, 1C:Enterprise among them. A file in a language without a
 parser is said so out loud rather than silently skipped — <code>analyzer graph-stats</code>
 lists what was and was not read.</p>
 <hr />
