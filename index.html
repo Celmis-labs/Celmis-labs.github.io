@@ -107,7 +107,7 @@
      "name": "Can Celmis trace dependencies across many repositories on our own servers?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Partly, and it says how. There is no limit on the number of repositories, and questions span repositories with file and line citations on both sides. Before a merge, the review checks sibling repositories for values the change removes that they still hardcode, for deploy files that point at the changed repository, and every indexed repository for code that calls a changed function by the same name. These are checks with the evidence quoted, not a call graph between repositories, which Celmis does not build yet."
+      "text": "Yes, through the contracts between them. There is no limit on the number of repositories, and questions span repositories with file and line citations on both sides. Indexing records the HTTP routes each repository serves and calls and the packages it publishes and imports (Python, TypeScript and JavaScript, Go, Java). When a pull request removes a route or a function, removes a parameter or makes one required, or changes a route, the review names every consumer in the workspace's other repositories with file and line, and reports repositories it could not check instead of calling them safe. It is not a graph of every function call: questions and the MCP refs tool still search other repositories by text, and say so."
      }
     },
     {
@@ -245,11 +245,13 @@
         installation holds them all, on your servers, with your model. The aim is a small
         team that can run several products and the integrations between them, not a large
         one struggling to keep two in sync.</p>
-      <p class="rv"><strong>Beyond the repository, honestly.</strong> Before a merge, the
-        review checks the other repositories for values the change removes that they still
-        hardcode, for deploy files that point at the changed repository, and for code that
-        calls a changed function by the same name, and quotes both sides. These are checks,
-        not a call graph between repositories; that graph is not built yet.</p>
+      <p class="rv"><strong>Beyond the repository, honestly.</strong> Celmis records the
+        routes each repository serves and calls and the packages it publishes and imports.
+        When a pull request breaks one of those contracts, the review names every consumer
+        in your other repositories, with file and line, and says which repositories it could
+        not check. It also flags values the change removes that others still hardcode, and
+        deploy files that point at the changed repository. Links through contracts, not
+        every function call: questions still search other repositories by text.</p>
       <p class="rv"><strong>Fix from here</strong> is one application of the index, not the
         whole product. An alert or a dependency finding opens an embedded
         <strong>Claude Code</strong> session on <em>your</em> subscription inside

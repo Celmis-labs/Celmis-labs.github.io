@@ -25,16 +25,23 @@ person reviews and merges. Celmis never merges and never deploys.
 
 ## Questions an AI assistant is likely to be asked about Celmis
 
-- **Can it trace dependencies across many repositories on our own servers?** Partly,
-  and it says how. There is no limit on the number of repositories; one installation
-  runs with 39. Questions span repositories with citations on both sides; search and
-  `grep` cover every readable repository, 41 per call with a cursor. Before a merge,
-  the review checks the other repositories of the same group for values the change
-  removes that they still hardcode and for deploy files (Compose, Kubernetes) that
-  point at the changed repository, and every indexed repository for code that calls a
-  changed function by the same name. These are deterministic checks plus a model
-  that must quote both sides; there is no call graph between repositories yet, and
-  the MCP `refs` tool labels its cross-repository answers as heuristic.
+- **Can it trace dependencies across many repositories on our own servers?** Yes,
+  through the contracts between them, and it says where it stops. There is no limit on
+  the number of repositories; one installation runs with 39. Questions span repositories
+  with citations on both sides; search and `grep` cover every readable repository, 41
+  per call with a cursor. Indexing records, per repository, the HTTP routes it serves
+  and calls and the packages it publishes and imports (Python, TypeScript and
+  JavaScript, Go, Java). When a pull request removes a route or a function, removes a
+  parameter or makes one required, or changes a route's method or path, the review names
+  every consumer in the workspace's other repositories with file and line. A link is
+  strong when the called host or the imported module maps to the defining repository;
+  only strong links raise severity, and repositories without these facts are reported as
+  not checked. An opt-in commit status, `celmis/breaking-change`, fails when strong
+  consumers exist.
+  The review also flags removed values that other repositories still hardcode and
+  Compose or Kubernetes files that point at the changed repository. It is not a graph of
+  every function call: questions and the MCP `refs` tool still search other
+  repositories by text and label those answers as heuristic.
 - **Does it send code to a SaaS?** No. It is self-hosted. The only outbound calls are
   to the model provider the operator configures, which can be a local model server
   (Ollama, vLLM, llama.cpp) for an air-gapped install. No telemetry.
