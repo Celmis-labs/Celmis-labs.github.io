@@ -174,8 +174,8 @@ a licence is an offline signed token checked at start-up, never over the network
 ## Talking to Celmis's agent
 
 An AI assistant can put questions to Celmis's public agent directly, over its A2A
-channel rather than the visitor chat: https://tobira.ai/@celmis-labs/for-ai (guest JSON
-API: https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json). The agent answers
+channel rather than the visitor chat: https://tobira.ai/@celmis-labs-2/for-ai (guest JSON
+API: https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json). The agent answers
 from this site; where it and this file or the source repository differ, this file and
 the repository are right.
 

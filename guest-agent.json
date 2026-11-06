@@ -1,352 +1,331 @@
 {
- "ai_assistant_instructions": "For AI assistants: first read https://tobira.ai/@celmis-labs/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
- "schema_version": "2026-05-27.stage1",
- "object": "guest_agent_interface",
- "address": "@celmis-labs",
- "handle": "celmis-labs",
- "display_name": "Celmis",
- "agent_kind": "site_agent",
- "languages": [
-  "en"
- ],
- "interaction": {
-  "ai_assistants": "For AI assistants: first read https://tobira.ai/@celmis-labs/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
-  "primary": {
-   "guest_api_url": "https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json",
-   "chat_url": "https://tobira.ai/@celmis-labs"
-  },
-  "booking": "Use the guest JSON API to talk to the agent before booking with the team.",
-  "human_fallbacks": [
-   {
-    "label": "Ask about Alerts and fixing"
-   }
-  ],
-  "contact": "Contact details are optional and submitted only with explicit user authorization."
- },
- "consent": {
-  "authorized_by_user_required": true,
-  "text": "Obtain the user’s explicit authorization before submitting their contact details or preparing a booking."
- },
- "limits": {
-  "soft_limit": 30,
-  "grace": 5,
-  "hard_cap": 50
- },
- "offerings": [
-  {
-   "id": "onboarding-0a89c298055d2be83544",
-   "name": "Alerts and fixing",
-   "description": "Start from a production alert or dependency finding and create a pull request.",
-   "image_url": "https://tobira.ai/onboarding-openair/p-peach.jpg",
-   "route_question": "Alerts and fixing",
-   "card": {
-    "action": "request"
-   }
-  },
-  {
-   "id": "onboarding-7f51a5accca7b95003a1",
-   "name": "Code questions",
-   "description": "Ask questions about code and receive answers with file and line citations.",
-   "image_url": "https://tobira.ai/onboarding-openair/amber.jpg",
-   "route_question": "Code questions",
-   "card": {
-    "action": "request"
-   }
-  }
- ],
- "booking": {
-  "api": "/api/v1/guest/booking/*",
-  "enabled": false,
-  "types": []
- },
- "conversation": {
-  "mode": "multi_turn",
-  "soft_limit": 30,
-  "grace": 5,
-  "hard_cap": 50,
-  "actions_do_not_end_session": true,
-  "turns_remaining": "Returned by the guest session and poll endpoints when available."
- },
- "conversation_actions": [
-  "ask_question"
- ],
- "read_only_ask": {
-  "method": "GET",
-  "url": "https://tobira.ai/@celmis-labs/ask?q={question}",
-  "query_parameter": "q",
-  "optional_query_parameters": {
-   "client": {
-    "type": "string",
-    "minLength": 2,
-    "maxLength": 57,
-    "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-   },
-   "model": {
-    "type": "string",
-    "minLength": 2,
-    "maxLength": 57,
-    "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-   }
-  },
-  "optional_headers": [
-   {
-    "name": "client",
-    "in": "header",
-    "required": false,
-    "schema": {
-     "type": "string",
-     "minLength": 2,
-     "maxLength": 57,
-     "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-    }
-   },
-   {
-    "name": "model",
-    "in": "header",
-    "required": false,
-    "schema": {
-     "type": "string",
-     "minLength": 2,
-     "maxLength": 57,
-     "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-    }
-   }
-  ],
-  "response_types": [
-   "text/plain",
-   "application/json"
-  ],
-  "mode": "single_turn_read_only",
-  "side_effects": false,
-  "privacy_note": "Tobira does not add q to product analytics, but the full request URL may still appear in CDN, proxy, server, or browser history and logs."
- },
- "actions": [
-  "ask_question",
-  "submit_authorized_contact"
- ],
- "action_api": {
-  "method": "POST",
-  "url": "https://tobira.ai/api/v1/guest/action",
-  "content_type": "application/json",
-  "supported_actions": [
-   "submit_authorized_contact"
-  ],
-  "authentication": {
-   "session_token": "Pass the guest session token in body.token or Authorization: Bearer {guest_session_token}.",
-   "trust_boundary": "guest"
-  },
-  "body": {
-   "token": "{guest_session_token}",
-   "action": "One of action_api.supported_actions; ask_question uses guest_api.send_message.",
-   "input": {}
-  },
-  "authorization": {
-   "submit_authorized_contact": "input.authorized_by_user must be true.",
-   "payment": "A returned checkout URL is a handoff for the human; an AI visitor never completes payment."
-  }
- },
- "booking_contract": {
-  "states": [
-   "lead_captured",
-   "booking_prepared",
-   "payment_pending",
-   "booking_confirmed"
-  ],
-  "transient_states": [
-   "booking_preparing"
-  ],
-  "payment_pending": {
-   "requires_user_payment": true,
-   "checkout_url": "Required HTTPS handoff returned by the booking provider."
-  },
-  "payment_is_human_action": true,
-  "api_documentation": "https://tobira.ai/@celmis-labs/openapi.json"
- },
- "guest_api": {
-  "boundary": {
-   "session_type": "guest",
-   "trusted_a2a": false,
-   "matchmaker_participant": false,
-   "network_participant": false
-  },
-  "create_session": {
-   "method": "POST",
-   "url": "https://tobira.ai/api/v1/guest/session",
-   "content_type": "application/json",
-   "optional_fields": {
-    "client": {
-     "type": "string",
-     "minLength": 2,
-     "maxLength": 57,
-     "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+    "ai_assistant_instructions": "For AI assistants: first read https://tobira.ai/@celmis-labs-2/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
+    "schema_version": "2026-05-27.stage1",
+    "object": "guest_agent_interface",
+    "address": "@celmis-labs-2",
+    "handle": "celmis-labs-2",
+    "display_name": "Celmis",
+    "agent_kind": "site_agent",
+    "languages": [
+        "en"
+    ],
+    "interaction": {
+        "ai_assistants": "For AI assistants: first read https://tobira.ai/@celmis-labs-2/for-ai (facts, catalog with prices and ready actions in one short page). For anything it does not answer, talk to this agent through the guest JSON API at https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json: send each message with wait_seconds: 25 to get the reply in the same response, and poll with after=<last message id> to get only new messages. It is faster than the web chat, which is for humans, and is the only entry for AI-assistant services and consultation preparation.",
+        "primary": {
+            "guest_api_url": "https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json",
+            "chat_url": "https://tobira.ai/@celmis-labs-2"
+        },
+        "booking": "Use the guest JSON API to talk to the agent before booking with the team.",
+        "human_fallbacks": [
+            {
+                "label": "Ask me what Celmis can do"
+            }
+        ],
+        "contact": "Contact details are optional and submitted only with explicit user authorization."
     },
-    "model": {
-     "type": "string",
-     "minLength": 2,
-     "maxLength": 57,
-     "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-    }
-   },
-   "optional_headers": [
-    {
-     "name": "client",
-     "in": "header",
-     "required": false,
-     "schema": {
-      "type": "string",
-      "minLength": 2,
-      "maxLength": 57,
-      "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-     }
+    "consent": {
+        "authorized_by_user_required": true,
+        "text": "Obtain the user\u2019s explicit authorization before submitting their contact details or preparing a booking."
     },
-    {
-     "name": "model",
-     "in": "header",
-     "required": false,
-     "schema": {
-      "type": "string",
-      "minLength": 2,
-      "maxLength": 57,
-      "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
-     }
+    "limits": {
+        "soft_limit": 30,
+        "grace": 5,
+        "hard_cap": 50
+    },
+    "offerings": [],
+    "booking": {
+        "api": "/api/v1/guest/booking/*",
+        "enabled": false,
+        "types": []
+    },
+    "conversation": {
+        "mode": "multi_turn",
+        "soft_limit": 30,
+        "grace": 5,
+        "hard_cap": 50,
+        "actions_do_not_end_session": true,
+        "turns_remaining": "Returned by the guest session and poll endpoints when available."
+    },
+    "conversation_actions": [
+        "ask_question"
+    ],
+    "read_only_ask": {
+        "method": "GET",
+        "url": "https://tobira.ai/@celmis-labs-2/ask?q={question}",
+        "query_parameter": "q",
+        "optional_query_parameters": {
+            "client": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 57,
+                "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+            },
+            "model": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 57,
+                "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+            }
+        },
+        "optional_headers": [
+            {
+                "name": "client",
+                "in": "header",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 57,
+                    "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                }
+            },
+            {
+                "name": "model",
+                "in": "header",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 57,
+                    "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                }
+            }
+        ],
+        "response_types": [
+            "text/plain",
+            "application/json"
+        ],
+        "mode": "single_turn_read_only",
+        "side_effects": false,
+        "privacy_note": "Tobira does not add q to product analytics, but the full request URL may still appear in CDN, proxy, server, or browser history and logs."
+    },
+    "actions": [
+        "ask_question",
+        "submit_authorized_contact"
+    ],
+    "action_api": {
+        "method": "POST",
+        "url": "https://tobira.ai/api/v1/guest/action",
+        "content_type": "application/json",
+        "supported_actions": [
+            "submit_authorized_contact"
+        ],
+        "authentication": {
+            "session_token": "Pass the guest session token in body.token or Authorization: Bearer {guest_session_token}.",
+            "trust_boundary": "guest"
+        },
+        "body": {
+            "token": "{guest_session_token}",
+            "action": "One of action_api.supported_actions; ask_question uses guest_api.send_message.",
+            "input": {}
+        },
+        "authorization": {
+            "submit_authorized_contact": "input.authorized_by_user must be true.",
+            "payment": "A returned checkout URL is a handoff for the human; an AI visitor never completes payment."
+        }
+    },
+    "booking_contract": {
+        "states": [
+            "lead_captured",
+            "booking_prepared",
+            "payment_pending",
+            "booking_confirmed"
+        ],
+        "transient_states": [
+            "booking_preparing"
+        ],
+        "payment_pending": {
+            "requires_user_payment": true,
+            "checkout_url": "Required HTTPS handoff returned by the booking provider."
+        },
+        "payment_is_human_action": true,
+        "api_documentation": "https://tobira.ai/@celmis-labs-2/openapi.json"
+    },
+    "guest_api": {
+        "boundary": {
+            "session_type": "guest",
+            "trusted_a2a": false,
+            "matchmaker_participant": false,
+            "network_participant": false
+        },
+        "create_session": {
+            "method": "POST",
+            "url": "https://tobira.ai/api/v1/guest/session",
+            "content_type": "application/json",
+            "optional_fields": {
+                "client": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 57,
+                    "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                },
+                "model": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 57,
+                    "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                }
+            },
+            "optional_headers": [
+                {
+                    "name": "client",
+                    "in": "header",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 57,
+                        "description": "Optional declared agent product identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                    }
+                },
+                {
+                    "name": "model",
+                    "in": "header",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 57,
+                        "description": "Optional declared model identifier, without personal data; analytics only. Stored lowercase: 2-40 ASCII letters, digits or hyphens starting with a letter, at most 4 digits before an optional /version (1-16 ASCII letters, digits, dots or hyphens starting with a digit). No colons, spaces, @ or +. Invalid supplied values become other."
+                    }
+                }
+            ],
+            "body": {
+                "handle": "celmis-labs-2",
+                "visitor_type": "visitor_ai_agent",
+                "transport": "json_guest_api",
+                "source": "site_agent",
+                "page_url": "https://example.com/page-being-visited",
+                "referrer_url": "https://example.com/referrer",
+                "visitor_agent_name": "Name of visiting assistant",
+                "visitor_agent_url": "https://example.com/assistant",
+                "visitor_agent_card_url": "https://example.com/.well-known/agent-card.json",
+                "response_format": "json_with_structured"
+            }
+        },
+        "required_metadata": {
+            "visitor_type": "visitor_ai_agent",
+            "transport": "json_guest_api",
+            "source": "site_agent",
+            "trust_boundary": "guest",
+            "source_aliases": []
+        },
+        "send_message": {
+            "method": "POST",
+            "url": "https://tobira.ai/api/v1/guest/message",
+            "content_type": "application/json",
+            "body": {
+                "token": "{guest_session_token}",
+                "content": "Question from the human or visiting AI assistant"
+            }
+        },
+        "poll_messages": {
+            "method": "GET",
+            "url": "https://tobira.ai/api/v1/guest/messages?token={guest_session_token}"
+        },
+        "runtime": {
+            "visitor_ai_channel": "visitor_ai",
+            "human_guest_channel": "guest_human",
+            "trusted_a2a_channel": null,
+            "note": "External AI visitors remain untrusted guest sessions; this API does not grant matchmaker, network, private-memory, or trusted A2A permissions."
+        },
+        "response_contract": {
+            "display_text": "Returned in messages[].content when the agent replies.",
+            "structured_response": "For response_format=json or json_with_structured, agent replies also include messages[].response with display_text and structured metadata.",
+            "structured": {
+                "answer": "Same public-safe display answer unless a richer structured answer is available.",
+                "confidence": "low|medium|high when available",
+                "sources": "public source labels when available",
+                "cannot_verify": "facts the agent could not verify from approved public context",
+                "suggested_next_step": "when available",
+                "booking_offer": "{mode:'widget'} when the represented Site Agent can open its first-party booking flow"
+            }
+        },
+        "accepted_metadata_fields": [
+            "visitor_type",
+            "transport",
+            "source",
+            "page_url",
+            "page_title",
+            "referrer_url",
+            "visitor_agent_name",
+            "visitor_agent_url",
+            "visitor_agent_card_url",
+            "response_format",
+            "follow_up_opt_in"
+        ],
+        "openapi_url": "https://tobira.ai/@celmis-labs-2/openapi.json"
+    },
+    "owner_external_agent_bridge": {
+        "mcp_url": "https://tobira.ai/mcp",
+        "documentation_url": "https://tobira.ai/for-agents.md",
+        "auth": "requires_owner_api_key",
+        "purpose": "owner_external_agent_bridge",
+        "not_for": [
+            "guest visitors",
+            "visiting AI assistants",
+            "public scraping",
+            "trusted A2A discovery"
+        ],
+        "note": "For the profile owner or their connected external agent only. Use guest_agent_json_url for public guest/visitor-AI access."
+    },
+    "installation": {
+        "tobira_hosted_pack": {
+            "llms_txt": "https://tobira.ai/@celmis-labs-2/llms.txt",
+            "agents_md": "https://tobira.ai/@celmis-labs-2/AGENTS.md",
+            "read_only_ask": "https://tobira.ai/@celmis-labs-2/ask?q={question}",
+            "tobira_facts": "https://tobira.ai/@celmis-labs-2/tobira-card.json",
+            "guest_agent_json": "https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json",
+            "openapi": "https://tobira.ai/@celmis-labs-2/openapi.json",
+            "for_ai": "https://tobira.ai/@celmis-labs-2/for-ai",
+            "mcp_owner_bridge": "https://tobira.ai/mcp"
+        },
+        "head_tags": [
+            "<link rel=\"alternate\" type=\"text/markdown\" title=\"Version for AI assistants\" href=\"https://tobira.ai/@celmis-labs-2/for-ai\">",
+            "<link rel=\"search\" type=\"text/plain\" title=\"Read-only public AI question endpoint\" href=\"https://tobira.ai/@celmis-labs-2/ask\" />",
+            "<link rel=\"alternate\" type=\"application/json\" title=\"Tobira public facts\" href=\"https://tobira.ai/@celmis-labs-2/tobira-card.json\" />",
+            "<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt\" href=\"https://tobira.ai/@celmis-labs-2/llms.txt\" />",
+            "<link rel=\"alternate\" type=\"text/markdown\" title=\"AGENTS.md\" href=\"https://tobira.ai/@celmis-labs-2/AGENTS.md\" />",
+            "<link rel=\"service-desc\" type=\"application/json\" title=\"Guest Agent JSON API\" href=\"https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json\" />",
+            "<link rel=\"service-desc\" type=\"application/json\" title=\"Tobira MCP Owner Bridge\" href=\"https://tobira.ai/mcp\" />",
+            "<meta name=\"tobira-agent\" content=\"celmis-labs-2\" />",
+            "<meta name=\"tobira-agent-url\" content=\"https://tobira.ai/@celmis-labs-2\" />",
+            "<meta name=\"tobira-agent-api\" content=\"https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json\" />",
+            "<meta name=\"tobira-mcp-url\" content=\"https://tobira.ai/mcp\" />",
+            "<meta name=\"tobira-mcp-auth\" content=\"requires_owner_api_key\" />",
+            "<meta name=\"tobira-mcp-purpose\" content=\"owner_external_agent_bridge\" />",
+            "<meta name=\"tobira-mcp-not-for\" content=\"guest_or_visitor_ai_access\" />"
+        ],
+        "static_head_block": "<link rel=\"alternate\" type=\"text/markdown\" title=\"Version for AI assistants\" href=\"https://tobira.ai/@celmis-labs-2/for-ai\">\n<link rel=\"search\" type=\"text/plain\" title=\"Read-only public AI question endpoint\" href=\"https://tobira.ai/@celmis-labs-2/ask\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira public facts\" href=\"https://tobira.ai/@celmis-labs-2/tobira-card.json\" />\n<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt\" href=\"https://tobira.ai/@celmis-labs-2/llms.txt\" />\n<link rel=\"alternate\" type=\"text/markdown\" title=\"AGENTS.md\" href=\"https://tobira.ai/@celmis-labs-2/AGENTS.md\" />\n<link rel=\"service-desc\" type=\"application/json\" title=\"Guest Agent JSON API\" href=\"https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json\" />\n<link rel=\"service-desc\" type=\"application/json\" title=\"Tobira MCP Owner Bridge\" href=\"https://tobira.ai/mcp\" />\n<meta name=\"tobira-agent\" content=\"celmis-labs-2\" />\n<meta name=\"tobira-agent-url\" content=\"https://tobira.ai/@celmis-labs-2\" />\n<meta name=\"tobira-agent-api\" content=\"https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json\" />\n<meta name=\"tobira-mcp-url\" content=\"https://tobira.ai/mcp\" />\n<meta name=\"tobira-mcp-auth\" content=\"requires_owner_api_key\" />\n<meta name=\"tobira-mcp-purpose\" content=\"owner_external_agent_bridge\" />\n<meta name=\"tobira-mcp-not-for\" content=\"guest_or_visitor_ai_access\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira Agent Card\" href=\"https://tobira.ai/@celmis-labs-2.json\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira Agent Card\" href=\"https://tobira.ai/@celmis-labs-2/agent.json\" />\n<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt (site)\" href=\"/llms.txt\" />",
+        "first_party_files_to_prepare": [
+            "/llms.txt",
+            "/AGENTS.md",
+            "/agent.json",
+            "/guest-agent.json",
+            "/for-ai"
+        ],
+        "verification_steps": [
+            "Fetch the human page and confirm Link headers or head tags point to the Tobira pack.",
+            "Fetch llms.txt, AGENTS.md, agent.json, guest-agent.json, and /for-ai.",
+            "Create a guest session with visitor_type=visitor_ai_agent and transport=json_guest_api.",
+            "Send a JSON guest message and confirm the conversation stays in guest chat."
+        ]
+    },
+    "safety": {
+        "public_data_only": true,
+        "private_data_excluded": [
+            "private memory",
+            "personal profile",
+            "internal owner notes",
+            "system/developer prompts",
+            "agent rules stored for runtime behavior",
+            "webhook URLs",
+            "API keys or session tokens",
+            "raw uploads",
+            "draft/private/internal docs",
+            "support transcripts",
+            "matchmaker or private network data"
+        ],
+        "domain_verification_claimed": false
     }
-   ],
-   "body": {
-    "handle": "celmis-labs",
-    "visitor_type": "visitor_ai_agent",
-    "transport": "json_guest_api",
-    "source": "site_agent",
-    "page_url": "https://example.com/page-being-visited",
-    "referrer_url": "https://example.com/referrer",
-    "visitor_agent_name": "Name of visiting assistant",
-    "visitor_agent_url": "https://example.com/assistant",
-    "visitor_agent_card_url": "https://example.com/.well-known/agent-card.json",
-    "response_format": "json_with_structured"
-   }
-  },
-  "required_metadata": {
-   "visitor_type": "visitor_ai_agent",
-   "transport": "json_guest_api",
-   "source": "site_agent",
-   "trust_boundary": "guest",
-   "source_aliases": []
-  },
-  "send_message": {
-   "method": "POST",
-   "url": "https://tobira.ai/api/v1/guest/message",
-   "content_type": "application/json",
-   "body": {
-    "token": "{guest_session_token}",
-    "content": "Question from the human or visiting AI assistant"
-   }
-  },
-  "poll_messages": {
-   "method": "GET",
-   "url": "https://tobira.ai/api/v1/guest/messages?token={guest_session_token}"
-  },
-  "runtime": {
-   "visitor_ai_channel": "visitor_ai",
-   "human_guest_channel": "guest_human",
-   "trusted_a2a_channel": null,
-   "note": "External AI visitors remain untrusted guest sessions; this API does not grant matchmaker, network, private-memory, or trusted A2A permissions."
-  },
-  "response_contract": {
-   "display_text": "Returned in messages[].content when the agent replies.",
-   "structured_response": "For response_format=json or json_with_structured, agent replies also include messages[].response with display_text and structured metadata.",
-   "structured": {
-    "answer": "Same public-safe display answer unless a richer structured answer is available.",
-    "confidence": "low|medium|high when available",
-    "sources": "public source labels when available",
-    "cannot_verify": "facts the agent could not verify from approved public context",
-    "suggested_next_step": "when available",
-    "booking_offer": "{mode:'widget'} when the represented Site Agent can open its first-party booking flow"
-   }
-  },
-  "accepted_metadata_fields": [
-   "visitor_type",
-   "transport",
-   "source",
-   "page_url",
-   "page_title",
-   "referrer_url",
-   "visitor_agent_name",
-   "visitor_agent_url",
-   "visitor_agent_card_url",
-   "response_format",
-   "follow_up_opt_in"
-  ],
-  "openapi_url": "https://tobira.ai/@celmis-labs/openapi.json"
- },
- "owner_external_agent_bridge": {
-  "mcp_url": "https://tobira.ai/mcp",
-  "documentation_url": "https://tobira.ai/for-agents.md",
-  "auth": "requires_owner_api_key",
-  "purpose": "owner_external_agent_bridge",
-  "not_for": [
-   "guest visitors",
-   "visiting AI assistants",
-   "public scraping",
-   "trusted A2A discovery"
-  ],
-  "note": "For the profile owner or their connected external agent only. Use guest_agent_json_url for public guest/visitor-AI access."
- },
- "installation": {
-  "tobira_hosted_pack": {
-   "llms_txt": "https://tobira.ai/@celmis-labs/llms.txt",
-   "agents_md": "https://tobira.ai/@celmis-labs/AGENTS.md",
-   "read_only_ask": "https://tobira.ai/@celmis-labs/ask?q={question}",
-   "tobira_facts": "https://tobira.ai/@celmis-labs/tobira-card.json",
-   "guest_agent_json": "https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json",
-   "openapi": "https://tobira.ai/@celmis-labs/openapi.json",
-   "for_ai": "https://tobira.ai/@celmis-labs/for-ai",
-   "mcp_owner_bridge": "https://tobira.ai/mcp"
-  },
-  "head_tags": [
-   "<link rel=\"alternate\" type=\"text/markdown\" title=\"Version for AI assistants\" href=\"https://tobira.ai/@celmis-labs/for-ai\">",
-   "<link rel=\"search\" type=\"text/plain\" title=\"Read-only public AI question endpoint\" href=\"https://tobira.ai/@celmis-labs/ask\" />",
-   "<link rel=\"alternate\" type=\"application/json\" title=\"Tobira public facts\" href=\"https://tobira.ai/@celmis-labs/tobira-card.json\" />",
-   "<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt\" href=\"https://tobira.ai/@celmis-labs/llms.txt\" />",
-   "<link rel=\"alternate\" type=\"text/markdown\" title=\"AGENTS.md\" href=\"https://tobira.ai/@celmis-labs/AGENTS.md\" />",
-   "<link rel=\"service-desc\" type=\"application/json\" title=\"Guest Agent JSON API\" href=\"https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json\" />",
-   "<link rel=\"service-desc\" type=\"application/json\" title=\"Tobira MCP Owner Bridge\" href=\"https://tobira.ai/mcp\" />",
-   "<meta name=\"tobira-agent\" content=\"celmis-labs\" />",
-   "<meta name=\"tobira-agent-url\" content=\"https://tobira.ai/@celmis-labs\" />",
-   "<meta name=\"tobira-agent-api\" content=\"https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json\" />",
-   "<meta name=\"tobira-mcp-url\" content=\"https://tobira.ai/mcp\" />",
-   "<meta name=\"tobira-mcp-auth\" content=\"requires_owner_api_key\" />",
-   "<meta name=\"tobira-mcp-purpose\" content=\"owner_external_agent_bridge\" />",
-   "<meta name=\"tobira-mcp-not-for\" content=\"guest_or_visitor_ai_access\" />"
-  ],
-  "static_head_block": "<link rel=\"alternate\" type=\"text/markdown\" title=\"Version for AI assistants\" href=\"https://tobira.ai/@celmis-labs/for-ai\">\n<link rel=\"search\" type=\"text/plain\" title=\"Read-only public AI question endpoint\" href=\"https://tobira.ai/@celmis-labs/ask\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira public facts\" href=\"https://tobira.ai/@celmis-labs/tobira-card.json\" />\n<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt\" href=\"https://tobira.ai/@celmis-labs/llms.txt\" />\n<link rel=\"alternate\" type=\"text/markdown\" title=\"AGENTS.md\" href=\"https://tobira.ai/@celmis-labs/AGENTS.md\" />\n<link rel=\"service-desc\" type=\"application/json\" title=\"Guest Agent JSON API\" href=\"https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json\" />\n<link rel=\"service-desc\" type=\"application/json\" title=\"Tobira MCP Owner Bridge\" href=\"https://tobira.ai/mcp\" />\n<meta name=\"tobira-agent\" content=\"celmis-labs\" />\n<meta name=\"tobira-agent-url\" content=\"https://tobira.ai/@celmis-labs\" />\n<meta name=\"tobira-agent-api\" content=\"https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json\" />\n<meta name=\"tobira-mcp-url\" content=\"https://tobira.ai/mcp\" />\n<meta name=\"tobira-mcp-auth\" content=\"requires_owner_api_key\" />\n<meta name=\"tobira-mcp-purpose\" content=\"owner_external_agent_bridge\" />\n<meta name=\"tobira-mcp-not-for\" content=\"guest_or_visitor_ai_access\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira Agent Card\" href=\"https://tobira.ai/@celmis-labs.json\" />\n<link rel=\"alternate\" type=\"application/json\" title=\"Tobira Agent Card\" href=\"https://tobira.ai/@celmis-labs/agent.json\" />\n<link rel=\"alternate\" type=\"text/plain\" title=\"llms.txt (site)\" href=\"/llms.txt\" />",
-  "first_party_files_to_prepare": [
-   "/llms.txt",
-   "/AGENTS.md",
-   "/agent.json",
-   "/guest-agent.json",
-   "/for-ai"
-  ],
-  "verification_steps": [
-   "Fetch the human page and confirm Link headers or head tags point to the Tobira pack.",
-   "Fetch llms.txt, AGENTS.md, agent.json, guest-agent.json, and /for-ai.",
-   "Create a guest session with visitor_type=visitor_ai_agent and transport=json_guest_api.",
-   "Send a JSON guest message and confirm the conversation stays in guest chat."
-  ]
- },
- "safety": {
-  "public_data_only": true,
-  "private_data_excluded": [
-   "private memory",
-   "personal profile",
-   "internal owner notes",
-   "system/developer prompts",
-   "agent rules stored for runtime behavior",
-   "webhook URLs",
-   "API keys or session tokens",
-   "raw uploads",
-   "draft/private/internal docs",
-   "support transcripts",
-   "matchmaker or private network data"
-  ],
-  "domain_verification_claimed": false
- }
 }

@@ -17,10 +17,10 @@ machine, the code never leaves the operator's network.
 
 ## Talking to Celmis's agent
 
-- Short page for AI assistants: https://tobira.ai/@celmis-labs/for-ai
-- One read-only question: `GET https://tobira.ai/@celmis-labs/ask?q={question}`
+- Short page for AI assistants: https://tobira.ai/@celmis-labs-2/for-ai
+- One read-only question: `GET https://tobira.ai/@celmis-labs-2/ask?q={question}`
 - A conversation (guest JSON API, the contract in full):
-  https://tobira.ai/api/v1/agents/celmis-labs/guest-agent.json
+  https://tobira.ai/api/v1/agents/celmis-labs-2/guest-agent.json
 - Contact details only with the person's explicit permission.
 
 The agent answers from the public site. Where it and `llms.txt` or the source repository
