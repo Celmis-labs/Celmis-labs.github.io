@@ -87,11 +87,18 @@ one measured finding). A person reviews and merges; Celmis never merges or deplo
 of a separate tool for each of those jobs, each with its own access rules and its own
 copy of your code, one installation holds them all. The aim is a small team that can
 run several products and the integrations between them.</p>
-<p><strong>What &quot;beyond its own repository&quot; means today.</strong> Before a merge, the review checks the
-other repositories for values the change removes that they still hardcode, for deploy
-files that point at the changed repository, and for code that calls a changed function
-by the same name, quoting both sides. These are checks, not a call graph between
-repositories; that graph is not built yet.</p>
+<p><strong>What &quot;beyond its own repository&quot; means today.</strong> Indexing records what each repository
+exposes and uses: the HTTP routes it serves and calls, the packages it publishes and
+imports (Python, TypeScript and JavaScript, Go, Java). When a pull request removes a
+route or a function, removes a parameter or makes one required, or changes a route's
+method or path, the review names every consumer in the workspace's other repositories,
+with file and line. A link is strong when the called host or the imported module maps to
+the repository that defines it, and only strong links raise severity; a repository
+without these facts is reported as not checked, never as safe. The review also flags
+values the change removes that other repositories still hardcode, and deploy files that
+point at the changed repository. These are links through contracts, not every function
+call: questions and the MCP <code>refs</code> tool still search other repositories by text, and say
+so.</p>
 <h2 id="what-it-does"><a class="anchor" href="#what-it-does" aria-label="Link to this section">#</a>What it does</h2>
 <div class="tablewrap"><table>
 <thead>
@@ -111,7 +118,7 @@ repositories; that graph is not built yet.</p>
 </tr>
 <tr>
 <td><strong>Pull-request review</strong></td>
-<td>Agents read the diff and, where the graph exists, who else calls what changed, across repositories. Talk to it with <code>@celmis</code>, teach it with <code>remember</code>, and it stays quiet when there is nothing to say. <a href="#pull-request-review">Review</a></td>
+<td>Agents read the diff and name the other repositories that call a changed route or function, with file and line. Talk to it with <code>@celmis</code>, teach it with <code>remember</code>, and it stays quiet when there is nothing to say. <a href="#pull-request-review">Review</a></td>
 </tr>
 <tr>
 <td><strong>Evidence</strong></td>
